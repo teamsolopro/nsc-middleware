@@ -16,14 +16,10 @@ router.post('/login', async (req, res) => {
   const { username, password } = req.body;
   const validUser = username === process.env.ADMIN_USERNAME;
   const hash = process.env.ADMIN_PASSWORD_HASH || '';
-  console.log('[login] user match:', validUser);
-  console.log('[login] hash length:', hash.length);
-  console.log('[login] hash prefix:', hash.slice(0, 7));
   const validPass = await bcrypt.compare(password, hash);
-  console.log('[login] pass match:', validPass);
   if (validUser && validPass) {
     req.session.authenticated = true;
-    return res.redirect('/admin');
+    return req.session.save(() => res.redirect('/admin'));
   }
   res.render('admin/login', { error: 'Invalid credentials' });
 });
