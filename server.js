@@ -11,6 +11,7 @@ const apiRoutes = require('./routes/api');
 const { startExportJob } = require('./jobs/exportJson');
 
 const app = express();
+app.set('trust proxy', 1);
 const PORT = process.env.PORT || 3000;
 
 // View engine
