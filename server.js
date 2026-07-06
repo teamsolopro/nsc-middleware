@@ -4,6 +4,7 @@ const session = require('express-session');
 const mongoose = require('mongoose');
 const path = require('path');
 
+const MongoStore = require('connect-mongo');
 const webhookRoutes = require('./routes/webhook');
 const adminRoutes = require('./routes/admin');
 const apiRoutes = require('./routes/api');
@@ -29,6 +30,7 @@ app.use(session({
   secret: process.env.SESSION_SECRET || 'dev-secret-change-me',
   resave: false,
   saveUninitialized: false,
+  store: MongoStore.create({ mongoUrl: process.env.MONGODB_URI }),
   cookie: {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
