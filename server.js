@@ -4,7 +4,7 @@ const session = require('express-session');
 const mongoose = require('mongoose');
 const path = require('path');
 
-const MongoStore = require('connect-mongo');
+const { MongoStore } = require('connect-mongo');
 const webhookRoutes = require('./routes/webhook');
 const adminRoutes = require('./routes/admin');
 const apiRoutes = require('./routes/api');
