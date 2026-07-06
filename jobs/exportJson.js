@@ -1,7 +1,18 @@
 const cron = require('node-cron');
-const axios = require('axios');
+const { S3Client, PutObjectCommand } = require('@aws-sdk/client-s3');
 const Audition = require('../models/Audition');
 const Production = require('../models/Production');
+
+function getS3Client() {
+  return new S3Client({
+    region: 'auto',
+    endpoint: `https://${process.env.CDN_ACCOUNT_ID}.r2.cloudflarestorage.com`,
+    credentials: {
+      accessKeyId: process.env.CDN_ACCESS_KEY_ID,
+      secretAccessKey: process.env.CDN_SECRET_ACCESS_KEY,
+    },
+  });
+}
 
 async function runExport() {
   const now = new Date();
@@ -30,20 +41,20 @@ async function runExport() {
 }
 
 async function uploadToCdn(filename, data) {
-  const cdnUrl = process.env.CDN_BUCKET_URL;
-  const token = process.env.CDN_WRITE_TOKEN;
+  const { CDN_ACCOUNT_ID, CDN_ACCESS_KEY_ID, CDN_SECRET_ACCESS_KEY, CDN_BUCKET_NAME } = process.env;
 
-  if (!cdnUrl || !token) {
+  if (!CDN_ACCOUNT_ID || !CDN_ACCESS_KEY_ID || !CDN_SECRET_ACCESS_KEY || !CDN_BUCKET_NAME) {
     console.warn(`[exportJson] CDN not configured — skipping upload of ${filename}`);
     return;
   }
 
-  await axios.put(`${cdnUrl}/${filename}`, JSON.stringify(data), {
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`,
-    },
-  });
+  const client = getS3Client();
+  await client.send(new PutObjectCommand({
+    Bucket: CDN_BUCKET_NAME,
+    Key: `data/${filename}`,
+    Body: JSON.stringify(data),
+    ContentType: 'application/json',
+  }));
 }
 
 function startExportJob() {
