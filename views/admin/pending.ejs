@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>NSC Admin — Pending</title>
+  <link rel="stylesheet" href="/public/admin.css">
+</head>
+<body>
+  <%- include('_nav') %>
+  <main>
+    <h1>Pending Submissions</h1>
+
+    <section>
+      <h2>Auditions (<%= auditions.length %>)</h2>
+      <% if (auditions.length === 0) { %><p>None pending.</p><% } %>
+      <% auditions.forEach(a => { %>
+        <div class="submission-card">
+          <h3><%= a.show.title %></h3>
+          <p>Submitted: <%= a.submittedAt.toLocaleDateString() %> &mdash; <%= a.submittedByEmail %></p>
+          <p>Contact: <%= a.contactName %> / <%= a.contactEmail %></p>
+          <div class="actions">
+            <form method="POST" action="/admin/approve/audition/<%= a._id %>">
+              <button type="submit" class="btn btn-approve">Approve</button>
+            </form>
+            <form method="POST" action="/admin/reject/audition/<%= a._id %>">
+              <input type="text" name="note" placeholder="Rejection note (optional)">
+              <button type="submit" class="btn btn-reject">Reject</button>
+            </form>
+          </div>
+        </div>
+      <% }) %>
+    </section>
+
+    <section>
+      <h2>Productions (<%= productions.length %>)</h2>
+      <% if (productions.length === 0) { %><p>None pending.</p><% } %>
+      <% productions.forEach(p => { %>
+        <div class="submission-card">
+          <h3><%= p.show.title %></h3>
+          <p>Submitted: <%= p.submittedAt.toLocaleDateString() %> &mdash; <%= p.submittedByEmail %></p>
+          <p>Contact: <%= p.contactName %> / <%= p.contactEmail %></p>
+          <div class="actions">
+            <form method="POST" action="/admin/approve/production/<%= p._id %>">
+              <button type="submit" class="btn btn-approve">Approve</button>
+            </form>
+            <form method="POST" action="/admin/reject/production/<%= p._id %>">
+              <input type="text" name="note" placeholder="Rejection note (optional)">
+              <button type="submit" class="btn btn-reject">Reject</button>
+            </form>
+          </div>
+        </div>
+      <% }) %>
+    </section>
+  </main>
+</body>
+</html>

@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>NSC Admin — Dashboard</title>
+  <link rel="stylesheet" href="/public/admin.css">
+</head>
+<body>
+  <%- include('_nav') %>
+  <main>
+    <h1>Dashboard</h1>
+    <div class="stats">
+      <div class="stat-card">
+        <span class="stat-number"><%= pendingAuditions %></span>
+        <span class="stat-label">Pending Auditions</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-number"><%= pendingProductions %></span>
+        <span class="stat-label">Pending Productions</span>
+      </div>
+    </div>
+    <p><a href="/admin/pending" class="btn">Review Queue</a></p>
+  </main>
+</body>
+</html>

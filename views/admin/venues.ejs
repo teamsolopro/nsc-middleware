@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>NSC Admin — Venues</title>
+  <link rel="stylesheet" href="/public/admin.css">
+</head>
+<body>
+  <%- include('_nav') %>
+  <main>
+    <h1>Venues</h1>
+
+    <details class="form-panel">
+      <summary>Add Venue</summary>
+      <form method="POST" action="/admin/venues">
+        <label>Name <input type="text" name="name" required></label>
+        <label>Address <input type="text" name="address"></label>
+        <label>City <input type="text" name="city"></label>
+        <label>State
+          <select name="state">
+            <option value="">—</option>
+            <option value="NC">NC</option>
+            <option value="SC">SC</option>
+          </select>
+        </label>
+        <label>Zip <input type="text" name="zip"></label>
+        <label>County <input type="text" name="county"></label>
+        <label>Region
+          <select name="region">
+            <option value="">—</option>
+            <option>Charlotte metro</option>
+            <option>Triad</option>
+            <option>Triangle</option>
+            <option>Wilmington / Cape Fear</option>
+            <option>Asheville / Western NC</option>
+            <option>Lowcountry</option>
+            <option>Upstate SC</option>
+            <option>Other NC</option>
+            <option>Other SC</option>
+          </select>
+        </label>
+        <label>Map URL <input type="url" name="mapUrl"></label>
+        <label>Website <input type="url" name="website"></label>
+        <label>Parking Notes <textarea name="parkingNotes"></textarea></label>
+        <label>Accessibility Notes <textarea name="accessibilityNotes"></textarea></label>
+        <button type="submit" class="btn">Add Venue</button>
+      </form>
+    </details>
+
+    <table>
+      <thead><tr><th>Name</th><th>City</th><th>State</th><th>Region</th></tr></thead>
+      <tbody>
+        <% venues.forEach(v => { %>
+          <tr>
+            <td><%= v.name %></td>
+            <td><%= v.city %></td>
+            <td><%= v.state %></td>
+            <td><%= v.region %></td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </main>
+</body>
+</html>

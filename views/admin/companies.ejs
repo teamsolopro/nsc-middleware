@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>NSC Admin — Companies</title>
+  <link rel="stylesheet" href="/public/admin.css">
+</head>
+<body>
+  <%- include('_nav') %>
+  <main>
+    <h1>Companies</h1>
+
+    <details class="form-panel">
+      <summary>Add Company</summary>
+      <form method="POST" action="/admin/companies">
+        <label>Name <input type="text" name="name" required></label>
+        <label>Slug <input type="text" name="slug" required placeholder="charlotte-players"></label>
+        <label>City <input type="text" name="city"></label>
+        <label>State
+          <select name="state">
+            <option value="">—</option>
+            <option value="NC">NC</option>
+            <option value="SC">SC</option>
+          </select>
+        </label>
+        <label>Region
+          <select name="region">
+            <option value="">—</option>
+            <option>Charlotte metro</option>
+            <option>Triad</option>
+            <option>Triangle</option>
+            <option>Wilmington / Cape Fear</option>
+            <option>Asheville / Western NC</option>
+            <option>Lowcountry</option>
+            <option>Upstate SC</option>
+            <option>Other NC</option>
+            <option>Other SC</option>
+          </select>
+        </label>
+        <label>Website <input type="url" name="website"></label>
+        <label>Contact Name <input type="text" name="contactName"></label>
+        <label>Contact Email <input type="email" name="contactEmail"></label>
+        <button type="submit" class="btn">Add Company</button>
+      </form>
+    </details>
+
+    <table>
+      <thead><tr><th>Name</th><th>City</th><th>State</th><th>Region</th><th>Verified</th></tr></thead>
+      <tbody>
+        <% companies.forEach(c => { %>
+          <tr>
+            <td><%= c.name %></td>
+            <td><%= c.city %></td>
+            <td><%= c.state %></td>
+            <td><%= c.region %></td>
+            <td><%= c.verified ? 'Yes' : '' %></td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </main>
+</body>
+</html>
