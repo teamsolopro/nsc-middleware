@@ -1,8 +1,10 @@
 const crypto = require('crypto');
 
 function validateWebhook(req, res, next) {
+  if (process.env.NODE_ENV !== 'production') return next();
+
   const secret = process.env.GHL_WEBHOOK_SECRET;
-  if (!secret) return next(); // skip validation in dev if secret not set
+  if (!secret) return next();
 
   const signature = req.headers['x-ghl-signature'] || req.headers['x-webhook-signature'];
   if (!signature) {

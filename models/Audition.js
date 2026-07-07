@@ -17,11 +17,17 @@ const auditionSchema = new mongoose.Schema(
 
     show: {
       title: { type: String, required: true },
+      author: String,
+      composer: String,
       description: String,
       type: {
         type: String,
         enum: ['musical', 'play', 'improv', 'opera', 'dance', 'other'],
       },
+      showType: [{
+        type: String,
+        enum: ['musical', 'drama', 'comedy', 'one_act', 'childrens', 'other'],
+      }],
       showDates: {
         opens: Date,
         closes: Date,
@@ -29,6 +35,17 @@ const auditionSchema = new mongoose.Schema(
       isUnion: Boolean,
       unionType: { type: String, enum: ['AEA', 'non-union', 'both'] },
     },
+
+    rehearsalStart: Date,
+
+    ageRanges: [{
+      type: String,
+      enum: ['children', 'teens', 'young_adults', 'adults', 'seniors', 'all'],
+    }],
+
+    genderOpen: Boolean,
+    genderMale: Boolean,
+    genderFemale: Boolean,
 
     auditionDates: [
       {

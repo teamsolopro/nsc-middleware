@@ -8,6 +8,7 @@ const { MongoStore } = require('connect-mongo');
 const webhookRoutes = require('./routes/webhook');
 const adminRoutes = require('./routes/admin');
 const apiRoutes = require('./routes/api');
+const cronRoutes = require('./routes/cron');
 const { startExportJob } = require('./jobs/exportJson');
 
 const app = express();
@@ -43,6 +44,7 @@ app.use(session({
 app.use('/webhook', webhookRoutes);
 app.use('/admin', adminRoutes);
 app.use('/api', apiRoutes);
+app.use('/cron', cronRoutes);
 
 app.get('/', (req, res) => res.redirect('/admin'));
 

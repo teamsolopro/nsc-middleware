@@ -3,6 +3,7 @@ const router = express.Router();
 const { validateWebhook } = require('../middleware/validateWebhook');
 const Audition = require('../models/Audition');
 const Production = require('../models/Production');
+const Review = require('../models/Review');
 
 router.post('/audition', validateWebhook, async (req, res) => {
   try {
@@ -43,6 +44,28 @@ router.post('/production', validateWebhook, async (req, res) => {
   } catch (err) {
     console.error('Webhook /production error:', err);
     res.status(500).json({ error: 'Failed to save production submission' });
+  }
+});
+
+router.post('/review', validateWebhook, async (req, res) => {
+  try {
+    const data = req.body;
+    // TODO: map GHL form field names to Review schema fields
+    const review = new Review({
+      reviewType: 'guest',
+      linkedProductionId: data.production_id,
+      reviewerName: data.reviewer_name || data.name,
+      reviewerEmail: data.email,
+      rating: data.rating,
+      body: data.body || data.review_body,
+      // Additional field mapping goes here once GHL form fields are finalized
+    });
+    await review.save();
+    console.log(`New review submission: ${review._id}`);
+    res.status(200).json({ received: true, id: review._id });
+  } catch (err) {
+    console.error('Webhook /review error:', err);
+    res.status(500).json({ error: 'Failed to save review submission' });
   }
 });
 

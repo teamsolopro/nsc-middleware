@@ -26,6 +26,8 @@ const venueSchema = new mongoose.Schema(
     accessibilityNotes: String,
     mapUrl: String,
     website: String,
+    lat: Number,
+    lng: Number,
   },
   { timestamps: true }
 );

@@ -17,15 +17,24 @@ const productionSchema = new mongoose.Schema(
 
     show: {
       title: { type: String, required: true },
+      author: String,
+      composer: String,
       description: String,
       type: {
         type: String,
         enum: ['musical', 'play', 'improv', 'opera', 'dance', 'other'],
       },
+      showType: [{
+        type: String,
+        enum: ['musical', 'drama', 'comedy', 'one_act', 'childrens', 'other'],
+      }],
+      familyRating: { type: String, enum: ['G', 'PG', 'PG-13'] },
       posterImageUrl: String,
       runtime: String,
       contentWarnings: String,
     },
+
+    mediaIds: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Media' }],
 
     dates: {
       opens: Date,
