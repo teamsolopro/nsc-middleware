@@ -105,6 +105,23 @@ h2 { margin: 1.5rem 0 0.75rem; }
   font-size: 14px;
 }
 
+/* Status badges */
+.status-badge {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border-radius: 20px;
+  background: #ddd;
+  color: #555;
+}
+.status-published { background: #d4edda; color: #2d6a2d; }
+.status-pending   { background: #fff3cd; color: #856404; }
+.status-rejected  { background: #f8d7da; color: #8b1a1a; }
+
+.btn-sm { padding: 0.25rem 0.6rem; font-size: 12px; }
+
 /* Table */
 table { width: 100%; border-collapse: collapse; background: #fff; border-radius: 6px; overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
 th { background: #1a1a2e; color: #fff; text-align: left; padding: 0.6rem 0.75rem; font-size: 13px; }

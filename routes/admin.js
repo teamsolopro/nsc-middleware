@@ -80,6 +80,73 @@ router.put('/companies/:id', requireAuth, async (req, res) => {
   res.redirect('/admin/companies');
 });
 
+// Productions
+router.get('/productions', requireAuth, async (req, res) => {
+  const [productions, companies, venues] = await Promise.all([
+    Production.find().populate('linkedCompanyId', 'name').populate('linkedVenueId', 'name').sort({ createdAt: -1 }),
+    Company.find().sort({ name: 1 }),
+    Venue.find().sort({ name: 1 }),
+  ]);
+  res.render('admin/productions', { productions, companies, venues, error: null });
+});
+
+router.post('/productions', requireAuth, async (req, res) => {
+  try {
+    const d = req.body;
+    const production = new Production({
+      linkedCompanyId: d.linkedCompanyId || undefined,
+      linkedVenueId:   d.linkedVenueId   || undefined,
+      show: {
+        title:          d.title,
+        author:         d.author,
+        composer:       d.composer,
+        description:    d.description,
+        type:           d.showType,
+        familyRating:   d.familyRating,
+        posterImageUrl: d.posterImageUrl,
+        runtime:        d.runtime,
+        contentWarnings: d.contentWarnings,
+      },
+      dates: {
+        opens:  d.opens  || undefined,
+        closes: d.closes || undefined,
+      },
+      tickets: {
+        generalAdmission: d.ticketGeneral   || undefined,
+        senior:           d.ticketSenior    || undefined,
+        student:          d.ticketStudent   || undefined,
+        child:            d.ticketChild     || undefined,
+        bookingUrl:       d.ticketUrl       || undefined,
+        boxOfficePhone:   d.boxOfficePhone  || undefined,
+        notes:            d.ticketNotes     || undefined,
+      },
+      contactName:      d.contactName,
+      contactEmail:     d.contactEmail,
+      contactPhone:     d.contactPhone,
+      status:           d.status || 'pending',
+    });
+    await production.save();
+    res.redirect('/admin/productions');
+  } catch (err) {
+    const [companies, venues] = await Promise.all([
+      Company.find().sort({ name: 1 }),
+      Venue.find().sort({ name: 1 }),
+    ]);
+    const productions = await Production.find().populate('linkedCompanyId', 'name').populate('linkedVenueId', 'name').sort({ createdAt: -1 });
+    res.render('admin/productions', { productions, companies, venues, error: err.message });
+  }
+});
+
+router.post('/productions/:id/status', requireAuth, async (req, res) => {
+  await Production.findByIdAndUpdate(req.params.id, { status: req.body.status });
+  res.redirect('/admin/productions');
+});
+
+router.post('/productions/:id/delete', requireAuth, async (req, res) => {
+  await Production.findByIdAndDelete(req.params.id);
+  res.redirect('/admin/productions');
+});
+
 // Venues
 router.get('/venues', requireAuth, async (req, res) => {
   const venues = await Venue.find().sort({ name: 1 });
