@@ -9,7 +9,6 @@ const webhookRoutes = require('./routes/webhook');
 const adminRoutes = require('./routes/admin');
 const apiRoutes = require('./routes/api');
 const cronRoutes = require('./routes/cron');
-const { startExportJob } = require('./jobs/exportJson');
 
 const app = express();
 app.set('trust proxy', 1);
@@ -53,7 +52,6 @@ mongoose
   .connect(process.env.MONGODB_URI)
   .then(() => {
     console.log('Connected to MongoDB');
-    startExportJob();
     app.listen(PORT, () => console.log(`nsc-middleware listening on port ${PORT}`));
   })
   .catch((err) => {

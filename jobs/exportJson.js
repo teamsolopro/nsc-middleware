@@ -1,4 +1,3 @@
-const cron = require('node-cron');
 const { S3Client, PutObjectCommand } = require('@aws-sdk/client-s3');
 const Audition = require('../models/Audition');
 const Production = require('../models/Production');
@@ -57,13 +56,4 @@ async function uploadToCdn(filename, data) {
   }));
 }
 
-function startExportJob() {
-  // Run immediately on startup, then every 30 minutes
-  runExport().catch((err) => console.error('[exportJson] Initial export failed:', err));
-  cron.schedule('*/30 * * * *', () => {
-    runExport().catch((err) => console.error('[exportJson] Cron export failed:', err));
-  });
-  console.log('[exportJson] Export job scheduled (every 30 min)');
-}
-
-module.exports = { startExportJob, runExport };
+module.exports = { runExport };

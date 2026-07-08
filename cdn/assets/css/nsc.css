@@ -1,0 +1,152 @@
+/* Neighborhood Stage Carolinas — Shared Styles */
+
+:root {
+  --nsc-midnight:    #1E3A5F;
+  --nsc-navy:        #3D5A80;
+  --nsc-primary:     #6699C2;
+  --nsc-deep:        #4477A1;
+  --nsc-light-tint:  #D6E6F5;
+  --nsc-off-white:   #F5F3EE;
+  --nsc-near-black:  #1A1A1A;
+}
+
+/* ─── Section wrapper ─────────────────────────────────── */
+.nsc-section {
+  padding: 60px 20px;
+}
+
+.nsc-section-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.nsc-section-heading {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 2rem;
+  font-weight: 700;
+  font-style: italic;
+  color: var(--nsc-near-black);
+  margin: 0 0 8px;
+}
+
+.nsc-section-subhead {
+  font-family: 'Lato', sans-serif;
+  font-weight: 300;
+  font-size: 1rem;
+  color: #666;
+  margin: 0 0 32px;
+}
+
+/* ─── Card grid ───────────────────────────────────────── */
+.nsc-card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 24px;
+}
+
+.nsc-card {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.nsc-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+}
+
+.nsc-card-label {
+  font-family: 'Lato', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--nsc-primary);
+}
+
+.nsc-card-title {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--nsc-near-black);
+  margin: 0;
+}
+
+.nsc-card-company {
+  font-family: 'Lato', sans-serif;
+  font-size: 0.9rem;
+  color: #555;
+  margin: 0;
+}
+
+.nsc-card-meta {
+  font-family: 'Lato', sans-serif;
+  font-size: 0.85rem;
+  color: #777;
+  margin: 0;
+}
+
+.nsc-card-link {
+  font-family: 'Lato', sans-serif;
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--nsc-deep);
+  text-decoration: none;
+  margin-top: auto;
+  padding-top: 12px;
+}
+
+.nsc-card-link:hover {
+  color: var(--nsc-midnight);
+  text-decoration: underline;
+}
+
+/* ─── See all link ────────────────────────────────────── */
+.nsc-see-all {
+  text-align: center;
+  margin-top: 36px;
+}
+
+.nsc-see-all a {
+  font-family: 'Lato', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--nsc-deep);
+  text-decoration: none;
+  border-bottom: 2px solid var(--nsc-primary);
+  padding-bottom: 2px;
+}
+
+.nsc-see-all a:hover {
+  color: var(--nsc-midnight);
+  border-color: var(--nsc-midnight);
+}
+
+/* ─── Empty / loading states ──────────────────────────── */
+.nsc-empty {
+  font-family: 'Lato', sans-serif;
+  color: #999;
+  text-align: center;
+  padding: 40px 0;
+  grid-column: 1 / -1;
+}
+
+/* ─── Responsive ──────────────────────────────────────── */
+@media (max-width: 640px) {
+  .nsc-section {
+    padding: 40px 16px;
+  }
+
+  .nsc-section-heading {
+    font-size: 1.6rem;
+  }
+
+  .nsc-card-grid {
+    grid-template-columns: 1fr;
+  }
+}
