@@ -163,4 +163,91 @@ router.put('/venues/:id', requireAuth, async (req, res) => {
   res.redirect('/admin/venues');
 });
 
+// Auditions
+router.get('/auditions', requireAuth, async (req, res) => {
+  const [auditions, companies, venues, productions] = await Promise.all([
+    Audition.find().populate('linkedCompanyId', 'name').populate('linkedVenueId', 'name').sort({ createdAt: -1 }),
+    Company.find().sort({ name: 1 }),
+    Venue.find().sort({ name: 1 }),
+    Production.find({ status: 'published' }).sort({ 'show.title': 1 }),
+  ]);
+  res.render('admin/auditions', { auditions, companies, venues, productions, error: null });
+});
+
+router.post('/auditions', requireAuth, async (req, res) => {
+  try {
+    const d = req.body;
+    const audition = new Audition({
+      linkedCompanyId:   d.linkedCompanyId   || undefined,
+      linkedVenueId:     d.linkedVenueId     || undefined,
+      linkedProductionId: d.linkedProductionId || undefined,
+      show: {
+        title:       d.title,
+        author:      d.author,
+        composer:    d.composer,
+        description: d.description,
+        type:        d.showType,
+        showDates: {
+          opens:  d.showOpens  || undefined,
+          closes: d.showCloses || undefined,
+        },
+        isUnion:   d.isUnion === 'true',
+        unionType: d.unionType || undefined,
+      },
+      rehearsalStart: d.rehearsalStart || undefined,
+      auditionDates: d.auditionDate
+        ? (Array.isArray(d.auditionDate) ? d.auditionDate : [d.auditionDate]).map(function (date, i) {
+            const times = Array.isArray(d.auditionStartTime) ? d.auditionStartTime : [d.auditionStartTime];
+            const ends  = Array.isArray(d.auditionEndTime)   ? d.auditionEndTime   : [d.auditionEndTime];
+            const fmts  = Array.isArray(d.auditionFormat)    ? d.auditionFormat    : [d.auditionFormat];
+            return {
+              date:      date || undefined,
+              startTime: times[i] || undefined,
+              endTime:   ends[i]  || undefined,
+              format:    fmts[i]  || undefined,
+            };
+          }).filter(function (ad) { return ad.date; })
+        : [],
+      ageRanges:   Array.isArray(d.ageRanges)   ? d.ageRanges   : (d.ageRanges   ? [d.ageRanges]   : []),
+      genderOpen:  d.genderOpen  === 'on',
+      genderMale:  d.genderMale  === 'on',
+      genderFemale: d.genderFemale === 'on',
+      requirements: {
+        preparedSong:    d.preparedSong   === 'on',
+        songLength:      d.songLength     || undefined,
+        coldReading:     d.coldReading    === 'on',
+        headshot:        d.headshot       === 'on',
+        resume:          d.resume         === 'on',
+        callbacks:       d.callbacks      || undefined,
+        conflictDates:   d.conflictDates  || undefined,
+        additionalNotes: d.additionalNotes || undefined,
+      },
+      contactName:      d.contactName,
+      contactEmail:     d.contactEmail,
+      contactPhone:     d.contactPhone,
+      status:           d.status || 'pending',
+    });
+    await audition.save();
+    res.redirect('/admin/auditions');
+  } catch (err) {
+    const [auditions, companies, venues, productions] = await Promise.all([
+      Audition.find().populate('linkedCompanyId', 'name').populate('linkedVenueId', 'name').sort({ createdAt: -1 }),
+      Company.find().sort({ name: 1 }),
+      Venue.find().sort({ name: 1 }),
+      Production.find({ status: 'published' }).sort({ 'show.title': 1 }),
+    ]);
+    res.render('admin/auditions', { auditions, companies, venues, productions, error: err.message });
+  }
+});
+
+router.post('/auditions/:id/status', requireAuth, async (req, res) => {
+  await Audition.findByIdAndUpdate(req.params.id, { status: req.body.status });
+  res.redirect('/admin/auditions');
+});
+
+router.post('/auditions/:id/delete', requireAuth, async (req, res) => {
+  await Audition.findByIdAndDelete(req.params.id);
+  res.redirect('/admin/auditions');
+});
+
 module.exports = router;
