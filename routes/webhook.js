@@ -7,14 +7,15 @@ const Review = require('../models/Review');
 const Company = require('../models/Company');
 const Venue = require('../models/Venue');
 const stripPrice = v => v ? parseFloat(v.replace(/[^0-9.]/g, '')) || v : undefined;
+const toId = v => (v && /^[a-f\d]{24}$/i.test(v)) ? v : undefined;
 
 // ─── Show submission ───────────────────────────────────────
 router.post('/submit-show', async (req, res) => {
   try {
     const d = req.body;
     const production = new Production({
-      linkedCompanyId: d.linkedCompanyId || undefined,
-      linkedVenueId:   d.linkedVenueId   || undefined,
+      linkedCompanyId: toId(d.linkedCompanyId),
+      linkedVenueId:   toId(d.linkedVenueId),
       show: {
         title:           d.title,
         author:          d.author,
