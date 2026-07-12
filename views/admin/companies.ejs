@@ -40,24 +40,94 @@
         <label>Website <input type="url" name="website"></label>
         <label>Contact Name <input type="text" name="contactName"></label>
         <label>Contact Email <input type="email" name="contactEmail"></label>
+        <label>Contact Phone <input type="tel" name="contactPhone"></label>
+        <label><input type="checkbox" name="verified"> Verified</label>
         <button type="submit" class="btn">Add Company</button>
       </form>
     </details>
 
     <table>
-      <thead><tr><th>Name</th><th>City</th><th>State</th><th>Region</th><th>Verified</th></tr></thead>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>City</th>
+          <th>State</th>
+          <th>Region</th>
+          <th>Verified</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
       <tbody>
         <% companies.forEach(c => { %>
           <tr>
-            <td><%= c.name %></td>
+            <td><strong><%= c.name %></strong></td>
             <td><%= c.city %></td>
             <td><%= c.state %></td>
             <td><%= c.region %></td>
-            <td><%= c.verified ? 'Yes' : '' %></td>
+            <td><%= c.verified ? '✓' : '' %></td>
+            <td>
+              <button class="btn-sm" onclick="toggleEdit('<%= c._id %>')">Edit</button>
+              <form method="POST" action="/admin/companies/<%= c._id %>/delete" style="display:inline" onsubmit="return confirm('Delete <%= c.name %>?')">
+                <button type="submit" class="btn-sm btn-danger">Delete</button>
+              </form>
+            </td>
+          </tr>
+          <tr id="edit-<%= c._id %>" style="display:none">
+            <td colspan="6">
+              <form method="POST" action="/admin/companies/<%= c._id %>" class="edit-form">
+                <div class="edit-grid">
+                  <label>Name <input type="text" name="name" value="<%= c.name %>" required></label>
+                  <label>Slug <input type="text" name="slug" value="<%= c.slug %>"></label>
+                  <label>City <input type="text" name="city" value="<%= c.city %>"></label>
+                  <label>State
+                    <select name="state">
+                      <option value="">—</option>
+                      <option value="NC" <%- c.state === 'NC' ? 'selected' : '' %>>NC</option>
+                      <option value="SC" <%- c.state === 'SC' ? 'selected' : '' %>>SC</option>
+                    </select>
+                  </label>
+                  <label>Region
+                    <select name="region">
+                      <option value="">—</option>
+                      <% ['Charlotte metro','Triad','Triangle','Wilmington / Cape Fear','Asheville / Western NC','Lowcountry','Upstate SC','Other NC','Other SC'].forEach(r => { %>
+                        <option <%- c.region === r ? 'selected' : '' %>><%= r %></option>
+                      <% }) %>
+                    </select>
+                  </label>
+                  <label>Website <input type="url" name="website" value="<%= c.website %>"></label>
+                  <label>Contact Name <input type="text" name="contactName" value="<%= c.contactName %>"></label>
+                  <label>Contact Email <input type="email" name="contactEmail" value="<%= c.contactEmail %>"></label>
+                  <label>Contact Phone <input type="tel" name="contactPhone" value="<%= c.contactPhone %>"></label>
+                  <label>Bio <textarea name="bio" rows="3"><%= c.bio %></textarea></label>
+                  <label><input type="checkbox" name="verified" <%- c.verified ? 'checked' : '' %>> Verified (shows in public dropdowns)</label>
+                </div>
+                <div style="margin-top:12px;display:flex;gap:8px">
+                  <button type="submit" class="btn">Save Changes</button>
+                  <button type="button" class="btn-sm" onclick="toggleEdit('<%= c._id %>')">Cancel</button>
+                </div>
+              </form>
+            </td>
           </tr>
         <% }) %>
       </tbody>
     </table>
   </main>
+
+  <style>
+    .edit-form { padding: 16px 0; }
+    .edit-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .edit-grid label { display: flex; flex-direction: column; font-size: 12px; font-weight: 600; gap: 4px; }
+    .edit-grid label input, .edit-grid label select, .edit-grid label textarea { font-size: 14px; padding: 6px 8px; border: 1px solid #ccc; border-radius: 4px; }
+    .edit-grid label:last-child { grid-column: span 2; }
+    .btn-danger { background: #c00; color: #fff; border: none; }
+    .btn-danger:hover { background: #900; }
+  </style>
+
+  <script>
+    function toggleEdit(id) {
+      var row = document.getElementById('edit-' + id);
+      row.style.display = row.style.display === 'none' ? '' : 'none';
+    }
+  </script>
 </body>
 </html>

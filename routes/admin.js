@@ -75,8 +75,17 @@ router.post('/companies', requireAuth, async (req, res) => {
   res.redirect('/admin/companies');
 });
 
-router.put('/companies/:id', requireAuth, async (req, res) => {
-  await Company.findByIdAndUpdate(req.params.id, req.body);
+router.post('/companies/:id', requireAuth, async (req, res) => {
+  const { name, slug, city, state, region, website, contactName, contactEmail, contactPhone, bio, verified } = req.body;
+  await Company.findByIdAndUpdate(req.params.id, {
+    name, slug, city, state, region, website, contactName, contactEmail, contactPhone, bio,
+    verified: verified === 'on',
+  });
+  res.redirect('/admin/companies');
+});
+
+router.post('/companies/:id/delete', requireAuth, async (req, res) => {
+  await Company.findByIdAndDelete(req.params.id);
   res.redirect('/admin/companies');
 });
 
