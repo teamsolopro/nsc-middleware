@@ -1,7 +1,8 @@
-const cron = require('node-cron');
 const { S3Client, PutObjectCommand } = require('@aws-sdk/client-s3');
 const Audition = require('../models/Audition');
 const Production = require('../models/Production');
+const Company = require('../models/Company');
+const Venue = require('../models/Venue');
 
 function getS3Client() {
   return new S3Client({
@@ -21,23 +22,27 @@ async function runExport() {
     $or: [{ expiresAt: { $gt: now } }, { expiresAt: null }],
   };
 
-  const [auditions, productions] = await Promise.all([
+  const [auditions, productions, companies, venues] = await Promise.all([
     Audition.find(activeFilter)
       .populate('linkedCompanyId', 'name slug city state region logoUrl website')
-      .populate('linkedVenueId', 'name address city state zip mapUrl')
+      .populate('linkedVenueId', 'name address city state zip mapUrl lat lng')
       .lean(),
     Production.find(activeFilter)
       .populate('linkedCompanyId', 'name slug city state region logoUrl website')
-      .populate('linkedVenueId', 'name address city state zip mapUrl')
+      .populate('linkedVenueId', 'name address city state zip mapUrl lat lng')
       .lean(),
+    Company.find({ verified: true }).select('name slug city state region website logoUrl homeVenueIds').lean(),
+    Venue.find().select('name address city state zip county region lat lng mapUrl website linkedCompanyId').lean(),
   ]);
 
   await Promise.all([
     uploadToCdn('auditions.json', auditions),
     uploadToCdn('productions.json', productions),
+    uploadToCdn('companies.json', companies),
+    uploadToCdn('venues.json', venues),
   ]);
 
-  console.log(`[exportJson] Exported ${auditions.length} auditions, ${productions.length} productions`);
+  console.log(`[exportJson] Exported ${auditions.length} auditions, ${productions.length} productions, ${companies.length} companies, ${venues.length} venues`);
 }
 
 async function uploadToCdn(filename, data) {

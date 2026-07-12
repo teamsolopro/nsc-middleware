@@ -1,0 +1,1128 @@
+<!-- ============================================================
+     NSC — Submit a Show  |  Paste this entire block into GHL
+     ============================================================ -->
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@1,700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+
+<style>
+/* ── Variables ── */
+:root {
+  --midnight: #1E3A5F;
+  --navy:     #3D5A80;
+  --primary:  #6699C2;
+  --deep:     #4477A1;
+  --tint:     #D6E6F5;
+  --offwhite: #F5F3EE;
+  --black:    #1A1A1A;
+}
+
+/* ── Wrapper ── */
+#nsc-wizard {
+  font-family: 'Lato', sans-serif;
+  max-width: 780px;
+  margin: 0 auto;
+  padding: 0 16px 60px;
+  color: var(--black);
+}
+
+/* ── Step indicator ── */
+.nsc-steps {
+  display: flex;
+  justify-content: space-between;
+  margin: 32px 0 40px;
+  position: relative;
+}
+.nsc-steps::before {
+  content: '';
+  position: absolute;
+  top: 18px;
+  left: 0; right: 0;
+  height: 2px;
+  background: #ddd;
+  z-index: 0;
+}
+.nsc-step-dot {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  position: relative;
+  z-index: 1;
+}
+.nsc-step-dot .dot {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  background: #ddd;
+  color: #999;
+  font-weight: 700;
+  font-size: 14px;
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.2s, color 0.2s;
+}
+.nsc-step-dot.active .dot  { background: var(--primary); color: #fff; }
+.nsc-step-dot.done .dot    { background: var(--midnight); color: #fff; }
+.nsc-step-dot .label {
+  font-size: 11px;
+  color: #999;
+  text-align: center;
+  white-space: nowrap;
+}
+.nsc-step-dot.active .label { color: var(--primary); font-weight: 700; }
+.nsc-step-dot.done .label   { color: var(--midnight); }
+
+/* ── Panel ── */
+.nsc-panel { display: none; }
+.nsc-panel.active { display: block; }
+
+.nsc-panel h2 {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-style: italic;
+  font-size: 1.6rem;
+  color: var(--midnight);
+  margin: 0 0 24px;
+}
+
+/* ── Field groups ── */
+.nsc-field {
+  margin-bottom: 20px;
+}
+.nsc-field label {
+  display: block;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: #666;
+  margin-bottom: 6px;
+}
+.nsc-field label .req { color: #c00; }
+.nsc-field input[type="text"],
+.nsc-field input[type="email"],
+.nsc-field input[type="tel"],
+.nsc-field input[type="url"],
+.nsc-field input[type="date"],
+.nsc-field select,
+.nsc-field textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-family: 'Lato', sans-serif;
+  font-size: 15px;
+  color: var(--black);
+  background: #fff;
+  transition: border-color 0.15s;
+  box-sizing: border-box;
+}
+.nsc-field input:focus,
+.nsc-field select:focus,
+.nsc-field textarea:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(102,153,194,0.15);
+}
+.nsc-field textarea { resize: vertical; min-height: 100px; }
+.nsc-field select:disabled { background: #f5f5f5; color: #aaa; cursor: not-allowed; }
+.nsc-field-hint { font-size: 12px; color: #888; margin-top: 4px; }
+.nsc-field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.nsc-field-error { font-size: 12px; color: #c00; margin-top: 4px; display: none; }
+
+/* ── Checkbox group ── */
+.nsc-check-group {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 4px;
+}
+.nsc-check-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  cursor: pointer;
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  transition: border-color 0.15s, background 0.15s;
+}
+.nsc-check-item:hover { border-color: var(--primary); background: var(--tint); }
+.nsc-check-item input[type="checkbox"] { accent-color: var(--primary); width: 16px; height: 16px; }
+
+/* ── Add link ── */
+.nsc-add-link {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--deep);
+  text-decoration: none;
+  cursor: pointer;
+  display: inline-block;
+  margin-top: 6px;
+}
+.nsc-add-link:hover { color: var(--midnight); text-decoration: underline; }
+.nsc-add-link.disabled { color: #bbb; cursor: not-allowed; pointer-events: none; }
+
+/* ── Buttons ── */
+.nsc-btn-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 36px;
+  padding-top: 24px;
+  border-top: 1px solid #eee;
+}
+.nsc-btn {
+  padding: 12px 28px;
+  border-radius: 6px;
+  font-family: 'Lato', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  border: none;
+  transition: background 0.15s, opacity 0.15s;
+}
+.nsc-btn-primary { background: var(--primary); color: #fff; }
+.nsc-btn-primary:hover { background: var(--deep); }
+.nsc-btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
+.nsc-btn-ghost { background: none; border: 2px solid #ccc; color: #666; }
+.nsc-btn-ghost:hover { border-color: var(--primary); color: var(--primary); }
+.nsc-btn-submit { background: var(--midnight); color: #fff; }
+.nsc-btn-submit:hover { background: var(--navy); }
+
+/* ── Section divider in form ── */
+.nsc-section-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--primary);
+  margin: 28px 0 16px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid var(--tint);
+}
+
+/* ── Review step ── */
+.nsc-review-section {
+  background: var(--offwhite);
+  border-radius: 8px;
+  padding: 20px 24px;
+  margin-bottom: 16px;
+  position: relative;
+}
+.nsc-review-section h3 {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 1rem;
+  font-style: italic;
+  color: var(--midnight);
+  margin: 0 0 12px;
+}
+.nsc-review-row { display: flex; gap: 8px; margin-bottom: 6px; font-size: 14px; }
+.nsc-review-row .rl { font-weight: 700; color: #555; min-width: 140px; flex-shrink: 0; }
+.nsc-review-row .rv { color: var(--black); }
+.nsc-edit-link {
+  position: absolute;
+  top: 16px; right: 16px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--deep);
+  cursor: pointer;
+  text-decoration: none;
+}
+.nsc-edit-link:hover { text-decoration: underline; }
+
+/* ── Modal ── */
+.nsc-modal-backdrop {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+}
+.nsc-modal-backdrop.open { display: flex; }
+.nsc-modal {
+  background: #fff;
+  border-radius: 10px;
+  padding: 32px;
+  width: 100%;
+  max-width: 540px;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+}
+.nsc-modal h2 {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-style: italic;
+  font-size: 1.4rem;
+  color: var(--midnight);
+  margin: 0 0 24px;
+}
+.nsc-modal-close {
+  position: absolute;
+  top: 16px; right: 20px;
+  font-size: 22px;
+  cursor: pointer;
+  color: #999;
+  background: none;
+  border: none;
+  line-height: 1;
+}
+.nsc-modal-close:hover { color: var(--black); }
+.nsc-modal-error { color: #c00; font-size: 13px; margin-bottom: 12px; display: none; }
+
+/* ── Char counter ── */
+.nsc-char-count { font-size: 12px; color: #aaa; text-align: right; margin-top: 2px; }
+.nsc-char-count.warn { color: #c00; }
+
+/* ── Legal checkbox ── */
+.nsc-legal {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  font-size: 14px;
+  line-height: 1.5;
+  color: #444;
+  padding: 16px;
+  background: var(--tint);
+  border-radius: 6px;
+}
+.nsc-legal input { margin-top: 2px; accent-color: var(--primary); flex-shrink: 0; }
+
+@media (max-width: 600px) {
+  .nsc-field-row { grid-template-columns: 1fr; }
+  .nsc-check-group { grid-template-columns: 1fr; }
+  .nsc-btn-row { flex-direction: column-reverse; gap: 12px; }
+  .nsc-btn { width: 100%; text-align: center; }
+}
+</style>
+
+<div id="nsc-wizard">
+
+  <!-- Step indicator -->
+  <div class="nsc-steps">
+    <div class="nsc-step-dot active" data-step="1"><div class="dot">1</div><div class="label">Company<br>&amp; Venue</div></div>
+    <div class="nsc-step-dot" data-step="2"><div class="dot">2</div><div class="label">Show<br>Details</div></div>
+    <div class="nsc-step-dot" data-step="3"><div class="dot">3</div><div class="label">Dates &amp;<br>Tickets</div></div>
+    <div class="nsc-step-dot" data-step="4"><div class="dot">4</div><div class="label">Description<br>&amp; Contact</div></div>
+    <div class="nsc-step-dot" data-step="5"><div class="dot">5</div><div class="label">Review &amp;<br>Submit</div></div>
+  </div>
+
+  <!-- ── STEP 1: Company & Venue ── -->
+  <div class="nsc-panel active" id="nsc-step-1">
+    <h2>Company &amp; Venue</h2>
+
+    <div class="nsc-field">
+      <label>Theater Company <span class="req">*</span></label>
+      <select id="nsc-company" required>
+        <option value="">— Select Your Theater Company —</option>
+      </select>
+      <a class="nsc-add-link disabled" id="nsc-add-company-link">+ Add New Company</a>
+    </div>
+
+    <div class="nsc-field">
+      <label>Venue <span class="req">*</span></label>
+      <select id="nsc-venue" required disabled>
+        <option value="">— Select a Venue —</option>
+      </select>
+      <a class="nsc-add-link disabled" id="nsc-add-venue-link">+ Add New Venue</a>
+    </div>
+
+    <div class="nsc-btn-row">
+      <span></span>
+      <button class="nsc-btn nsc-btn-primary" id="nsc-next-1" disabled>Next →</button>
+    </div>
+  </div>
+
+  <!-- ── STEP 2: Show Details ── -->
+  <div class="nsc-panel" id="nsc-step-2">
+    <h2>Show Details</h2>
+
+    <div class="nsc-section-label">Basic Info</div>
+    <div class="nsc-field">
+      <label>Show Title <span class="req">*</span></label>
+      <input type="text" id="nsc-title" maxlength="200" required>
+    </div>
+    <div class="nsc-field-row">
+      <div class="nsc-field">
+        <label>Author / Playwright <span class="req">*</span></label>
+        <input type="text" id="nsc-author" maxlength="200" required>
+      </div>
+      <div class="nsc-field" id="nsc-composer-field" style="display:none">
+        <label>Composer</label>
+        <input type="text" id="nsc-composer" maxlength="200">
+      </div>
+    </div>
+    <div class="nsc-field">
+      <label>Runtime</label>
+      <input type="text" id="nsc-runtime" placeholder="e.g. 2 hours 15 minutes with one intermission">
+    </div>
+
+    <div class="nsc-section-label">Show Type <span class="req">*</span></div>
+    <div class="nsc-check-group" id="nsc-showtype-group">
+      <label class="nsc-check-item"><input type="checkbox" name="showType" value="musical" id="nsc-st-musical"> Musical</label>
+      <label class="nsc-check-item"><input type="checkbox" name="showType" value="drama"> Drama</label>
+      <label class="nsc-check-item"><input type="checkbox" name="showType" value="comedy"> Comedy</label>
+      <label class="nsc-check-item"><input type="checkbox" name="showType" value="one_act"> One Act</label>
+      <label class="nsc-check-item"><input type="checkbox" name="showType" value="childrens"> Children's / Family</label>
+      <label class="nsc-check-item"><input type="checkbox" name="showType" value="other"> Other</label>
+    </div>
+    <div class="nsc-field-error" id="nsc-showtype-error">Please select at least one show type.</div>
+
+    <div class="nsc-section-label">Content &amp; Rating</div>
+    <div class="nsc-field-row">
+      <div class="nsc-field">
+        <label>Family Rating <span class="req">*</span></label>
+        <select id="nsc-rating" required>
+          <option value="">— Select —</option>
+          <option value="G">G — General Audiences</option>
+          <option value="PG">PG — Parental Guidance</option>
+          <option value="PG-13">PG-13 — Parents Strongly Cautioned</option>
+        </select>
+      </div>
+    </div>
+    <div class="nsc-field">
+      <label>Content Warnings</label>
+      <textarea id="nsc-warnings" placeholder="e.g. Contains mild language, adult themes, and simulated violence." rows="2"></textarea>
+    </div>
+
+    <div class="nsc-btn-row">
+      <button class="nsc-btn nsc-btn-ghost" onclick="nscGo(1)">← Back</button>
+      <button class="nsc-btn nsc-btn-primary" onclick="nscValidateStep2()">Next →</button>
+    </div>
+  </div>
+
+  <!-- ── STEP 3: Dates, Times & Tickets ── -->
+  <div class="nsc-panel" id="nsc-step-3">
+    <h2>Dates, Times &amp; Tickets</h2>
+
+    <div class="nsc-section-label">Run Dates &amp; Times</div>
+    <div class="nsc-field-row">
+      <div class="nsc-field">
+        <label>Opening Night <span class="req">*</span></label>
+        <input type="date" id="nsc-opens" required>
+      </div>
+      <div class="nsc-field">
+        <label>Closing Night <span class="req">*</span></label>
+        <input type="date" id="nsc-closes" required>
+      </div>
+    </div>
+    <div class="nsc-field">
+      <label>Showtimes <span class="req">*</span></label>
+      <textarea id="nsc-showtimes" rows="2" placeholder="e.g. Fridays &amp; Saturdays 7:30pm, Sundays 2:00pm" required></textarea>
+    </div>
+
+    <div class="nsc-section-label">Ticket Pricing <span style="font-weight:300;text-transform:none;letter-spacing:0;color:#888;font-size:11px">— Only fields with values will display publicly</span></div>
+    <div class="nsc-field-row">
+      <div class="nsc-field">
+        <label>Adult</label>
+        <input type="text" id="nsc-ticket-adult" placeholder="e.g. $22">
+      </div>
+      <div class="nsc-field">
+        <label>Senior</label>
+        <input type="text" id="nsc-ticket-senior" placeholder="e.g. $18">
+      </div>
+    </div>
+    <div class="nsc-field-row">
+      <div class="nsc-field">
+        <label>Student</label>
+        <input type="text" id="nsc-ticket-student" placeholder="e.g. $15">
+      </div>
+      <div class="nsc-field">
+        <label>Child</label>
+        <input type="text" id="nsc-ticket-child" placeholder="e.g. $10">
+      </div>
+    </div>
+    <div class="nsc-field">
+      <label>General Admission <span style="font-weight:300;text-transform:none;color:#888;font-size:11px">— Use if no tiered pricing</span></label>
+      <input type="text" id="nsc-ticket-general" placeholder="e.g. $18">
+    </div>
+
+    <div class="nsc-section-label">Box Office</div>
+    <div class="nsc-field">
+      <label>Ticket Purchase URL</label>
+      <input type="url" id="nsc-ticket-url" placeholder="https://...">
+    </div>
+    <div class="nsc-field-row">
+      <div class="nsc-field">
+        <label>Box Office Phone</label>
+        <input type="tel" id="nsc-boxoffice" placeholder="(336) 555-1234">
+      </div>
+    </div>
+    <div class="nsc-field">
+      <label>Ticket Notes</label>
+      <textarea id="nsc-ticket-notes" rows="2" placeholder="e.g. Season subscribers receive 20% off. Group rates available for 10 or more."></textarea>
+    </div>
+
+    <div class="nsc-btn-row">
+      <button class="nsc-btn nsc-btn-ghost" onclick="nscGo(2)">← Back</button>
+      <button class="nsc-btn nsc-btn-primary" onclick="nscValidateStep3()">Next →</button>
+    </div>
+  </div>
+
+  <!-- ── STEP 4: Description & Contact ── -->
+  <div class="nsc-panel" id="nsc-step-4">
+    <h2>Description &amp; Contact</h2>
+
+    <div class="nsc-section-label">Marketing</div>
+    <div class="nsc-field">
+      <label>Marketing Description <span class="req">*</span></label>
+      <textarea id="nsc-description" rows="5" minlength="50" maxlength="1000" placeholder="How should the show be described on the listing?" required></textarea>
+      <div class="nsc-char-count" id="nsc-desc-count">0 / 1000</div>
+      <div class="nsc-field-hint">Min 50 characters. Max 1000.</div>
+    </div>
+
+    <div class="nsc-section-label">Contact Info <span style="font-weight:300;text-transform:none;color:#888;font-size:11px">— Internal use only, not displayed publicly</span></div>
+    <div class="nsc-field">
+      <label>Contact Name <span class="req">*</span></label>
+      <input type="text" id="nsc-contact-name" required>
+    </div>
+    <div class="nsc-field-row">
+      <div class="nsc-field">
+        <label>Contact Email <span class="req">*</span></label>
+        <input type="email" id="nsc-contact-email" required>
+      </div>
+      <div class="nsc-field">
+        <label>Contact Phone</label>
+        <input type="tel" id="nsc-contact-phone" placeholder="(336) 555-1234">
+      </div>
+    </div>
+
+    <div class="nsc-section-label">Agreement</div>
+    <label class="nsc-legal">
+      <input type="checkbox" id="nsc-agree" required>
+      <span>I confirm that I am authorized to submit this listing on behalf of <strong id="nsc-agree-company">[your company]</strong> and agree to the <a href="/about" target="_blank">Neighborhood Stage Carolinas submission guidelines</a>.</span>
+    </label>
+
+    <div class="nsc-btn-row">
+      <button class="nsc-btn nsc-btn-ghost" onclick="nscGo(3)">← Back</button>
+      <button class="nsc-btn nsc-btn-primary" onclick="nscValidateStep4()">Review Submission →</button>
+    </div>
+  </div>
+
+  <!-- ── STEP 5: Review & Submit ── -->
+  <div class="nsc-panel" id="nsc-step-5">
+    <h2>Review &amp; Submit</h2>
+    <p style="color:#555;margin-bottom:24px;font-size:14px">Please review your submission before sending. Click any <strong>Edit</strong> link to go back and make changes.</p>
+
+    <div class="nsc-review-section">
+      <h3>Company &amp; Venue</h3>
+      <a class="nsc-edit-link" onclick="nscGo(1)">Edit</a>
+      <div class="nsc-review-row"><span class="rl">Company</span><span class="rv" id="rv-company">—</span></div>
+      <div class="nsc-review-row"><span class="rl">Venue</span><span class="rv" id="rv-venue">—</span></div>
+    </div>
+
+    <div class="nsc-review-section">
+      <h3>Show Details</h3>
+      <a class="nsc-edit-link" onclick="nscGo(2)">Edit</a>
+      <div class="nsc-review-row"><span class="rl">Title</span><span class="rv" id="rv-title">—</span></div>
+      <div class="nsc-review-row"><span class="rl">Author</span><span class="rv" id="rv-author">—</span></div>
+      <div class="nsc-review-row" id="rv-composer-row" style="display:none"><span class="rl">Composer</span><span class="rv" id="rv-composer">—</span></div>
+      <div class="nsc-review-row"><span class="rl">Show Type</span><span class="rv" id="rv-showtype">—</span></div>
+      <div class="nsc-review-row"><span class="rl">Family Rating</span><span class="rv" id="rv-rating">—</span></div>
+      <div class="nsc-review-row" id="rv-runtime-row" style="display:none"><span class="rl">Runtime</span><span class="rv" id="rv-runtime">—</span></div>
+      <div class="nsc-review-row" id="rv-warnings-row" style="display:none"><span class="rl">Content Warnings</span><span class="rv" id="rv-warnings">—</span></div>
+    </div>
+
+    <div class="nsc-review-section">
+      <h3>Dates &amp; Tickets</h3>
+      <a class="nsc-edit-link" onclick="nscGo(3)">Edit</a>
+      <div class="nsc-review-row"><span class="rl">Run Dates</span><span class="rv" id="rv-dates">—</span></div>
+      <div class="nsc-review-row"><span class="rl">Showtimes</span><span class="rv" id="rv-showtimes">—</span></div>
+      <div class="nsc-review-row" id="rv-ticket-adult-row"   style="display:none"><span class="rl">Adult</span><span class="rv" id="rv-ticket-adult">—</span></div>
+      <div class="nsc-review-row" id="rv-ticket-senior-row"  style="display:none"><span class="rl">Senior</span><span class="rv" id="rv-ticket-senior">—</span></div>
+      <div class="nsc-review-row" id="rv-ticket-student-row" style="display:none"><span class="rl">Student</span><span class="rv" id="rv-ticket-student">—</span></div>
+      <div class="nsc-review-row" id="rv-ticket-child-row"   style="display:none"><span class="rl">Child</span><span class="rv" id="rv-ticket-child">—</span></div>
+      <div class="nsc-review-row" id="rv-ticket-general-row" style="display:none"><span class="rl">General Admission</span><span class="rv" id="rv-ticket-general">—</span></div>
+      <div class="nsc-review-row" id="rv-ticket-url-row"     style="display:none"><span class="rl">Ticket URL</span><span class="rv" id="rv-ticket-url">—</span></div>
+      <div class="nsc-review-row" id="rv-boxoffice-row"      style="display:none"><span class="rl">Box Office</span><span class="rv" id="rv-boxoffice">—</span></div>
+      <div class="nsc-review-row" id="rv-ticket-notes-row"   style="display:none"><span class="rl">Ticket Notes</span><span class="rv" id="rv-ticket-notes">—</span></div>
+    </div>
+
+    <div class="nsc-review-section">
+      <h3>Description &amp; Contact</h3>
+      <a class="nsc-edit-link" onclick="nscGo(4)">Edit</a>
+      <div class="nsc-review-row"><span class="rl">Description</span><span class="rv" id="rv-description" style="white-space:pre-wrap">—</span></div>
+      <div class="nsc-review-row"><span class="rl">Contact</span><span class="rv" id="rv-contact">—</span></div>
+    </div>
+
+    <div class="nsc-btn-row">
+      <button class="nsc-btn nsc-btn-ghost" onclick="nscGo(4)">← Back</button>
+      <button class="nsc-btn nsc-btn-submit" id="nsc-submit-btn" onclick="nscSubmit()">Submit for Review</button>
+    </div>
+    <p id="nsc-submit-error" style="color:#c00;font-size:13px;margin-top:12px;display:none"></p>
+  </div>
+
+</div><!-- #nsc-wizard -->
+
+<!-- ── COMPANY MODAL ── -->
+<div class="nsc-modal-backdrop" id="nsc-company-modal">
+  <div class="nsc-modal">
+    <button class="nsc-modal-close" onclick="nscCloseModal('nsc-company-modal')">&times;</button>
+    <h2>Add New Company</h2>
+    <p class="nsc-modal-error" id="nsc-company-modal-error"></p>
+    <div class="nsc-field"><label>Company Name <span class="req">*</span></label><input type="text" id="mc-name" required></div>
+    <div class="nsc-field"><label>Website</label><input type="url" id="mc-website" placeholder="https://..."></div>
+    <div class="nsc-field-row">
+      <div class="nsc-field"><label>City <span class="req">*</span></label><input type="text" id="mc-city" required></div>
+      <div class="nsc-field">
+        <label>State <span class="req">*</span></label>
+        <select id="mc-state" required>
+          <option value="">—</option>
+          <option value="NC">NC</option>
+          <option value="SC">SC</option>
+        </select>
+      </div>
+    </div>
+    <div class="nsc-field"><label>Contact Name <span class="req">*</span></label><input type="text" id="mc-contact-name" required></div>
+    <div class="nsc-field"><label>Contact Email <span class="req">*</span></label><input type="email" id="mc-contact-email" required></div>
+    <div class="nsc-field"><label>Contact Phone</label><input type="tel" id="mc-contact-phone"></div>
+    <div class="nsc-btn-row" style="border:none;padding:0;margin-top:24px">
+      <button class="nsc-btn nsc-btn-ghost" onclick="nscCloseModal('nsc-company-modal')">Cancel</button>
+      <button class="nsc-btn nsc-btn-primary" id="nsc-company-save-btn" onclick="nscSaveCompany()">Save Company</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── VENUE MODAL ── -->
+<div class="nsc-modal-backdrop" id="nsc-venue-modal">
+  <div class="nsc-modal">
+    <button class="nsc-modal-close" onclick="nscCloseModal('nsc-venue-modal')">&times;</button>
+    <h2>Add New Venue</h2>
+    <p class="nsc-modal-error" id="nsc-venue-modal-error"></p>
+    <div class="nsc-field"><label>Venue Name <span class="req">*</span></label><input type="text" id="mv-name" required></div>
+    <div class="nsc-field"><label>Address <span class="req">*</span></label><input type="text" id="mv-address" required></div>
+    <div class="nsc-field-row">
+      <div class="nsc-field"><label>City <span class="req">*</span></label><input type="text" id="mv-city" required></div>
+      <div class="nsc-field">
+        <label>State <span class="req">*</span></label>
+        <select id="mv-state" required onchange="nscUpdateCounties(this.value)">
+          <option value="">—</option>
+          <option value="NC">NC</option>
+          <option value="SC">SC</option>
+        </select>
+      </div>
+    </div>
+    <div class="nsc-field">
+      <label>County <span class="req">*</span></label>
+      <select id="mv-county" required disabled>
+        <option value="">— Select State First —</option>
+      </select>
+    </div>
+    <div class="nsc-field-row">
+      <div class="nsc-field"><label>Zip <span class="req">*</span></label><input type="text" id="mv-zip" required></div>
+      <div class="nsc-field">
+        <label>Venue Type <span class="req">*</span></label>
+        <select id="mv-type" required>
+          <option value="">—</option>
+          <option value="proscenium">Proscenium</option>
+          <option value="black_box">Black Box</option>
+          <option value="thrust">Thrust</option>
+          <option value="arena">Arena</option>
+          <option value="outdoor">Outdoor</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
+    </div>
+    <div class="nsc-field"><label>Seating Capacity</label><input type="number" id="mv-capacity" min="0"></div>
+    <div class="nsc-btn-row" style="border:none;padding:0;margin-top:24px">
+      <button class="nsc-btn nsc-btn-ghost" onclick="nscCloseModal('nsc-venue-modal')">Cancel</button>
+      <button class="nsc-btn nsc-btn-primary" id="nsc-venue-save-btn" onclick="nscSaveVenue()">Save Venue</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  /* ── Config ── change RAILWAY_URL to your Railway deployment URL ── */
+  var RAILWAY_URL = 'https://app.neighborhoodstage.com';
+  var CDN         = 'https://cdn.neighborhoodstage.com/data';
+  var THANK_YOU   = '/thank-you/show';
+
+  /* ── State ── */
+  var state = {
+    companyId:   '',
+    companyName: '',
+    venueId:     '',
+    venueName:   '',
+  };
+
+  /* ── Session storage for pending records ── */
+  var SESSION_KEY = 'nsc_pending';
+  function getPending() {
+    try { return JSON.parse(sessionStorage.getItem(SESSION_KEY) || '{"companies":[],"venues":[]}'); }
+    catch(e) { return { companies: [], venues: [] }; }
+  }
+  function savePending(p) { sessionStorage.setItem(SESSION_KEY, JSON.stringify(p)); }
+
+  /* ── DOM helpers ── */
+  function el(id) { return document.getElementById(id); }
+  function val(id) { return el(id) ? el(id).value.trim() : ''; }
+  function show(id) { var e = el(id); if (e) e.style.display = ''; }
+  function hide(id) { var e = el(id); if (e) e.style.display = 'none'; }
+  function showErr(id, msg) { var e = el(id); if (e) { e.textContent = msg; e.style.display = 'block'; } }
+  function hideErr(id) { var e = el(id); if (e) e.style.display = 'none'; }
+
+  /* ── Step navigation ── */
+  window.nscGo = function (step) {
+    document.querySelectorAll('.nsc-panel').forEach(function (p) { p.classList.remove('active'); });
+    document.querySelectorAll('.nsc-step-dot').forEach(function (d) {
+      var n = parseInt(d.getAttribute('data-step'), 10);
+      d.classList.remove('active', 'done');
+      if (n === step) d.classList.add('active');
+      if (n < step)  d.classList.add('done');
+    });
+    el('nsc-step-' + step).classList.add('active');
+    window.scrollTo({ top: el('nsc-wizard').offsetTop - 20, behavior: 'smooth' });
+  };
+
+  /* ── Load companies from CDN + session ── */
+  function loadCompanies() {
+    var sel = el('nsc-company');
+    fetch(CDN + '/companies.json')
+      .then(function (r) { return r.json(); })
+      .catch(function () { return []; })
+      .then(function (data) {
+        var pending = getPending();
+        var all = (data || []).concat(pending.companies);
+        all.sort(function (a, b) { return a.name.localeCompare(b.name); });
+        all.forEach(function (c) {
+          var opt = document.createElement('option');
+          opt.value = c._id || c.id;
+          opt.textContent = c.name + (c.city ? ' (' + c.city + ')' : '');
+          sel.appendChild(opt);
+        });
+        el('nsc-add-company-link').classList.remove('disabled');
+      });
+  }
+
+  /* ── Load venues for selected company ── */
+  function loadVenues(companyId) {
+    var sel = el('nsc-venue');
+    sel.innerHTML = '<option value="">— Select a Venue —</option>';
+    sel.disabled = true;
+
+    fetch(CDN + '/venues.json')
+      .then(function (r) { return r.json(); })
+      .catch(function () { return []; })
+      .then(function (data) {
+        var pending = getPending();
+        var all = (data || []).concat(pending.venues);
+        var filtered = all.filter(function (v) {
+          return !v.linkedCompanyId || v.linkedCompanyId === companyId || v.linkedCompanyId.toString() === companyId;
+        });
+        filtered.sort(function (a, b) { return a.name.localeCompare(b.name); });
+        filtered.forEach(function (v) {
+          var opt = document.createElement('option');
+          opt.value = v._id || v.id;
+          opt.textContent = v.name + (v.city ? ' — ' + v.city : '');
+          sel.appendChild(opt);
+        });
+        sel.disabled = false;
+        el('nsc-add-venue-link').classList.remove('disabled');
+      });
+  }
+
+  /* ── Step 1 wiring ── */
+  el('nsc-company').addEventListener('change', function () {
+    state.companyId   = this.value;
+    state.companyName = this.options[this.selectedIndex].text;
+    state.venueId     = '';
+    state.venueName   = '';
+    el('nsc-next-1').disabled = true;
+    el('nsc-agree-company').textContent = state.companyName || '[your company]';
+
+    if (this.value) {
+      loadVenues(this.value);
+      el('nsc-add-venue-link').classList.remove('disabled');
+    } else {
+      el('nsc-venue').innerHTML = '<option value="">— Select a Venue —</option>';
+      el('nsc-venue').disabled = true;
+      el('nsc-add-venue-link').classList.add('disabled');
+    }
+  });
+
+  el('nsc-venue').addEventListener('change', function () {
+    state.venueId   = this.value;
+    state.venueName = this.options[this.selectedIndex].text;
+    el('nsc-next-1').disabled = !(state.companyId && state.venueId);
+  });
+
+  el('nsc-next-1').addEventListener('click', function () {
+    nscGo(2);
+  });
+
+  /* ── Step 2: show Composer field when Musical is checked ── */
+  el('nsc-st-musical').addEventListener('change', function () {
+    el('nsc-composer-field').style.display = this.checked ? '' : 'none';
+  });
+
+  /* ── Step 2 validation ── */
+  window.nscValidateStep2 = function () {
+    var ok = true;
+    if (!val('nsc-title'))  { showErr('nsc-title',  'Please enter the show title.');  ok = false; }
+    else                    { hideErr('nsc-title'); }
+    if (!val('nsc-author')) { showErr('nsc-author', 'Please enter the author name.'); ok = false; }
+    else                    { hideErr('nsc-author'); }
+
+    var types = document.querySelectorAll('#nsc-showtype-group input:checked');
+    if (types.length === 0) { el('nsc-showtype-error').style.display = 'block'; ok = false; }
+    else                    { el('nsc-showtype-error').style.display = 'none'; }
+
+    if (!val('nsc-rating')) { showErr('nsc-rating', 'Please select a family rating.'); ok = false; }
+    else                    { hideErr('nsc-rating'); }
+
+    if (ok) nscGo(3);
+  };
+
+  /* ── Step 3 validation ── */
+  window.nscValidateStep3 = function () {
+    var ok = true;
+    var opens  = val('nsc-opens');
+    var closes = val('nsc-closes');
+    if (!opens)                         { showErr('nsc-opens',  'Please enter the opening night.'); ok = false; }
+    else                                { hideErr('nsc-opens'); }
+    if (!closes)                        { showErr('nsc-closes', 'Please enter the closing night.'); ok = false; }
+    else if (closes < opens)            { showErr('nsc-closes', 'Closing night must be after opening night.'); ok = false; }
+    else                                { hideErr('nsc-closes'); }
+    if (!val('nsc-showtimes'))          { showErr('nsc-showtimes', 'Please enter showtimes.'); ok = false; }
+    else                                { hideErr('nsc-showtimes'); }
+    if (ok) nscGo(4);
+  };
+
+  /* ── Step 4: char counter ── */
+  el('nsc-description').addEventListener('input', function () {
+    var len = this.value.length;
+    var counter = el('nsc-desc-count');
+    counter.textContent = len + ' / 1000';
+    counter.className = 'nsc-char-count' + (len > 900 ? ' warn' : '');
+  });
+
+  /* ── Step 4 validation ── */
+  window.nscValidateStep4 = function () {
+    var ok = true;
+    var desc = val('nsc-description');
+    if (desc.length < 50)      { showErr('nsc-description', 'Please enter at least 50 characters.'); ok = false; }
+    else if (desc.length > 1000) { showErr('nsc-description', 'Maximum 1000 characters.'); ok = false; }
+    else                       { hideErr('nsc-description'); }
+    if (!val('nsc-contact-name'))  { showErr('nsc-contact-name',  'Please enter the contact name.');  ok = false; }
+    else                           { hideErr('nsc-contact-name'); }
+    if (!val('nsc-contact-email')) { showErr('nsc-contact-email', 'Please enter the contact email.'); ok = false; }
+    else                           { hideErr('nsc-contact-email'); }
+    if (!el('nsc-agree').checked)  { showErr('nsc-agree', 'You must agree to the submission guidelines.'); ok = false; }
+    else                           { hideErr('nsc-agree'); }
+    if (ok) nscBuildReview();
+  };
+
+  /* ── Build review step ── */
+  function rv(id, val, rowId) {
+    if (el(id)) el(id).textContent = val || '—';
+    if (rowId) { if (val) show(rowId); else hide(rowId); }
+  }
+
+  function nscBuildReview() {
+    var types = Array.from(document.querySelectorAll('#nsc-showtype-group input:checked'))
+      .map(function (c) { return c.parentElement.textContent.trim(); }).join(', ');
+
+    rv('rv-company',  state.companyName);
+    rv('rv-venue',    state.venueName);
+    rv('rv-title',    val('nsc-title'));
+    rv('rv-author',   val('nsc-author'));
+    rv('rv-composer', val('nsc-composer'), 'rv-composer-row');
+    rv('rv-showtype', types);
+    rv('rv-rating',   val('nsc-rating'));
+    rv('rv-runtime',  val('nsc-runtime'),   'rv-runtime-row');
+    rv('rv-warnings', val('nsc-warnings'),  'rv-warnings-row');
+
+    var opens  = val('nsc-opens')  ? new Date(val('nsc-opens') + 'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) : '';
+    var closes = val('nsc-closes') ? new Date(val('nsc-closes') + 'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) : '';
+    rv('rv-dates',    opens && closes ? opens + ' – ' + closes : opens || closes);
+    rv('rv-showtimes', val('nsc-showtimes'));
+
+    rv('rv-ticket-adult',   val('nsc-ticket-adult'),   'rv-ticket-adult-row');
+    rv('rv-ticket-senior',  val('nsc-ticket-senior'),  'rv-ticket-senior-row');
+    rv('rv-ticket-student', val('nsc-ticket-student'), 'rv-ticket-student-row');
+    rv('rv-ticket-child',   val('nsc-ticket-child'),   'rv-ticket-child-row');
+    rv('rv-ticket-general', val('nsc-ticket-general'), 'rv-ticket-general-row');
+    rv('rv-ticket-url',     val('nsc-ticket-url'),     'rv-ticket-url-row');
+    rv('rv-boxoffice',      val('nsc-boxoffice'),       'rv-boxoffice-row');
+    rv('rv-ticket-notes',   val('nsc-ticket-notes'),   'rv-ticket-notes-row');
+    rv('rv-description',    val('nsc-description'));
+    rv('rv-contact',        val('nsc-contact-name') + ' — ' + val('nsc-contact-email'));
+
+    nscGo(5);
+  }
+
+  /* ── Submit ── */
+  window.nscSubmit = function () {
+    var btn = el('nsc-submit-btn');
+    btn.disabled = true;
+    btn.textContent = 'Submitting…';
+    hide('nsc-submit-error');
+
+    var types = Array.from(document.querySelectorAll('#nsc-showtype-group input:checked'))
+      .map(function (c) { return c.value; });
+
+    var payload = {
+      linkedCompanyId: state.companyId,
+      linkedVenueId:   state.venueId,
+      title:           val('nsc-title'),
+      author:          val('nsc-author'),
+      composer:        val('nsc-composer')        || null,
+      runtime:         val('nsc-runtime')         || null,
+      showType:        types,
+      familyRating:    val('nsc-rating'),
+      contentWarnings: val('nsc-warnings')        || null,
+      runDates: {
+        start: val('nsc-opens')  || null,
+        end:   val('nsc-closes') || null,
+      },
+      showtimes:       val('nsc-showtimes'),
+      ticketPrices: {
+        adult:   val('nsc-ticket-adult')   || null,
+        senior:  val('nsc-ticket-senior')  || null,
+        student: val('nsc-ticket-student') || null,
+        child:   val('nsc-ticket-child')   || null,
+        general: val('nsc-ticket-general') || null,
+      },
+      ticketUrl:         val('nsc-ticket-url')   || null,
+      boxOfficePhone:    val('nsc-boxoffice')      || null,
+      ticketNotes:       val('nsc-ticket-notes')  || null,
+      marketingDescription: val('nsc-description'),
+      contactName:       val('nsc-contact-name'),
+      contactEmail:      val('nsc-contact-email'),
+      contactPhone:      val('nsc-contact-phone') || null,
+      status:            'pending',
+    };
+
+    fetch(RAILWAY_URL + '/webhook/submit-show', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    })
+      .then(function (res) {
+        if (!res.ok) throw new Error('Server error ' + res.status);
+        return res.json();
+      })
+      .then(function () {
+        window.location.href = THANK_YOU;
+      })
+      .catch(function (err) {
+        btn.disabled = false;
+        btn.textContent = 'Submit for Review';
+        var errEl = el('nsc-submit-error');
+        errEl.textContent = 'There was a problem submitting your listing. Please try again or contact info@neighborhoodstage.com.';
+        errEl.style.display = 'block';
+        console.error('Submission error:', err);
+      });
+  };
+
+  /* ── Company modal ── */
+  el('nsc-add-company-link').addEventListener('click', function (e) {
+    e.preventDefault();
+    el('nsc-company-modal').classList.add('open');
+  });
+
+  window.nscCloseModal = function (id) {
+    el(id).classList.remove('open');
+  };
+
+  window.nscSaveCompany = function () {
+    var name  = val('mc-name');
+    var city  = val('mc-city');
+    var state_ = val('mc-state');
+    var cname = val('mc-contact-name');
+    var cemail = val('mc-contact-email');
+    var errEl = el('nsc-company-modal-error');
+
+    if (!name || !city || !state_ || !cname || !cemail) {
+      errEl.textContent = 'Please fill in all required fields.';
+      errEl.style.display = 'block';
+      return;
+    }
+    errEl.style.display = 'none';
+
+    var btn = el('nsc-company-save-btn');
+    btn.disabled = true;
+    btn.textContent = 'Saving…';
+
+    var payload = {
+      name: name,
+      website: val('mc-website') || null,
+      city: city,
+      state: state_,
+      contactName: cname,
+      contactEmail: cemail,
+      contactPhone: val('mc-contact-phone') || null,
+      status: 'pending',
+    };
+
+    fetch(RAILWAY_URL + '/webhook/submit-company', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    })
+      .then(function (r) { return r.json(); })
+      .then(function (data) {
+        // Store in session
+        var pending = getPending();
+        var newCompany = { _id: data.id, id: data.id, name: name, city: city };
+        pending.companies.push(newCompany);
+        savePending(pending);
+
+        // Add to dropdown and select
+        var opt = document.createElement('option');
+        opt.value = data.id;
+        opt.textContent = name + ' (' + city + ')';
+        el('nsc-company').appendChild(opt);
+        el('nsc-company').value = data.id;
+        el('nsc-company').dispatchEvent(new Event('change'));
+
+        btn.disabled = false;
+        btn.textContent = 'Save Company';
+        nscCloseModal('nsc-company-modal');
+
+        // Clear modal fields
+        ['mc-name','mc-website','mc-city','mc-state','mc-contact-name','mc-contact-email','mc-contact-phone']
+          .forEach(function (id) { var e = el(id); if (e) e.value = ''; });
+      })
+      .catch(function () {
+        errEl.textContent = 'Could not save company. Please try again.';
+        errEl.style.display = 'block';
+        btn.disabled = false;
+        btn.textContent = 'Save Company';
+      });
+  };
+
+  /* ── Venue modal ── */
+  el('nsc-add-venue-link').addEventListener('click', function (e) {
+    e.preventDefault();
+    if (this.classList.contains('disabled')) return;
+    el('nsc-venue-modal').classList.add('open');
+  });
+
+  window.nscSaveVenue = function () {
+    var name    = val('mv-name');
+    var address = val('mv-address');
+    var city    = val('mv-city');
+    var state_  = val('mv-state');
+    var county  = val('mv-county');
+    var zip     = val('mv-zip');
+    var type    = val('mv-type');
+    var errEl   = el('nsc-venue-modal-error');
+
+    if (!name || !address || !city || !state_ || !county || !zip || !type) {
+      errEl.textContent = 'Please fill in all required fields.';
+      errEl.style.display = 'block';
+      return;
+    }
+    errEl.style.display = 'none';
+
+    var btn = el('nsc-venue-save-btn');
+    btn.disabled = true;
+    btn.textContent = 'Saving…';
+
+    var payload = {
+      name: name,
+      address: address,
+      city: city,
+      state: state_,
+      zip: zip,
+      type: type,
+      capacity: val('mv-capacity') ? parseInt(val('mv-capacity'), 10) : null,
+      county:          county,
+      linkedCompanyId: state.companyId,
+      status: 'pending',
+    };
+
+    fetch(RAILWAY_URL + '/webhook/submit-venue', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    })
+      .then(function (r) { return r.json(); })
+      .then(function (data) {
+        var pending = getPending();
+        var newVenue = { _id: data.id, id: data.id, name: name, city: city, linkedCompanyId: state.companyId };
+        pending.venues.push(newVenue);
+        savePending(pending);
+
+        var opt = document.createElement('option');
+        opt.value = data.id;
+        opt.textContent = name + ' — ' + city;
+        el('nsc-venue').appendChild(opt);
+        el('nsc-venue').value = data.id;
+        el('nsc-venue').dispatchEvent(new Event('change'));
+
+        btn.disabled = false;
+        btn.textContent = 'Save Venue';
+        nscCloseModal('nsc-venue-modal');
+
+        ['mv-name','mv-address','mv-city','mv-state','mv-zip','mv-type','mv-capacity']
+          .forEach(function (id) { var e = el(id); if (e) e.value = ''; });
+        nscUpdateCounties('');
+      })
+      .catch(function () {
+        errEl.textContent = 'Could not save venue. Please try again.';
+        errEl.style.display = 'block';
+        btn.disabled = false;
+        btn.textContent = 'Save Venue';
+      });
+  };
+
+  /* ── Close modals on backdrop click ── */
+  document.querySelectorAll('.nsc-modal-backdrop').forEach(function (bd) {
+    bd.addEventListener('click', function (e) {
+      if (e.target === bd) bd.classList.remove('open');
+    });
+  });
+
+  /* ── County data ── */
+  var COUNTIES = {
+    NC: [
+      'Alamance','Alexander','Alleghany','Anson','Ashe','Avery','Beaufort','Bertie','Bladen',
+      'Brunswick','Buncombe','Burke','Cabarrus','Caldwell','Camden','Carteret','Caswell',
+      'Catawba','Chatham','Cherokee','Chowan','Clay','Cleveland','Columbus','Craven',
+      'Cumberland','Currituck','Dare','Davidson','Davie','Duplin','Durham','Edgecombe',
+      'Forsyth','Franklin','Gaston','Gates','Graham','Granville','Greene','Guilford',
+      'Halifax','Harnett','Haywood','Henderson','Hertford','Hoke','Hyde','Iredell',
+      'Jackson','Johnston','Jones','Lee','Lenoir','Lincoln','McDowell','Macon','Madison',
+      'Martin','Mecklenburg','Mitchell','Montgomery','Moore','Nash','New Hanover',
+      'Northampton','Onslow','Orange','Pamlico','Pasquotank','Pender','Perquimans',
+      'Person','Pitt','Polk','Randolph','Richmond','Robeson','Rockingham','Rowan',
+      'Rutherford','Sampson','Scotland','Stanly','Stokes','Surry','Swain','Transylvania',
+      'Tyrrell','Union','Vance','Wake','Warren','Washington','Watauga','Wayne','Wilkes',
+      'Wilson','Yadkin','Yancey'
+    ],
+    SC: [
+      'Abbeville','Aiken','Allendale','Anderson','Bamberg','Barnwell','Beaufort','Berkeley',
+      'Calhoun','Charleston','Cherokee','Chester','Chesterfield','Clarendon','Colleton',
+      'Darlington','Dillon','Dorchester','Edgefield','Fairfield','Florence','Georgetown',
+      'Greenville','Greenwood','Hampton','Horry','Jasper','Kershaw','Lancaster','Laurens',
+      'Lee','Lexington','McCormick','Marion','Marlboro','Newberry','Oconee','Orangeburg',
+      'Pickens','Richland','Saluda','Spartanburg','Sumter','Union','Williamsburg','York'
+    ]
+  };
+
+  window.nscUpdateCounties = function (stateVal) {
+    var sel = el('mv-county');
+    sel.innerHTML = '<option value="">— Select County —</option>';
+    if (!stateVal || !COUNTIES[stateVal]) {
+      sel.disabled = true;
+      sel.innerHTML = '<option value="">— Select State First —</option>';
+      return;
+    }
+    COUNTIES[stateVal].forEach(function (c) {
+      var opt = document.createElement('option');
+      opt.value = c;
+      opt.textContent = c + ' County';
+      sel.appendChild(opt);
+    });
+    sel.disabled = false;
+  };
+
+  /* ── Boot ── */
+  loadCompanies();
+
+})();
+</script>
