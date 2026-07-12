@@ -4,35 +4,32 @@
   <meta charset="UTF-8">
   <title>NSC Admin — Productions</title>
   <link rel="stylesheet" href="/public/admin.css">
+  <style>
+    .edit-form { padding: 16px 0; }
+    .edit-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .edit-grid label { display: flex; flex-direction: column; font-size: 12px; font-weight: 600; gap: 4px; }
+    .edit-grid label input, .edit-grid label select, .edit-grid label textarea { font-size: 14px; padding: 6px 8px; border: 1px solid #ccc; border-radius: 4px; }
+    .edit-grid .full { grid-column: span 2; }
+    .edit-grid h4 { grid-column: span 2; margin: 10px 0 2px; font-size: 13px; text-transform: uppercase; letter-spacing: .5px; color: #555; border-bottom: 1px solid #eee; padding-bottom: 4px; }
+    .btn-danger { background: #c00; color: #fff; border: none; }
+    .btn-danger:hover { background: #900; }
+    .poster-thumb { max-height: 80px; border-radius: 4px; display: block; margin-top: 6px; }
+  </style>
 </head>
 <body>
   <%- include('_nav') %>
   <main>
     <h1>Productions</h1>
 
-    <% if (error) { %>
-      <p class="error"><%= error %></p>
-    <% } %>
+    <% if (error) { %><p class="error"><%= error %></p><% } %>
 
     <details class="form-panel">
       <summary>Add Production</summary>
       <form method="POST" action="/admin/productions">
-
         <h3 style="margin-top:0">Show Info</h3>
         <label>Title <input type="text" name="title" required></label>
         <label>Author <input type="text" name="author"></label>
         <label>Composer <input type="text" name="composer"></label>
-        <label>Show Type
-          <select name="showType">
-            <option value="">—</option>
-            <option value="musical">Musical</option>
-            <option value="play">Play</option>
-            <option value="improv">Improv</option>
-            <option value="opera">Opera</option>
-            <option value="dance">Dance</option>
-            <option value="other">Other</option>
-          </select>
-        </label>
         <label>Family Rating
           <select name="familyRating">
             <option value="">—</option>
@@ -41,7 +38,7 @@
             <option value="PG-13">PG-13</option>
           </select>
         </label>
-        <label>Runtime (e.g. "2 hrs 15 min") <input type="text" name="runtime"></label>
+        <label>Runtime <input type="text" name="runtime" placeholder="e.g. 2 hrs 15 min"></label>
         <label>Content Warnings <input type="text" name="contentWarnings"></label>
         <label>Poster Image URL <input type="url" name="posterImageUrl"></label>
         <label>Description <textarea name="description" rows="3"></textarea></label>
@@ -50,23 +47,20 @@
         <label>Company
           <select name="linkedCompanyId">
             <option value="">— Not linked —</option>
-            <% companies.forEach(c => { %>
-              <option value="<%= c._id %>"><%= c.name %></option>
-            <% }) %>
+            <% companies.forEach(c => { %><option value="<%= c._id %>"><%= c.name %></option><% }) %>
           </select>
         </label>
         <label>Venue
           <select name="linkedVenueId">
             <option value="">— Not linked —</option>
-            <% venues.forEach(v => { %>
-              <option value="<%= v._id %>"><%= v.name %></option>
-            <% }) %>
+            <% venues.forEach(v => { %><option value="<%= v._id %>"><%= v.name %></option><% }) %>
           </select>
         </label>
 
-        <h3>Run Dates</h3>
+        <h3>Run Dates &amp; Showtimes</h3>
         <label>Opening Night <input type="date" name="opens"></label>
         <label>Closing Night <input type="date" name="closes"></label>
+        <label>Showtimes <input type="text" name="showtimes" placeholder="e.g. Fri & Sat 7:30pm, Sun 2:00pm"></label>
 
         <h3>Tickets</h3>
         <label>General Admission ($) <input type="number" name="ticketGeneral" step="0.01" min="0"></label>
@@ -116,6 +110,7 @@
             <td><%= p.dates && p.dates.closes ? new Date(p.dates.closes).toLocaleDateString() : '—' %></td>
             <td><span class="status-badge status-<%= p.status %>"><%= p.status %></span></td>
             <td>
+              <button class="btn-sm" onclick="toggleEdit('<%= p._id %>')">Edit</button>
               <form method="POST" action="/admin/productions/<%= p._id %>/status" style="display:inline">
                 <% if (p.status !== 'published') { %>
                   <input type="hidden" name="status" value="published">
@@ -126,7 +121,87 @@
                 <% } %>
               </form>
               <form method="POST" action="/admin/productions/<%= p._id %>/delete" style="display:inline" onsubmit="return confirm('Delete this production?')">
-                <button type="submit" class="btn btn-reject btn-sm">Delete</button>
+                <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+              </form>
+            </td>
+          </tr>
+          <tr id="edit-<%= p._id %>" style="display:none">
+            <td colspan="7">
+              <form method="POST" action="/admin/productions/<%= p._id %>" class="edit-form">
+                <div class="edit-grid">
+                  <h4>Show Info</h4>
+                  <label class="full">Title <input type="text" name="title" value="<%= p.show && p.show.title %>" required></label>
+                  <label>Author <input type="text" name="author" value="<%= p.show && p.show.author %>"></label>
+                  <label>Composer <input type="text" name="composer" value="<%= p.show && p.show.composer %>"></label>
+                  <label>Family Rating
+                    <select name="familyRating">
+                      <option value="">—</option>
+                      <% ['G','PG','PG-13'].forEach(r => { %>
+                        <option <%- (p.show && p.show.familyRating) === r ? 'selected' : '' %>><%= r %></option>
+                      <% }) %>
+                    </select>
+                  </label>
+                  <label>Runtime <input type="text" name="runtime" value="<%= p.show && p.show.runtime %>"></label>
+                  <label class="full">Content Warnings <input type="text" name="contentWarnings" value="<%= p.show && p.show.contentWarnings %>"></label>
+                  <label class="full">Description <textarea name="description" rows="4"><%= p.show && p.show.description %></textarea></label>
+
+                  <label class="full">
+                    Poster Image URL
+                    <input type="url" name="posterImageUrl" value="<%= p.show && p.show.posterImageUrl %>" id="poster-url-<%= p._id %>">
+                    <% if (p.show && p.show.posterImageUrl) { %>
+                      <img src="<%= p.show.posterImageUrl %>" class="poster-thumb" alt="Poster">
+                    <% } %>
+                  </label>
+
+                  <h4>Company &amp; Venue</h4>
+                  <label>Company
+                    <select name="linkedCompanyId">
+                      <option value="">— Not linked —</option>
+                      <% companies.forEach(c => { %>
+                        <option value="<%= c._id %>" <%- String(p.linkedCompanyId && p.linkedCompanyId._id) === String(c._id) ? 'selected' : '' %>><%= c.name %></option>
+                      <% }) %>
+                    </select>
+                  </label>
+                  <label>Venue
+                    <select name="linkedVenueId">
+                      <option value="">— Not linked —</option>
+                      <% venues.forEach(v => { %>
+                        <option value="<%= v._id %>" <%- String(p.linkedVenueId && p.linkedVenueId._id) === String(v._id) ? 'selected' : '' %>><%= v.name %></option>
+                      <% }) %>
+                    </select>
+                  </label>
+
+                  <h4>Run Dates &amp; Showtimes</h4>
+                  <label>Opening Night <input type="date" name="opens" value="<%= p.dates && p.dates.opens ? new Date(p.dates.opens).toISOString().slice(0,10) : '' %>"></label>
+                  <label>Closing Night <input type="date" name="closes" value="<%= p.dates && p.dates.closes ? new Date(p.dates.closes).toISOString().slice(0,10) : '' %>"></label>
+                  <label class="full">Showtimes <input type="text" name="showtimes" value="<%= p.showtimes %>"></label>
+
+                  <h4>Tickets</h4>
+                  <label>General Admission ($) <input type="number" name="ticketGeneral" step="0.01" min="0" value="<%= p.tickets && p.tickets.generalAdmission %>"></label>
+                  <label>Senior ($) <input type="number" name="ticketSenior" step="0.01" min="0" value="<%= p.tickets && p.tickets.senior %>"></label>
+                  <label>Student ($) <input type="number" name="ticketStudent" step="0.01" min="0" value="<%= p.tickets && p.tickets.student %>"></label>
+                  <label>Child ($) <input type="number" name="ticketChild" step="0.01" min="0" value="<%= p.tickets && p.tickets.child %>"></label>
+                  <label class="full">Booking URL <input type="url" name="ticketUrl" value="<%= p.tickets && p.tickets.bookingUrl %>"></label>
+                  <label>Box Office Phone <input type="tel" name="boxOfficePhone" value="<%= p.tickets && p.tickets.boxOfficePhone %>"></label>
+                  <label class="full">Ticket Notes <input type="text" name="ticketNotes" value="<%= p.tickets && p.tickets.notes %>"></label>
+
+                  <h4>Contact &amp; Admin</h4>
+                  <label>Contact Name <input type="text" name="contactName" value="<%= p.contactName %>"></label>
+                  <label>Contact Email <input type="email" name="contactEmail" value="<%= p.contactEmail %>"></label>
+                  <label>Contact Phone <input type="tel" name="contactPhone" value="<%= p.contactPhone %>"></label>
+                  <label class="full">Admin Notes <textarea name="adminNotes" rows="2"><%= p.adminNotes %></textarea></label>
+                  <label>Status
+                    <select name="status">
+                      <% ['pending','published','closed','rejected'].forEach(s => { %>
+                        <option value="<%= s %>" <%- p.status === s ? 'selected' : '' %>><%= s %></option>
+                      <% }) %>
+                    </select>
+                  </label>
+                </div>
+                <div style="margin-top:14px;display:flex;gap:8px">
+                  <button type="submit" class="btn">Save Changes</button>
+                  <button type="button" class="btn-sm" onclick="toggleEdit('<%= p._id %>')">Cancel</button>
+                </div>
               </form>
             </td>
           </tr>
@@ -137,5 +212,12 @@
       </tbody>
     </table>
   </main>
+
+  <script>
+    function toggleEdit(id) {
+      var row = document.getElementById('edit-' + id);
+      row.style.display = row.style.display === 'none' ? '' : 'none';
+    }
+  </script>
 </body>
 </html>

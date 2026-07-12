@@ -1,5 +1,7 @@
 const express = require('express');
 const router = express.Router();
+const multer = require('multer');
+const { S3Client, PutObjectCommand } = require('@aws-sdk/client-s3');
 const { validateWebhook } = require('../middleware/validateWebhook');
 const Audition = require('../models/Audition');
 const Production = require('../models/Production');
@@ -8,6 +10,46 @@ const Company = require('../models/Company');
 const Venue = require('../models/Venue');
 const stripPrice = v => v ? parseFloat(v.replace(/[^0-9.]/g, '')) || v : undefined;
 const toId = v => (v && /^[a-f\d]{24}$/i.test(v)) ? v : undefined;
+
+const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 5 * 1024 * 1024 } });
+
+// ─── Poster image upload ───────────────────────────────────
+router.post('/upload-image', upload.single('file'), async (req, res) => {
+  try {
+    if (!req.file) return res.status(400).json({ error: 'No file provided' });
+
+    const { CDN_ACCOUNT_ID, CDN_ACCESS_KEY_ID, CDN_SECRET_ACCESS_KEY, CDN_BUCKET_NAME } = process.env;
+    if (!CDN_ACCOUNT_ID || !CDN_ACCESS_KEY_ID || !CDN_SECRET_ACCESS_KEY || !CDN_BUCKET_NAME) {
+      return res.status(500).json({ error: 'CDN not configured' });
+    }
+
+    const ext = req.file.originalname.split('.').pop().toLowerCase();
+    if (!['jpg', 'jpeg', 'png', 'webp'].includes(ext)) {
+      return res.status(400).json({ error: 'Only JPG, PNG, and WebP files are allowed' });
+    }
+
+    const key = `media/posters/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+    const client = new S3Client({
+      region: 'auto',
+      endpoint: `https://${CDN_ACCOUNT_ID}.r2.cloudflarestorage.com`,
+      credentials: { accessKeyId: CDN_ACCESS_KEY_ID, secretAccessKey: CDN_SECRET_ACCESS_KEY },
+    });
+
+    await client.send(new PutObjectCommand({
+      Bucket: CDN_BUCKET_NAME,
+      Key: key,
+      Body: req.file.buffer,
+      ContentType: req.file.mimetype,
+    }));
+
+    const url = `https://cdn.neighborhoodstage.com/${key}`;
+    console.log(`[webhook] Poster uploaded: ${url}`);
+    res.status(200).json({ url });
+  } catch (err) {
+    console.error('[webhook] /upload-image error:', err);
+    res.status(500).json({ error: 'Upload failed' });
+  }
+});
 
 // ─── Show submission ───────────────────────────────────────
 router.post('/submit-show', async (req, res) => {
@@ -23,9 +65,10 @@ router.post('/submit-show', async (req, res) => {
         description:     d.marketingDescription,
         type:            Array.isArray(d.showType) ? d.showType[0] : d.showType,
         showType:        Array.isArray(d.showType) ? d.showType : (d.showType ? [d.showType] : []),
-        familyRating:    d.familyRating    || undefined,
-        runtime:         d.runtime         || undefined,
-        contentWarnings: d.contentWarnings || undefined,
+        familyRating:    d.familyRating     || undefined,
+        posterImageUrl:  d.posterImageUrl   || undefined,
+        runtime:         d.runtime          || undefined,
+        contentWarnings: d.contentWarnings  || undefined,
       },
       dates: {
         opens:  d.runDates && d.runDates.start ? new Date(d.runDates.start) : undefined,

@@ -146,6 +146,38 @@ router.post('/productions', requireAuth, async (req, res) => {
   }
 });
 
+router.post('/productions/:id', requireAuth, async (req, res) => {
+  const d = req.body;
+  await Production.findByIdAndUpdate(req.params.id, {
+    linkedCompanyId: d.linkedCompanyId || undefined,
+    linkedVenueId:   d.linkedVenueId   || undefined,
+    'show.title':          d.title,
+    'show.author':         d.author,
+    'show.composer':       d.composer,
+    'show.description':    d.description,
+    'show.familyRating':   d.familyRating,
+    'show.posterImageUrl': d.posterImageUrl || undefined,
+    'show.runtime':        d.runtime,
+    'show.contentWarnings': d.contentWarnings,
+    'dates.opens':  d.opens  || undefined,
+    'dates.closes': d.closes || undefined,
+    'tickets.generalAdmission': d.ticketGeneral  || undefined,
+    'tickets.senior':           d.ticketSenior   || undefined,
+    'tickets.student':          d.ticketStudent  || undefined,
+    'tickets.child':            d.ticketChild    || undefined,
+    'tickets.bookingUrl':       d.ticketUrl      || undefined,
+    'tickets.boxOfficePhone':   d.boxOfficePhone || undefined,
+    'tickets.notes':            d.ticketNotes    || undefined,
+    showtimes:    d.showtimes,
+    contactName:  d.contactName,
+    contactEmail: d.contactEmail,
+    contactPhone: d.contactPhone,
+    status:       d.status,
+    adminNotes:   d.adminNotes,
+  });
+  res.redirect('/admin/productions');
+});
+
 router.post('/productions/:id/status', requireAuth, async (req, res) => {
   await Production.findByIdAndUpdate(req.params.id, { status: req.body.status });
   res.redirect('/admin/productions');

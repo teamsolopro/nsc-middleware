@@ -470,6 +470,14 @@
       <div class="nsc-field-hint">Min 50 characters. Max 1000.</div>
     </div>
 
+    <div class="nsc-section-label">Show Poster</div>
+    <div class="nsc-field">
+      <label>Poster Image <span style="font-weight:300;color:#888;font-size:12px">— JPG or PNG, max 5MB</span></label>
+      <input type="file" id="nsc-poster-file" accept="image/jpeg,image/png,image/webp">
+      <div id="nsc-poster-status" style="margin-top:8px;font-size:13px;color:#555"></div>
+      <img id="nsc-poster-preview" src="" alt="" style="display:none;max-height:140px;margin-top:10px;border-radius:6px;border:1px solid #ddd;">
+    </div>
+
     <div class="nsc-section-label">Contact Info <span style="font-weight:300;text-transform:none;color:#888;font-size:11px">— Internal use only, not displayed publicly</span></div>
     <div class="nsc-field">
       <label>Contact Name <span class="req">*</span></label>
@@ -677,50 +685,61 @@
   };
 
   /* ── Load companies from CDN + session ── */
-  function loadCompanies() {
-    var sel = el('nsc-company');
-    fetch(CDN + '/companies.json')
-      .then(function (r) { return r.json(); })
-      .catch(function () { return []; })
-      .then(function (data) {
-        var pending = getPending();
-        var all = (data || []).concat(pending.companies);
-        all.sort(function (a, b) { return a.name.localeCompare(b.name); });
-        all.forEach(function (c) {
-          var opt = document.createElement('option');
-          opt.value = c._id || c.id;
-          opt.textContent = c.name + (c.city ? ' (' + c.city + ')' : '');
-          sel.appendChild(opt);
-        });
-        el('nsc-add-company-link').classList.remove('disabled');
-      });
+  /* ── Pre-load both CDN lists once on page load ── */
+  var _allCompanies = [];
+  var _allVenues    = [];
+  var _dataReady    = false;
+
+  function loadData() {
+    Promise.all([
+      fetch(CDN + '/companies.json').then(function (r) { return r.json(); }).catch(function () { return []; }),
+      fetch(CDN + '/venues.json').then(function (r) { return r.json(); }).catch(function () { return []; }),
+    ]).then(function (results) {
+      var pending = getPending();
+      _allCompanies = (results[0] || []).concat(pending.companies);
+      _allVenues    = (results[1] || []).concat(pending.venues);
+      _dataReady    = true;
+      populateCompanyDropdown();
+    });
   }
 
-  /* ── Load venues for selected company ── */
+  function populateCompanyDropdown() {
+    var sel = el('nsc-company');
+    var sorted = _allCompanies.slice().sort(function (a, b) { return a.name.localeCompare(b.name); });
+    sorted.forEach(function (c) {
+      var opt = document.createElement('option');
+      opt.value = c._id || c.id;
+      opt.textContent = c.name + (c.city ? ' (' + c.city + ')' : '');
+      sel.appendChild(opt);
+    });
+    el('nsc-add-company-link').classList.remove('disabled');
+  }
+
+  /* ── Load venues for selected company using homeVenueIds ── */
   function loadVenues(companyId) {
     var sel = el('nsc-venue');
     sel.innerHTML = '<option value="">— Select a Venue —</option>';
     sel.disabled = true;
 
-    fetch(CDN + '/venues.json')
-      .then(function (r) { return r.json(); })
-      .catch(function () { return []; })
-      .then(function (data) {
-        var pending = getPending();
-        var all = (data || []).concat(pending.venues);
-        var filtered = all.filter(function (v) {
-          return !v.linkedCompanyId || v.linkedCompanyId === companyId || v.linkedCompanyId.toString() === companyId;
-        });
-        filtered.sort(function (a, b) { return a.name.localeCompare(b.name); });
-        filtered.forEach(function (v) {
-          var opt = document.createElement('option');
-          opt.value = v._id || v.id;
-          opt.textContent = v.name + (v.city ? ' — ' + v.city : '');
-          sel.appendChild(opt);
-        });
-        sel.disabled = false;
-        el('nsc-add-venue-link').classList.remove('disabled');
-      });
+    var company = _allCompanies.find(function (c) { return (c._id || c.id) === companyId; });
+    var homeIds = (company && company.homeVenueIds) ? company.homeVenueIds.map(String) : [];
+    var pending = getPending();
+    var pendingVenues = pending.venues.filter(function (v) { return v.linkedCompanyId === companyId; });
+
+    var filtered = _allVenues.filter(function (v) {
+      var vid = String(v._id || v.id || '');
+      return homeIds.indexOf(vid) !== -1;
+    }).concat(pendingVenues);
+
+    filtered.sort(function (a, b) { return a.name.localeCompare(b.name); });
+    filtered.forEach(function (v) {
+      var opt = document.createElement('option');
+      opt.value = v._id || v.id;
+      opt.textContent = v.name + (v.city ? ' — ' + v.city : '');
+      sel.appendChild(opt);
+    });
+    sel.disabled = false;
+    el('nsc-add-venue-link').classList.remove('disabled');
   }
 
   /* ── Step 1 wiring ── */
@@ -789,6 +808,42 @@
     else                                { hideErr('nsc-showtimes'); }
     if (ok) nscGo(4);
   };
+
+  /* ── Poster upload ── */
+  var _posterUrl = null;
+  el('nsc-poster-file').addEventListener('change', function () {
+    var file = this.files[0];
+    if (!file) return;
+    if (file.size > 5 * 1024 * 1024) {
+      el('nsc-poster-status').textContent = 'File too large. Max 5MB.';
+      el('nsc-poster-status').style.color = '#c00';
+      this.value = '';
+      return;
+    }
+    el('nsc-poster-status').textContent = 'Uploading…';
+    el('nsc-poster-status').style.color = '#555';
+    var formData = new FormData();
+    formData.append('file', file);
+    fetch(RAILWAY_URL + '/webhook/upload-image', { method: 'POST', body: formData })
+      .then(function (r) { return r.json(); })
+      .then(function (data) {
+        if (data.url) {
+          _posterUrl = data.url;
+          el('nsc-poster-status').textContent = 'Uploaded successfully.';
+          el('nsc-poster-status').style.color = '#2a7a2a';
+          var preview = el('nsc-poster-preview');
+          preview.src = data.url;
+          preview.style.display = 'block';
+        } else {
+          el('nsc-poster-status').textContent = data.error || 'Upload failed.';
+          el('nsc-poster-status').style.color = '#c00';
+        }
+      })
+      .catch(function () {
+        el('nsc-poster-status').textContent = 'Upload failed. Please try again.';
+        el('nsc-poster-status').style.color = '#c00';
+      });
+  });
 
   /* ── Step 4: char counter ── */
   el('nsc-description').addEventListener('input', function () {
@@ -888,6 +943,7 @@
       ticketUrl:         val('nsc-ticket-url')   || null,
       boxOfficePhone:    val('nsc-boxoffice')      || null,
       ticketNotes:       val('nsc-ticket-notes')  || null,
+      posterImageUrl:       _posterUrl || null,
       marketingDescription: val('nsc-description'),
       contactName:       val('nsc-contact-name'),
       contactEmail:      val('nsc-contact-email'),
@@ -1122,7 +1178,7 @@
   };
 
   /* ── Boot ── */
-  loadCompanies();
+  loadData();
 
 })();
 </script>
