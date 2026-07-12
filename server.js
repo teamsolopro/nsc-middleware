@@ -37,8 +37,7 @@ app.use('/webhook', (req, res, next) => {
   next();
 });
 
-// Body parsing — raw buffer for webhook signature validation, JSON for everything else
-app.use('/webhook', express.raw({ type: 'application/json' }));
+// Body parsing
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
