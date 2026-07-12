@@ -473,6 +473,58 @@
   font-size: 1rem;
 }
 
+/* ─── Audition requirements list ─────────────────────── */
+.nsc-req-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 12px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.nsc-req-item {
+  font-family: 'Lato', sans-serif;
+  font-size: 0.9rem;
+  padding: 6px 10px;
+  border-radius: 4px;
+}
+
+.nsc-req-yes {
+  background: #d4edda;
+  color: #2d6a2d;
+}
+
+.nsc-req-no {
+  background: #f5f5f5;
+  color: #999;
+}
+
+/* ─── Audition dates list ─────────────────────────────── */
+.nsc-audition-dates {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.nsc-audition-dates li {
+  font-family: 'Lato', sans-serif;
+  font-size: 0.95rem;
+  color: #333;
+  padding: 10px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.nsc-audition-dates li:last-child {
+  border-bottom: none;
+}
+
+.nsc-date-format {
+  font-size: 0.8rem;
+  color: #888;
+  font-style: italic;
+}
+
 /* ─── Responsive ──────────────────────────────────────── */
 @media (max-width: 640px) {
   .nsc-section {
