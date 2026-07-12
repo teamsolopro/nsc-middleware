@@ -9,7 +9,7 @@ const Venue = require('../models/Venue');
 const stripPrice = v => v ? parseFloat(v.replace(/[^0-9.]/g, '')) || v : undefined;
 
 // ─── Show submission ───────────────────────────────────────
-router.post('/submit-show', validateWebhook, async (req, res) => {
+router.post('/submit-show', async (req, res) => {
   try {
     const d = req.body;
     const production = new Production({
@@ -55,7 +55,7 @@ router.post('/submit-show', validateWebhook, async (req, res) => {
 });
 
 // ─── Company submission (from Add New Company modal) ───────
-router.post('/submit-company', validateWebhook, async (req, res) => {
+router.post('/submit-company', async (req, res) => {
   try {
     const d = req.body;
     const slug = d.name
@@ -85,7 +85,7 @@ router.post('/submit-company', validateWebhook, async (req, res) => {
 });
 
 // ─── Venue submission (from Add New Venue modal) ───────────
-router.post('/submit-venue', validateWebhook, async (req, res) => {
+router.post('/submit-venue', async (req, res) => {
   try {
     const d = req.body;
     const venue = new Venue({
