@@ -21,6 +21,22 @@ app.set('views', path.join(__dirname, 'views'));
 // Static assets
 app.use('/public', express.static(path.join(__dirname, 'public')));
 
+// CORS — allow GHL site and local dev to call /webhook endpoints
+const ALLOWED_ORIGINS = [
+  'https://neighborhoodstage.com',
+  'https://www.neighborhoodstage.com',
+];
+app.use('/webhook', (req, res, next) => {
+  const origin = req.headers.origin;
+  if (origin && ALLOWED_ORIGINS.includes(origin)) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+  }
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  if (req.method === 'OPTIONS') return res.sendStatus(204);
+  next();
+});
+
 // Body parsing — raw buffer for webhook signature validation, JSON for everything else
 app.use('/webhook', express.raw({ type: 'application/json' }));
 app.use(express.json());
