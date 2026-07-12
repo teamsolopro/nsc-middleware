@@ -1,3 +1,4 @@
+const cron = require('node-cron');
 const { S3Client, PutObjectCommand } = require('@aws-sdk/client-s3');
 const Audition = require('../models/Audition');
 const Production = require('../models/Production');
