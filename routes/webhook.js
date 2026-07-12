@@ -6,6 +6,7 @@ const Production = require('../models/Production');
 const Review = require('../models/Review');
 const Company = require('../models/Company');
 const Venue = require('../models/Venue');
+const stripPrice = v => v ? parseFloat(v.replace(/[^0-9.]/g, '')) || v : undefined;
 
 // ─── Show submission ───────────────────────────────────────
 router.post('/submit-show', validateWebhook, async (req, res) => {
@@ -29,7 +30,6 @@ router.post('/submit-show', validateWebhook, async (req, res) => {
         opens:  d.runDates && d.runDates.start ? new Date(d.runDates.start) : undefined,
         closes: d.runDates && d.runDates.end   ? new Date(d.runDates.end)   : undefined,
       },
-        const stripPrice = v => v ? parseFloat(v.replace(/[^0-9.]/g, '')) || v : undefined;
       tickets: {
         generalAdmission: d.ticketPrices && d.ticketPrices.general ? stripPrice(d.ticketPrices.general) : undefined,
         senior:           d.ticketPrices && d.ticketPrices.senior  ? stripPrice(d.ticketPrices.senior)  : undefined,
