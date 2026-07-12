@@ -4,6 +4,20 @@
   <meta charset="UTF-8">
   <title>NSC Admin — Pending</title>
   <link rel="stylesheet" href="/public/admin.css">
+  <style>
+    .submission-card { background: #fff; border: 1px solid #ddd; border-radius: 6px; padding: 20px; margin-bottom: 24px; }
+    .submission-card h3 { margin: 0 0 4px; font-size: 18px; }
+    .submission-card .meta { color: #666; font-size: 13px; margin-bottom: 16px; }
+    .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 24px; margin-bottom: 16px; font-size: 14px; }
+    .detail-grid .full { grid-column: span 2; }
+    .detail-label { font-weight: 600; color: #444; font-size: 12px; text-transform: uppercase; letter-spacing: .4px; }
+    .detail-value { margin-top: 2px; }
+    .desc-block { background: #f8f8f8; border-left: 3px solid #6699C2; padding: 10px 14px; font-size: 14px; line-height: 1.6; margin-bottom: 16px; white-space: pre-wrap; }
+    .actions { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; border-top: 1px solid #eee; padding-top: 14px; margin-top: 4px; }
+    .actions form { display: flex; gap: 6px; align-items: center; }
+    .actions input[type=text] { padding: 6px 10px; border: 1px solid #ccc; border-radius: 4px; font-size: 13px; width: 220px; }
+    .tag { display: inline-block; background: #D6E6F5; color: #1E3A5F; font-size: 12px; padding: 2px 8px; border-radius: 12px; margin: 2px 2px 2px 0; }
+  </style>
 </head>
 <body>
   <%- include('_nav') %>
@@ -11,18 +25,107 @@
     <h1>Pending Submissions</h1>
 
     <section>
-      <h2>Auditions (<%= auditions.length %>)</h2>
-      <% if (auditions.length === 0) { %><p>None pending.</p><% } %>
-      <% auditions.forEach(a => { %>
+      <h2>Productions (<%= productions.length %>)</h2>
+      <% if (productions.length === 0) { %><p>None pending.</p><% } %>
+      <% productions.forEach(p => { %>
         <div class="submission-card">
-          <h3><%= a.show.title %></h3>
-          <p>Submitted: <%= a.submittedAt.toLocaleDateString() %> &mdash; <%= a.submittedByEmail %></p>
-          <p>Contact: <%= a.contactName %> / <%= a.contactEmail %></p>
+          <h3><%= p.show.title %></h3>
+          <div class="meta">
+            Submitted <%= p.submittedAt ? p.submittedAt.toLocaleDateString() : '—' %>
+            &mdash; by <strong><%= p.submittedByEmail %></strong>
+          </div>
+
+          <div class="detail-grid">
+            <div>
+              <div class="detail-label">Company</div>
+              <div class="detail-value"><%= p.linkedCompanyId ? p.linkedCompanyId.name : '—' %></div>
+            </div>
+            <div>
+              <div class="detail-label">Venue</div>
+              <div class="detail-value"><%= p.linkedVenueId ? p.linkedVenueId.name + (p.linkedVenueId.city ? ', ' + p.linkedVenueId.city : '') : '—' %></div>
+            </div>
+            <div>
+              <div class="detail-label">Author / Playwright</div>
+              <div class="detail-value"><%= p.show.author || '—' %></div>
+            </div>
+            <div>
+              <div class="detail-label">Composer</div>
+              <div class="detail-value"><%= p.show.composer || '—' %></div>
+            </div>
+            <div>
+              <div class="detail-label">Show Type</div>
+              <div class="detail-value">
+                <% (p.show.showType || []).forEach(t => { %><span class="tag"><%= t %></span><% }) %>
+                <% if (!p.show.showType || p.show.showType.length === 0) { %>—<% } %>
+              </div>
+            </div>
+            <div>
+              <div class="detail-label">Family Rating</div>
+              <div class="detail-value"><%= p.show.familyRating || '—' %></div>
+            </div>
+            <div>
+              <div class="detail-label">Opens</div>
+              <div class="detail-value"><%= p.dates && p.dates.opens ? new Date(p.dates.opens).toLocaleDateString() : '—' %></div>
+            </div>
+            <div>
+              <div class="detail-label">Closes</div>
+              <div class="detail-value"><%= p.dates && p.dates.closes ? new Date(p.dates.closes).toLocaleDateString() : '—' %></div>
+            </div>
+            <div>
+              <div class="detail-label">Showtimes</div>
+              <div class="detail-value"><%= p.showtimes || '—' %></div>
+            </div>
+            <div>
+              <div class="detail-label">Runtime</div>
+              <div class="detail-value"><%= p.show.runtime || '—' %></div>
+            </div>
+            <div>
+              <div class="detail-label">Ticket Prices</div>
+              <div class="detail-value">
+                <% var t = p.tickets || {}; %>
+                <% if (t.generalAdmission) { %>General: $<%= t.generalAdmission %><br><% } %>
+                <% if (t.senior) { %>Senior: $<%= t.senior %><br><% } %>
+                <% if (t.student) { %>Student: $<%= t.student %><br><% } %>
+                <% if (t.child) { %>Child: $<%= t.child %><br><% } %>
+                <% if (!t.generalAdmission && !t.senior && !t.student && !t.child) { %>—<% } %>
+              </div>
+            </div>
+            <div>
+              <div class="detail-label">Ticket URL / Box Office</div>
+              <div class="detail-value">
+                <% if (t.bookingUrl) { %><a href="<%= t.bookingUrl %>" target="_blank"><%= t.bookingUrl %></a><br><% } %>
+                <% if (t.boxOfficePhone) { %><%= t.boxOfficePhone %><% } %>
+                <% if (!t.bookingUrl && !t.boxOfficePhone) { %>—<% } %>
+              </div>
+            </div>
+            <% if (p.show.contentWarnings) { %>
+            <div class="full">
+              <div class="detail-label">Content Warnings</div>
+              <div class="detail-value"><%= p.show.contentWarnings %></div>
+            </div>
+            <% } %>
+            <% if (t.notes) { %>
+            <div class="full">
+              <div class="detail-label">Ticket Notes</div>
+              <div class="detail-value"><%= t.notes %></div>
+            </div>
+            <% } %>
+            <div>
+              <div class="detail-label">Contact</div>
+              <div class="detail-value"><%= p.contactName %> &mdash; <%= p.contactEmail %><%= p.contactPhone ? ' / ' + p.contactPhone : '' %></div>
+            </div>
+          </div>
+
+          <% if (p.show.description) { %>
+          <div class="detail-label" style="margin-bottom:6px">Marketing Description</div>
+          <div class="desc-block"><%= p.show.description %></div>
+          <% } %>
+
           <div class="actions">
-            <form method="POST" action="/admin/approve/audition/<%= a._id %>">
+            <form method="POST" action="/admin/approve/production/<%= p._id %>">
               <button type="submit" class="btn btn-approve">Approve</button>
             </form>
-            <form method="POST" action="/admin/reject/audition/<%= a._id %>">
+            <form method="POST" action="/admin/reject/production/<%= p._id %>">
               <input type="text" name="note" placeholder="Rejection note (optional)">
               <button type="submit" class="btn btn-reject">Reject</button>
             </form>
@@ -32,18 +135,36 @@
     </section>
 
     <section>
-      <h2>Productions (<%= productions.length %>)</h2>
-      <% if (productions.length === 0) { %><p>None pending.</p><% } %>
-      <% productions.forEach(p => { %>
+      <h2>Auditions (<%= auditions.length %>)</h2>
+      <% if (auditions.length === 0) { %><p>None pending.</p><% } %>
+      <% auditions.forEach(a => { %>
         <div class="submission-card">
-          <h3><%= p.show.title %></h3>
-          <p>Submitted: <%= p.submittedAt.toLocaleDateString() %> &mdash; <%= p.submittedByEmail %></p>
-          <p>Contact: <%= p.contactName %> / <%= p.contactEmail %></p>
+          <h3><%= a.show.title %></h3>
+          <div class="meta">
+            Submitted <%= a.submittedAt ? a.submittedAt.toLocaleDateString() : '—' %>
+            &mdash; by <strong><%= a.submittedByEmail %></strong>
+          </div>
+
+          <div class="detail-grid">
+            <div>
+              <div class="detail-label">Company</div>
+              <div class="detail-value"><%= a.linkedCompanyId ? a.linkedCompanyId.name : '—' %></div>
+            </div>
+            <div>
+              <div class="detail-label">Venue</div>
+              <div class="detail-value"><%= a.linkedVenueId ? a.linkedVenueId.name : '—' %></div>
+            </div>
+            <div>
+              <div class="detail-label">Contact</div>
+              <div class="detail-value"><%= a.contactName %> &mdash; <%= a.contactEmail %></div>
+            </div>
+          </div>
+
           <div class="actions">
-            <form method="POST" action="/admin/approve/production/<%= p._id %>">
+            <form method="POST" action="/admin/approve/audition/<%= a._id %>">
               <button type="submit" class="btn btn-approve">Approve</button>
             </form>
-            <form method="POST" action="/admin/reject/production/<%= p._id %>">
+            <form method="POST" action="/admin/reject/audition/<%= a._id %>">
               <input type="text" name="note" placeholder="Rejection note (optional)">
               <button type="submit" class="btn btn-reject">Reject</button>
             </form>

@@ -41,8 +41,8 @@ router.get('/', requireAuth, async (req, res) => {
 // Pending queue
 router.get('/pending', requireAuth, async (req, res) => {
   const [auditions, productions] = await Promise.all([
-    Audition.find({ status: 'pending' }).sort({ submittedAt: 1 }),
-    Production.find({ status: 'pending' }).sort({ submittedAt: 1 }),
+    Audition.find({ status: 'pending' }).populate('linkedCompanyId', 'name').populate('linkedVenueId', 'name city').sort({ submittedAt: 1 }),
+    Production.find({ status: 'pending' }).populate('linkedCompanyId', 'name').populate('linkedVenueId', 'name city').sort({ submittedAt: 1 }),
   ]);
   res.render('admin/pending', { auditions, productions });
 });
