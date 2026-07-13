@@ -71,8 +71,27 @@ router.get('/companies', requireAuth, async (req, res) => {
 });
 
 router.post('/companies', requireAuth, async (req, res) => {
-  await Company.create(req.body);
-  res.redirect('/admin/companies');
+  try {
+    const d = req.body;
+    const baseSlug = (d.slug || d.name || '')
+      .toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+    await Company.create({
+      name:         d.name,
+      slug:         baseSlug + '-' + Date.now(),
+      city:         d.city         || undefined,
+      state:        d.state        || undefined,
+      region:       d.region       || undefined,
+      website:      d.website      || undefined,
+      contactName:  d.contactName  || undefined,
+      contactEmail: d.contactEmail || undefined,
+      contactPhone: d.contactPhone || undefined,
+      verified:     d.verified === 'on',
+    });
+    res.redirect('/admin/companies');
+  } catch (err) {
+    console.error('[admin] POST /companies error:', err);
+    res.status(500).send('Failed to add company: ' + err.message);
+  }
 });
 
 router.post('/companies/:id', requireAuth, async (req, res) => {
