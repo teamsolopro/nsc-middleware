@@ -51,6 +51,7 @@ const productionSchema = new mongoose.Schema(
 
     tickets: {
       generalAdmission: Number,
+      adult: Number,
       senior: Number,
       student: Number,
       child: Number,

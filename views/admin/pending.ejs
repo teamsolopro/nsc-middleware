@@ -84,6 +84,7 @@
               <div class="detail-value">
                 <% var t = p.tickets || {}; %>
                 <% if (t.generalAdmission) { %>General: $<%= t.generalAdmission %><br><% } %>
+                <% if (t.adult) { %>Adult: $<%= t.adult %><br><% } %>
                 <% if (t.senior) { %>Senior: $<%= t.senior %><br><% } %>
                 <% if (t.student) { %>Student: $<%= t.student %><br><% } %>
                 <% if (t.child) { %>Child: $<%= t.child %><br><% } %>

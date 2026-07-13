@@ -64,6 +64,7 @@
 
         <h3>Tickets</h3>
         <label>General Admission ($) <input type="number" name="ticketGeneral" step="0.01" min="0"></label>
+        <label>Adult ($) <input type="number" name="ticketAdult" step="0.01" min="0"></label>
         <label>Senior ($) <input type="number" name="ticketSenior" step="0.01" min="0"></label>
         <label>Student ($) <input type="number" name="ticketStudent" step="0.01" min="0"></label>
         <label>Child ($) <input type="number" name="ticketChild" step="0.01" min="0"></label>
@@ -178,6 +179,7 @@
 
                   <h4>Tickets</h4>
                   <label>General Admission ($) <input type="number" name="ticketGeneral" step="0.01" min="0" value="<%= p.tickets && p.tickets.generalAdmission %>"></label>
+                  <label>Adult ($) <input type="number" name="ticketAdult" step="0.01" min="0" value="<%= p.tickets && p.tickets.adult %>"></label>
                   <label>Senior ($) <input type="number" name="ticketSenior" step="0.01" min="0" value="<%= p.tickets && p.tickets.senior %>"></label>
                   <label>Student ($) <input type="number" name="ticketStudent" step="0.01" min="0" value="<%= p.tickets && p.tickets.student %>"></label>
                   <label>Child ($) <input type="number" name="ticketChild" step="0.01" min="0" value="<%= p.tickets && p.tickets.child %>"></label>

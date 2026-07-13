@@ -74,7 +74,8 @@ router.post('/submit-show', async (req, res) => {
         closes: d.runDates && d.runDates.end   ? new Date(d.runDates.end)   : undefined,
       },
       tickets: {
-        generalAdmission: d.ticketPrices && (d.ticketPrices.general || d.ticketPrices.adult) ? stripPrice(d.ticketPrices.general || d.ticketPrices.adult) : undefined,
+        generalAdmission: d.ticketPrices && d.ticketPrices.general ? stripPrice(d.ticketPrices.general) : undefined,
+        adult:            d.ticketPrices && d.ticketPrices.adult   ? stripPrice(d.ticketPrices.adult)   : undefined,
         senior:           d.ticketPrices && d.ticketPrices.senior  ? stripPrice(d.ticketPrices.senior)  : undefined,
         student:          d.ticketPrices && d.ticketPrices.student ? stripPrice(d.ticketPrices.student) : undefined,
         child:            d.ticketPrices && d.ticketPrices.child   ? stripPrice(d.ticketPrices.child)   : undefined,

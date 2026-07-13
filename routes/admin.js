@@ -181,6 +181,7 @@ router.post('/productions/:id', requireAuth, async (req, res) => {
     'dates.opens':  d.opens  || undefined,
     'dates.closes': d.closes || undefined,
     'tickets.generalAdmission': d.ticketGeneral  || undefined,
+    'tickets.adult':            d.ticketAdult    || undefined,
     'tickets.senior':           d.ticketSenior   || undefined,
     'tickets.student':          d.ticketStudent  || undefined,
     'tickets.child':            d.ticketChild    || undefined,
