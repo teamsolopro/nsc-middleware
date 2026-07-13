@@ -26,7 +26,7 @@ const productionSchema = new mongoose.Schema(
       },
       showType: [{
         type: String,
-        enum: ['musical', 'drama', 'comedy', 'one_act', 'childrens', 'other'],
+        enum: ['musical', 'play', 'drama', 'comedy', 'one_act', 'revue', 'opera', 'operetta', 'fringe', 'immersive', 'childrens', 'other'],
       }],
       familyRating: { type: String, enum: ['G', 'PG', 'PG-13'] },
       posterImageUrl: String,

@@ -359,9 +359,15 @@
     <div class="nsc-section-label">Show Type <span class="req">*</span></div>
     <div class="nsc-check-group" id="nsc-showtype-group">
       <label class="nsc-check-item"><input type="checkbox" name="showType" value="musical" id="nsc-st-musical"> Musical</label>
+      <label class="nsc-check-item"><input type="checkbox" name="showType" value="play"> Play</label>
       <label class="nsc-check-item"><input type="checkbox" name="showType" value="drama"> Drama</label>
       <label class="nsc-check-item"><input type="checkbox" name="showType" value="comedy"> Comedy</label>
       <label class="nsc-check-item"><input type="checkbox" name="showType" value="one_act"> One Act</label>
+      <label class="nsc-check-item"><input type="checkbox" name="showType" value="revue"> Revue</label>
+      <label class="nsc-check-item"><input type="checkbox" name="showType" value="opera"> Opera</label>
+      <label class="nsc-check-item"><input type="checkbox" name="showType" value="operetta"> Operetta</label>
+      <label class="nsc-check-item"><input type="checkbox" name="showType" value="fringe"> Fringe</label>
+      <label class="nsc-check-item"><input type="checkbox" name="showType" value="immersive"> Immersive</label>
       <label class="nsc-check-item"><input type="checkbox" name="showType" value="childrens"> Children's / Family</label>
       <label class="nsc-check-item"><input type="checkbox" name="showType" value="other"> Other</label>
     </div>
@@ -473,7 +479,9 @@
     <div class="nsc-section-label">Show Poster</div>
     <div class="nsc-field">
       <label>Poster Image <span style="font-weight:300;color:#888;font-size:12px">— JPG or PNG, max 5MB</span></label>
-      <input type="file" id="nsc-poster-file" accept="image/jpeg,image/png,image/webp">
+      <input type="file" id="nsc-poster-file" accept="image/jpeg,image/png,image/webp" style="position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;">
+      <button type="button" onclick="document.getElementById('nsc-poster-file').click()" style="margin-top:6px;padding:8px 18px;background:#4477A1;color:#fff;border:none;border-radius:5px;font-size:14px;cursor:pointer;">Choose File</button>
+      <span id="nsc-poster-filename" style="margin-left:10px;font-size:13px;color:#555">No file chosen</span>
       <div id="nsc-poster-status" style="margin-top:8px;font-size:13px;color:#555"></div>
       <img id="nsc-poster-preview" src="" alt="" style="display:none;max-height:140px;margin-top:10px;border-radius:6px;border:1px solid #ddd;">
     </div>
@@ -814,10 +822,12 @@
   el('nsc-poster-file').addEventListener('change', function () {
     var file = this.files[0];
     if (!file) return;
+    el('nsc-poster-filename').textContent = file.name;
     if (file.size > 5 * 1024 * 1024) {
       el('nsc-poster-status').textContent = 'File too large. Max 5MB.';
       el('nsc-poster-status').style.color = '#c00';
       this.value = '';
+      el('nsc-poster-filename').textContent = 'No file chosen';
       return;
     }
     el('nsc-poster-status').textContent = 'Uploading…';
