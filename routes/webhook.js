@@ -63,7 +63,6 @@ router.post('/submit-show', async (req, res) => {
         author:          d.author,
         composer:        d.composer         || undefined,
         description:     d.marketingDescription,
-        type:            Array.isArray(d.showType) ? d.showType[0] : d.showType,
         showType:        Array.isArray(d.showType) ? d.showType : (d.showType ? [d.showType] : []),
         familyRating:    d.familyRating     || undefined,
         posterImageUrl:  d.posterImageUrl   || undefined,
@@ -75,7 +74,7 @@ router.post('/submit-show', async (req, res) => {
         closes: d.runDates && d.runDates.end   ? new Date(d.runDates.end)   : undefined,
       },
       tickets: {
-        generalAdmission: d.ticketPrices && d.ticketPrices.general ? stripPrice(d.ticketPrices.general) : undefined,
+        generalAdmission: d.ticketPrices && (d.ticketPrices.general || d.ticketPrices.adult) ? stripPrice(d.ticketPrices.general || d.ticketPrices.adult) : undefined,
         senior:           d.ticketPrices && d.ticketPrices.senior  ? stripPrice(d.ticketPrices.senior)  : undefined,
         student:          d.ticketPrices && d.ticketPrices.student ? stripPrice(d.ticketPrices.student) : undefined,
         child:            d.ticketPrices && d.ticketPrices.child   ? stripPrice(d.ticketPrices.child)   : undefined,
