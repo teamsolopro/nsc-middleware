@@ -1,9 +1,14 @@
 const express = require('express');
 const router = express.Router();
+const cors = require('cors');
 const multer = require('multer');
 const { S3Client, PutObjectCommand } = require('@aws-sdk/client-s3');
 const { validateWebhook } = require('../middleware/validateWebhook');
 const { geocodeAddress } = require('../lib/geocode');
+
+// CORS — handle preflight and responses for all webhook routes
+router.use(cors());
+router.options('*', cors());
 const Audition = require('../models/Audition');
 const Production = require('../models/Production');
 const Review = require('../models/Review');
