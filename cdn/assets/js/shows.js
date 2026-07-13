@@ -14,6 +14,11 @@
   var FILTER_DATE_TO_ID   = 'nsc-filter-date-to';
   var GEO_STATUS_ID = 'nsc-geo-status';
 
+  var RUNNING_SECTION_ID  = 'nsc-running-section';
+  var RUNNING_GRID_ID     = 'nsc-running-grid';
+  var UPCOMING_SECTION_ID = 'nsc-upcoming-section';
+  var UPCOMING_GRID_ID    = 'nsc-upcoming-grid';
+
   var allProductions = [];
   var userLat = null;
   var userLng = null;
@@ -113,6 +118,10 @@
     var dateFrom  = (el(FILTER_DATE_FROM_ID) && el(FILTER_DATE_FROM_ID).value) ? new Date(el(FILTER_DATE_FROM_ID).value) : null;
     var dateTo    = (el(FILTER_DATE_TO_ID)   && el(FILTER_DATE_TO_ID).value)   ? new Date(el(FILTER_DATE_TO_ID).value)   : null;
 
+    // Today at midnight local time — used to bucket running vs. upcoming
+    var todayStart = new Date();
+    todayStart.setHours(0, 0, 0, 0);
+
     var filtered = allProductions.filter(function (p) {
       // Search
       if (search) {
@@ -122,13 +131,16 @@
         if (!titleMatch && !companyMatch && !authorMatch) return false;
       }
 
-      // Show type
-      if (typeVal && (p.show && p.show.type) !== typeVal) return false;
+      // Show type (checks showType array)
+      if (typeVal) {
+        var types = (p.show && p.show.showType) || [];
+        if (types.indexOf(typeVal) === -1) return false;
+      }
 
       // Family rating
       if (ratingVal && (p.show && p.show.familyRating) !== ratingVal) return false;
 
-      // Date range — show if run overlaps with selected range
+      // Date range filter — show if run overlaps with selected range
       if (dateFrom && p.dates && p.dates.closes && new Date(p.dates.closes) < dateFrom) return false;
       if (dateTo   && p.dates && p.dates.opens  && new Date(p.dates.opens)  > dateTo)   return false;
 
@@ -149,8 +161,33 @@
       return true;
     });
 
-    // Sort: by opening date ascending, then by distance if radius active
-    filtered.sort(function (a, b) {
+    // Split into Currently Running and Upcoming
+    var running  = [];
+    var upcoming = [];
+
+    filtered.forEach(function (p) {
+      var opens  = p.dates && p.dates.opens  ? new Date(p.dates.opens)  : null;
+      var closes = p.dates && p.dates.closes ? new Date(p.dates.closes) : null;
+      // Treat closes as end-of-day
+      if (closes) { closes = new Date(closes); closes.setHours(23, 59, 59, 999); }
+
+      if (opens && opens > todayStart) {
+        upcoming.push(p);
+      } else if (closes && closes >= todayStart) {
+        running.push(p);
+      }
+      // Past shows (closes < today) are silently excluded from this page
+    });
+
+    // Sort running: soonest closing first (so "closing soon" floats up)
+    running.sort(function (a, b) {
+      var aDate = a.dates && a.dates.closes ? new Date(a.dates.closes) : new Date('9999');
+      var bDate = b.dates && b.dates.closes ? new Date(b.dates.closes) : new Date('9999');
+      return aDate - bDate;
+    });
+
+    // Sort upcoming: soonest opening first
+    upcoming.sort(function (a, b) {
       if (radiusMi > 0 && userLat !== null && a._distance != null && b._distance != null) {
         return a._distance - b._distance;
       }
@@ -159,19 +196,44 @@
       return aDate - bDate;
     });
 
-    var grid  = el(GRID_ID);
+    // Render running section
+    var rSection = el(RUNNING_SECTION_ID);
+    var rGrid    = el(RUNNING_GRID_ID);
+    if (rSection && rGrid) {
+      if (running.length > 0) {
+        rGrid.innerHTML = running.map(renderCard).join('');
+        rSection.style.display = '';
+      } else {
+        rGrid.innerHTML = '';
+        rSection.style.display = 'none';
+      }
+    }
+
+    // Render upcoming section
+    var uSection = el(UPCOMING_SECTION_ID);
+    var uGrid    = el(UPCOMING_GRID_ID);
+    if (uSection && uGrid) {
+      if (upcoming.length > 0) {
+        uGrid.innerHTML = upcoming.map(renderCard).join('');
+        uSection.style.display = '';
+      } else {
+        uGrid.innerHTML = '';
+        uSection.style.display = 'none';
+      }
+    }
+
+    // Empty state: show if both sections are empty
     var empty = el(EMPTY_ID);
     var count = el(COUNT_ID);
+    var total = running.length + upcoming.length;
 
-    if (filtered.length === 0) {
-      grid.innerHTML = '';
+    if (total === 0) {
       if (empty) empty.style.display = 'block';
     } else {
       if (empty) empty.style.display = 'none';
-      grid.innerHTML = filtered.map(renderCard).join('');
     }
 
-    if (count) count.textContent = filtered.length + ' show' + (filtered.length !== 1 ? 's' : '');
+    if (count) count.textContent = total + ' show' + (total !== 1 ? 's' : '');
   }
 
   // ─── Geolocation ──────────────────────────────────────────
