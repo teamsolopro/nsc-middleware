@@ -4,117 +4,306 @@
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@1,700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
 
 <style>
+/* ── Variables ── */
 :root {
   --midnight: #1E3A5F;
   --navy:     #3D5A80;
-  --blue:     #6699C2;
+  --primary:  #6699C2;
   --deep:     #4477A1;
   --tint:     #D6E6F5;
-  --off:      #F5F3EE;
-  --near-black: #1A1A1A;
-  --red:      #c0392b;
-  --green:    #2a7a2a;
+  --offwhite: #F5F3EE;
+  --black:    #1A1A1A;
 }
 
+/* ── Wrapper ── */
+#nsc-audition-wizard {
+  font-family: 'Lato', sans-serif;
+  max-width: 780px;
+  margin: 0 auto;
+  padding: 0 16px 60px;
+  color: var(--black);
+}
 #nsc-audition-wizard * { box-sizing: border-box; }
-#nsc-audition-wizard { font-family: 'Lato', sans-serif; color: var(--near-black); max-width: 720px; margin: 0 auto; padding: 0 16px 48px; }
 
-/* Progress */
-.nsc-progress { display: flex; justify-content: space-between; margin-bottom: 36px; position: relative; }
-.nsc-progress::before { content:''; position:absolute; top:18px; left:0; right:0; height:2px; background:var(--tint); z-index:0; }
-.nsc-step-dot { display:flex; flex-direction:column; align-items:center; gap:6px; z-index:1; }
-.nsc-step-dot .dot { width:36px; height:36px; border-radius:50%; background:#fff; border:2px solid #ccc; display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:700; color:#999; transition:all .25s; }
-.nsc-step-dot .label { font-size:11px; color:#999; text-align:center; line-height:1.3; }
-.nsc-step-dot.active .dot { background:var(--midnight); border-color:var(--midnight); color:#fff; }
-.nsc-step-dot.active .label { color:var(--midnight); font-weight:700; }
-.nsc-step-dot.done .dot { background:var(--blue); border-color:var(--blue); color:#fff; }
-.nsc-step-dot.done .label { color:var(--blue); }
+/* ── Step indicator ── */
+.nsc-aud-steps {
+  display: flex;
+  justify-content: space-between;
+  margin: 32px 0 40px;
+  position: relative;
+}
+.nsc-aud-steps::before {
+  content: '';
+  position: absolute;
+  top: 18px;
+  left: 0; right: 0;
+  height: 2px;
+  background: #ddd;
+  z-index: 0;
+}
+.nsc-aud-steps .nsc-step-dot {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  position: relative;
+  z-index: 1;
+}
+.nsc-aud-steps .nsc-step-dot .dot {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  background: #ddd;
+  color: #999;
+  font-weight: 700;
+  font-size: 14px;
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.2s, color 0.2s;
+}
+.nsc-aud-steps .nsc-step-dot.active .dot  { background: var(--primary); color: #fff; }
+.nsc-aud-steps .nsc-step-dot.done .dot    { background: var(--midnight); color: #fff; }
+.nsc-aud-steps .nsc-step-dot .label {
+  font-size: 11px;
+  color: #999;
+  text-align: center;
+  white-space: nowrap;
+}
+.nsc-aud-steps .nsc-step-dot.active .label { color: var(--primary); font-weight: 700; }
+.nsc-aud-steps .nsc-step-dot.done .label   { color: var(--midnight); }
 
-/* Panels */
-.nsc-panel { display:none; }
-.nsc-panel.active { display:block; }
+/* ── Panel ── */
+#nsc-audition-wizard .nsc-panel { display: none; }
+#nsc-audition-wizard .nsc-panel.active { display: block; }
 
-/* Fields */
-.nsc-field { margin-bottom:18px; }
-.nsc-field label { display:block; font-size:13px; font-weight:700; margin-bottom:6px; color:var(--midnight); }
-.nsc-field input[type=text],
-.nsc-field input[type=email],
-.nsc-field input[type=tel],
-.nsc-field input[type=date],
-.nsc-field input[type=time],
-.nsc-field select,
-.nsc-field textarea { width:100%; padding:10px 12px; border:1px solid #ccc; border-radius:5px; font-size:14px; font-family:'Lato',sans-serif; color:var(--near-black); }
-.nsc-field input:focus, .nsc-field select:focus, .nsc-field textarea:focus { outline:none; border-color:var(--blue); box-shadow:0 0 0 3px rgba(102,153,194,.15); }
-.nsc-field-row { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
-.nsc-field-hint { font-size:12px; color:#777; margin-top:4px; }
-.nsc-field-error { color:var(--red); font-size:12px; margin-top:4px; display:none; }
-.nsc-section-label { font-size:11px; font-weight:700; letter-spacing:.8px; text-transform:uppercase; color:var(--blue); margin:28px 0 14px; border-bottom:1px solid var(--tint); padding-bottom:6px; }
+/* ── Field groups ── */
+#nsc-audition-wizard .nsc-field { margin-bottom: 20px; }
+#nsc-audition-wizard .nsc-field label {
+  display: block;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: #666;
+  margin-bottom: 6px;
+}
+#nsc-audition-wizard .nsc-field label .req { color: #c00; }
+#nsc-audition-wizard .nsc-field input[type="text"],
+#nsc-audition-wizard .nsc-field input[type="email"],
+#nsc-audition-wizard .nsc-field input[type="tel"],
+#nsc-audition-wizard .nsc-field input[type="url"],
+#nsc-audition-wizard .nsc-field input[type="date"],
+#nsc-audition-wizard .nsc-field input[type="time"],
+#nsc-audition-wizard .nsc-field select,
+#nsc-audition-wizard .nsc-field textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-family: 'Lato', sans-serif;
+  font-size: 15px;
+  color: var(--black);
+  background: #fff;
+  transition: border-color 0.15s;
+}
+#nsc-audition-wizard .nsc-field input:focus,
+#nsc-audition-wizard .nsc-field select:focus,
+#nsc-audition-wizard .nsc-field textarea:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(102,153,194,0.15);
+}
+#nsc-audition-wizard .nsc-field textarea { resize: vertical; min-height: 100px; }
+#nsc-audition-wizard .nsc-field select:disabled { background: #f5f5f5; color: #aaa; cursor: not-allowed; }
+#nsc-audition-wizard .nsc-field-hint { font-size: 12px; color: #888; margin-top: 4px; }
+#nsc-audition-wizard .nsc-field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+#nsc-audition-wizard .nsc-field-error { font-size: 12px; color: #c00; margin-top: 4px; display: none; }
 
-/* Check groups */
-.nsc-check-group { display:flex; flex-wrap:wrap; gap:8px; margin-top:4px; }
-.nsc-check-item { display:flex; align-items:center; gap:6px; background:var(--off); border:1px solid #ddd; border-radius:20px; padding:5px 12px; font-size:13px; cursor:pointer; transition:all .15s; }
-.nsc-check-item:hover { border-color:var(--blue); }
-.nsc-check-item input { margin:0; accent-color:var(--midnight); }
-.nsc-check-item:has(input:checked) { background:var(--tint); border-color:var(--blue); color:var(--midnight); font-weight:700; }
+/* ── Checkbox group ── */
+#nsc-audition-wizard .nsc-check-group {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 4px;
+}
+#nsc-audition-wizard .nsc-check-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  cursor: pointer;
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  transition: border-color 0.15s, background 0.15s;
+}
+#nsc-audition-wizard .nsc-check-item:hover { border-color: var(--primary); background: var(--tint); }
+#nsc-audition-wizard .nsc-check-item input[type="checkbox"] { accent-color: var(--primary); width: 16px; height: 16px; margin: 0; }
 
-/* Audition date rows */
-.aud-date-row { background:var(--off); border:1px solid #e0e0e0; border-radius:6px; padding:14px; margin-bottom:12px; position:relative; }
-.aud-date-row .remove-date { position:absolute; top:10px; right:12px; background:none; border:none; color:#999; font-size:18px; cursor:pointer; line-height:1; }
-.aud-date-row .remove-date:hover { color:var(--red); }
+/* ── Section label ── */
+#nsc-audition-wizard .nsc-section-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--primary);
+  margin: 28px 0 16px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid var(--tint);
+}
 
-/* Modals */
-.nsc-modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.55); z-index:9000; align-items:center; justify-content:center; }
-.nsc-modal-overlay.open { display:flex; }
-.nsc-modal { background:#fff; border-radius:10px; padding:28px; width:100%; max-width:480px; max-height:90vh; overflow-y:auto; }
-.nsc-modal h3 { margin:0 0 20px; color:var(--midnight); font-size:18px; }
-.nsc-modal .nsc-field label { color:var(--midnight); }
-.nsc-modal-error { color:var(--red); font-size:13px; margin-bottom:12px; display:none; }
-.nsc-modal-actions { display:flex; gap:10px; margin-top:20px; }
+/* ── Add link ── */
+#nsc-audition-wizard .nsc-add-link {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--deep);
+  text-decoration: none;
+  cursor: pointer;
+  display: inline-block;
+  margin-top: 6px;
+}
+#nsc-audition-wizard .nsc-add-link:hover { color: var(--midnight); text-decoration: underline; }
+#nsc-audition-wizard .nsc-add-link.disabled { color: #bbb; cursor: not-allowed; pointer-events: none; }
 
-/* Buttons */
-.nsc-btn { display:inline-block; padding:11px 24px; border-radius:5px; font-size:15px; font-weight:700; font-family:'Lato',sans-serif; cursor:pointer; border:none; transition:background .15s; }
-.nsc-btn-primary { background:var(--midnight); color:#fff; }
-.nsc-btn-primary:hover { background:var(--navy); }
-.nsc-btn-primary:disabled { background:#aaa; cursor:not-allowed; }
-.nsc-btn-secondary { background:#fff; color:var(--midnight); border:2px solid var(--midnight); }
-.nsc-btn-secondary:hover { background:var(--tint); }
-.nsc-btn-submit { background:var(--deep); color:#fff; width:100%; padding:14px; font-size:16px; }
-.nsc-btn-submit:hover { background:var(--midnight); }
-.nsc-btn-add { background:none; border:1px dashed var(--blue); color:var(--deep); padding:8px 16px; border-radius:5px; font-size:13px; font-weight:700; cursor:pointer; font-family:'Lato',sans-serif; }
-.nsc-btn-add:hover { background:var(--tint); }
+/* ── Buttons ── */
+#nsc-audition-wizard .nsc-btn-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 36px;
+  padding-top: 24px;
+  border-top: 1px solid #eee;
+}
+#nsc-audition-wizard .nsc-btn {
+  padding: 12px 28px;
+  border-radius: 6px;
+  font-family: 'Lato', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  border: none;
+  transition: background 0.15s, opacity 0.15s;
+}
+#nsc-audition-wizard .nsc-btn-primary { background: var(--primary); color: #fff; }
+#nsc-audition-wizard .nsc-btn-primary:hover { background: var(--deep); }
+#nsc-audition-wizard .nsc-btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
+#nsc-audition-wizard .nsc-btn-ghost { background: none; border: 2px solid #ccc; color: #666; }
+#nsc-audition-wizard .nsc-btn-ghost:hover { border-color: var(--primary); color: var(--primary); }
+#nsc-audition-wizard .nsc-btn-submit { background: var(--midnight); color: #fff; width: 100%; padding: 14px; font-size: 16px; }
+#nsc-audition-wizard .nsc-btn-submit:hover { background: var(--navy); }
+#nsc-audition-wizard .nsc-btn-submit:disabled { opacity: 0.4; cursor: not-allowed; }
+#nsc-audition-wizard .nsc-btn-add { background: none; border: 1px dashed var(--primary); color: var(--deep); padding: 8px 16px; border-radius: 6px; font-size: 13px; font-weight: 700; cursor: pointer; font-family: 'Lato', sans-serif; }
+#nsc-audition-wizard .nsc-btn-add:hover { background: var(--tint); }
 
-/* Add links */
-.nsc-add-link { font-size:13px; color:var(--deep); cursor:pointer; text-decoration:underline; display:inline-block; margin-top:6px; }
-.nsc-add-link.disabled { color:#aaa; pointer-events:none; }
+/* ── Step nav ── */
+#nsc-audition-wizard .nsc-step-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 36px;
+  padding-top: 24px;
+  border-top: 1px solid #eee;
+}
 
-/* Nav */
-.nsc-step-nav { display:flex; justify-content:space-between; align-items:center; margin-top:32px; padding-top:20px; border-top:1px solid #eee; }
+/* ── Audition date rows ── */
+.aud-date-row { background: var(--offwhite); border: 1px solid #e0e0e0; border-radius: 6px; padding: 14px; margin-bottom: 12px; position: relative; }
+.aud-date-row .remove-date { position: absolute; top: 10px; right: 12px; background: none; border: none; color: #999; font-size: 20px; cursor: pointer; line-height: 1; }
+.aud-date-row .remove-date:hover { color: #c00; }
 
-/* Review step */
-.nsc-review-section { background:var(--off); border-radius:6px; padding:14px 18px; margin-bottom:14px; }
-.nsc-review-section h4 { margin:0 0 10px; font-size:13px; text-transform:uppercase; letter-spacing:.5px; color:var(--blue); display:flex; justify-content:space-between; align-items:center; }
-.nsc-review-section h4 a { font-size:12px; color:var(--deep); cursor:pointer; text-transform:none; letter-spacing:0; }
-.nsc-review-row { display:flex; gap:12px; font-size:14px; margin-bottom:6px; }
-.nsc-review-row .rl { color:#666; min-width:140px; flex-shrink:0; }
-.nsc-review-row .rv { color:var(--near-black); font-weight:600; }
+/* ── Review step ── */
+#nsc-audition-wizard .nsc-review-section {
+  background: var(--offwhite);
+  border-radius: 8px;
+  padding: 20px 24px;
+  margin-bottom: 16px;
+  position: relative;
+}
+#nsc-audition-wizard .nsc-review-section h4 {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 1rem;
+  font-style: italic;
+  color: var(--midnight);
+  margin: 0 0 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+#nsc-audition-wizard .nsc-review-section h4 a { font-size: 12px; font-weight: 700; color: var(--deep); cursor: pointer; font-style: normal; font-family: 'Lato', sans-serif; }
+#nsc-audition-wizard .nsc-review-section h4 a:hover { text-decoration: underline; }
+#nsc-audition-wizard .nsc-review-row { display: flex; gap: 8px; margin-bottom: 6px; font-size: 14px; }
+#nsc-audition-wizard .nsc-review-row .rl { font-weight: 700; color: #555; min-width: 140px; flex-shrink: 0; }
+#nsc-audition-wizard .nsc-review-row .rv { color: var(--black); }
 
-/* Legal */
-.nsc-legal { display:flex; gap:10px; align-items:flex-start; font-size:13px; line-height:1.5; cursor:pointer; }
-.nsc-legal input { margin-top:3px; accent-color:var(--midnight); flex-shrink:0; }
+/* ── Modal ── */
+.nsc-aud-modal-backdrop {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+}
+.nsc-aud-modal-backdrop.open { display: flex; }
+.nsc-aud-modal {
+  background: #fff;
+  border-radius: 10px;
+  padding: 32px;
+  width: 100%;
+  max-width: 540px;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+}
+.nsc-aud-modal h2 {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-style: italic;
+  font-size: 1.4rem;
+  color: var(--midnight);
+  margin: 0 0 24px;
+}
+.nsc-aud-modal-close {
+  position: absolute;
+  top: 16px; right: 20px;
+  font-size: 22px;
+  cursor: pointer;
+  color: #999;
+  background: none;
+  border: none;
+  line-height: 1;
+}
+.nsc-aud-modal-close:hover { color: var(--black); }
+.nsc-aud-modal-error { color: #c00; font-size: 13px; margin-bottom: 12px; display: none; }
+.nsc-aud-modal .nsc-field label { text-transform: uppercase; letter-spacing: 0.8px; font-size: 12px; color: #666; }
 
-/* Error banner */
-.nsc-error-banner { background:#fdecea; border:1px solid #f5c6c2; color:var(--red); border-radius:5px; padding:12px 16px; margin-bottom:16px; font-size:14px; display:none; }
+/* ── Legal ── */
+#nsc-audition-wizard .nsc-legal {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  font-size: 14px;
+  line-height: 1.5;
+  color: #444;
+  padding: 16px;
+  background: var(--tint);
+  border-radius: 6px;
+}
+#nsc-audition-wizard .nsc-legal input { margin-top: 2px; accent-color: var(--primary); flex-shrink: 0; }
 
-@media (max-width:540px) {
-  .nsc-field-row { grid-template-columns:1fr; }
-  .nsc-progress .label { display:none; }
+/* ── Error banner ── */
+#nsc-audition-wizard .nsc-error-banner { background: #fdecea; border: 1px solid #f5c6c2; color: #c00; border-radius: 5px; padding: 12px 16px; margin-bottom: 16px; font-size: 14px; display: none; }
+
+@media (max-width: 600px) {
+  #nsc-audition-wizard .nsc-field-row { grid-template-columns: 1fr; }
+  #nsc-audition-wizard .nsc-check-group { grid-template-columns: 1fr; }
+  #nsc-audition-wizard .nsc-step-nav { flex-direction: column-reverse; gap: 12px; }
+  #nsc-audition-wizard .nsc-btn { width: 100%; text-align: center; }
+  .nsc-aud-steps .nsc-step-dot .label { display: none; }
 }
 </style>
 
 <div id="nsc-audition-wizard">
 
   <!-- Progress indicator -->
-  <div class="nsc-progress">
+  <div class="nsc-aud-steps">
     <div class="nsc-step-dot active" data-step="1"><div class="dot">1</div><div class="label">Company<br>&amp; Venue</div></div>
     <div class="nsc-step-dot" data-step="2"><div class="dot">2</div><div class="label">Show<br>Info</div></div>
     <div class="nsc-step-dot" data-step="3"><div class="dot">3</div><div class="label">Audition<br>Dates</div></div>
@@ -363,34 +552,46 @@
 </div><!-- end #nsc-audition-wizard -->
 
 <!-- ── Add New Company Modal ── -->
-<div class="nsc-modal-overlay" id="nsc-aud-company-modal">
-  <div class="nsc-modal">
-    <h3>Add New Company</h3>
-    <div class="nsc-modal-error" id="nsc-aud-company-modal-error"></div>
-    <div class="nsc-field"><label>Company Name <span style="color:var(--red)">*</span></label><input type="text" id="nsc-aud-mc-name" required></div>
+<div class="nsc-aud-modal-backdrop" id="nsc-aud-company-modal">
+  <div class="nsc-aud-modal">
+    <button class="nsc-aud-modal-close" onclick="nscAudCloseModal('nsc-aud-company-modal')">&times;</button>
+    <h2>Add New Company</h2>
+    <div class="nsc-aud-modal-error" id="nsc-aud-company-modal-error"></div>
+    <div class="nsc-field"><label>Company Name <span class="req">*</span></label><input type="text" id="nsc-aud-mc-name"></div>
     <div class="nsc-field"><label>Website</label><input type="url" id="nsc-aud-mc-website" placeholder="https://"></div>
-    <div class="nsc-field"><label>Primary Region / City <span style="color:var(--red)">*</span></label><input type="text" id="nsc-aud-mc-region" placeholder='e.g. "Winston-Salem"'></div>
-    <div class="nsc-field"><label>Contact Name <span style="color:var(--red)">*</span></label><input type="text" id="nsc-aud-mc-contact-name"></div>
-    <div class="nsc-field"><label>Contact Email <span style="color:var(--red)">*</span></label><input type="email" id="nsc-aud-mc-contact-email"></div>
+    <div class="nsc-field-row">
+      <div class="nsc-field"><label>City <span class="req">*</span></label><input type="text" id="nsc-aud-mc-city"></div>
+      <div class="nsc-field">
+        <label>State <span class="req">*</span></label>
+        <select id="nsc-aud-mc-state">
+          <option value="">—</option>
+          <option value="NC">NC</option>
+          <option value="SC">SC</option>
+        </select>
+      </div>
+    </div>
+    <div class="nsc-field"><label>Contact Name <span class="req">*</span></label><input type="text" id="nsc-aud-mc-contact-name"></div>
+    <div class="nsc-field"><label>Contact Email <span class="req">*</span></label><input type="email" id="nsc-aud-mc-contact-email"></div>
     <div class="nsc-field"><label>Contact Phone</label><input type="tel" id="nsc-aud-mc-contact-phone"></div>
-    <div class="nsc-modal-actions">
+    <div style="display:flex;gap:10px;margin-top:20px">
       <button class="nsc-btn nsc-btn-primary" id="nsc-aud-company-save-btn" onclick="nscAudSaveCompany()">Save Company</button>
-      <button class="nsc-btn nsc-btn-secondary" onclick="nscAudCloseModal('nsc-aud-company-modal')">Cancel</button>
+      <button class="nsc-btn nsc-btn-ghost" onclick="nscAudCloseModal('nsc-aud-company-modal')">Cancel</button>
     </div>
   </div>
 </div>
 
 <!-- ── Add New Venue Modal ── -->
-<div class="nsc-modal-overlay" id="nsc-aud-venue-modal">
-  <div class="nsc-modal">
-    <h3>Add New Venue</h3>
-    <div class="nsc-modal-error" id="nsc-aud-venue-modal-error"></div>
-    <div class="nsc-field"><label>Venue Name <span style="color:var(--red)">*</span></label><input type="text" id="nsc-aud-mv-name" required></div>
-    <div class="nsc-field"><label>Address <span style="color:var(--red)">*</span></label><input type="text" id="nsc-aud-mv-address"></div>
+<div class="nsc-aud-modal-backdrop" id="nsc-aud-venue-modal">
+  <div class="nsc-aud-modal">
+    <button class="nsc-aud-modal-close" onclick="nscAudCloseModal('nsc-aud-venue-modal')">&times;</button>
+    <h2>Add New Venue</h2>
+    <div class="nsc-aud-modal-error" id="nsc-aud-venue-modal-error"></div>
+    <div class="nsc-field"><label>Venue Name <span class="req">*</span></label><input type="text" id="nsc-aud-mv-name"></div>
+    <div class="nsc-field"><label>Address <span class="req">*</span></label><input type="text" id="nsc-aud-mv-address"></div>
     <div class="nsc-field-row">
-      <div class="nsc-field"><label>City <span style="color:var(--red)">*</span></label><input type="text" id="nsc-aud-mv-city"></div>
+      <div class="nsc-field"><label>City <span class="req">*</span></label><input type="text" id="nsc-aud-mv-city"></div>
       <div class="nsc-field">
-        <label>State <span style="color:var(--red)">*</span></label>
+        <label>State <span class="req">*</span></label>
         <select id="nsc-aud-mv-state" onchange="nscAudUpdateCounties(this.value)">
           <option value="">—</option>
           <option value="NC">NC</option>
@@ -399,14 +600,14 @@
       </div>
     </div>
     <div class="nsc-field">
-      <label>County <span style="color:var(--red)">*</span></label>
+      <label>County <span class="req">*</span></label>
       <select id="nsc-aud-mv-county" disabled>
         <option value="">— Select State First —</option>
       </select>
     </div>
-    <div class="nsc-field"><label>Zip <span style="color:var(--red)">*</span></label><input type="text" id="nsc-aud-mv-zip"></div>
+    <div class="nsc-field"><label>Zip <span class="req">*</span></label><input type="text" id="nsc-aud-mv-zip"></div>
     <div class="nsc-field">
-      <label>Venue Type <span style="color:var(--red)">*</span></label>
+      <label>Venue Type <span class="req">*</span></label>
       <select id="nsc-aud-mv-type">
         <option value="">— Select —</option>
         <option value="proscenium">Proscenium</option>
@@ -418,9 +619,9 @@
       </select>
     </div>
     <div class="nsc-field"><label>Seating Capacity</label><input type="number" id="nsc-aud-mv-capacity" min="0"></div>
-    <div class="nsc-modal-actions">
+    <div style="display:flex;gap:10px;margin-top:20px">
       <button class="nsc-btn nsc-btn-primary" id="nsc-aud-venue-save-btn" onclick="nscAudSaveVenue()">Save Venue</button>
-      <button class="nsc-btn nsc-btn-secondary" onclick="nscAudCloseModal('nsc-aud-venue-modal')">Cancel</button>
+      <button class="nsc-btn nsc-btn-ghost" onclick="nscAudCloseModal('nsc-aud-venue-modal')">Cancel</button>
     </div>
   </div>
 </div>
@@ -472,7 +673,7 @@
     document.querySelectorAll('#nsc-audition-wizard .nsc-panel').forEach(function(p) { p.classList.remove('active'); });
     var panel = el('nsc-aud-step-' + step);
     if (panel) panel.classList.add('active');
-    document.querySelectorAll('#nsc-audition-wizard .nsc-step-dot').forEach(function(d) {
+    document.querySelectorAll('.nsc-aud-steps .nsc-step-dot').forEach(function(d) {
       var n = parseInt(d.getAttribute('data-step'), 10);
       d.classList.remove('active','done');
       if (n === step) d.classList.add('active');
@@ -714,14 +915,14 @@
   window.nscAudCloseModal = function(id) { el(id).classList.remove('open'); };
 
   window.nscAudSaveCompany = function() {
-    var name = val('nsc-aud-mc-name'), region = val('nsc-aud-mc-region'), contactName = val('nsc-aud-mc-contact-name'), contactEmail = val('nsc-aud-mc-contact-email');
+    var name = val('nsc-aud-mc-name'), city = val('nsc-aud-mc-city'), state_ = val('nsc-aud-mc-state'), contactName = val('nsc-aud-mc-contact-name'), contactEmail = val('nsc-aud-mc-contact-email');
     var errEl = el('nsc-aud-company-modal-error');
-    if (!name || !region || !contactName || !contactEmail) { errEl.textContent = 'Please fill in all required fields.'; errEl.style.display='block'; return; }
+    if (!name || !city || !state_ || !contactName || !contactEmail) { errEl.textContent = 'Please fill in all required fields.'; errEl.style.display='block'; return; }
     errEl.style.display = 'none';
     var btn = el('nsc-aud-company-save-btn'); btn.disabled = true; btn.textContent = 'Saving…';
     fetch(RAILWAY_URL + '/webhook/submit-company', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, region, website: val('nsc-aud-mc-website')||null, contactName, contactEmail, contactPhone: val('nsc-aud-mc-contact-phone')||null }),
+      body: JSON.stringify({ name, city, state: state_, website: val('nsc-aud-mc-website')||null, contactName, contactEmail, contactPhone: val('nsc-aud-mc-contact-phone')||null }),
     })
     .then(function(r){return r.json();})
     .then(function(data) {
@@ -736,7 +937,7 @@
       el('nsc-aud-add-venue-link').classList.remove('disabled');
       loadVenues(data.id);
       nscAudCloseModal('nsc-aud-company-modal');
-      ['nsc-aud-mc-name','nsc-aud-mc-website','nsc-aud-mc-region','nsc-aud-mc-contact-name','nsc-aud-mc-contact-email','nsc-aud-mc-contact-phone'].forEach(function(id){var e=el(id);if(e)e.value='';});
+      ['nsc-aud-mc-name','nsc-aud-mc-website','nsc-aud-mc-city','nsc-aud-mc-state','nsc-aud-mc-contact-name','nsc-aud-mc-contact-email','nsc-aud-mc-contact-phone'].forEach(function(id){var e=el(id);if(e)e.value='';});
       btn.disabled=false; btn.textContent='Save Company';
     })
     .catch(function(){ errEl.textContent='Save failed. Please try again.'; errEl.style.display='block'; btn.disabled=false; btn.textContent='Save Company'; });
@@ -744,6 +945,7 @@
 
   /* ── Venue modal ── */
   window.nscAudOpenVenueModal = function() { el('nsc-aud-venue-modal').classList.add('open'); };
+
 
   window.nscAudSaveVenue = function() {
     var name = val('nsc-aud-mv-name'), address = val('nsc-aud-mv-address'), city = val('nsc-aud-mv-city'), state_ = val('nsc-aud-mv-state'), county = val('nsc-aud-mv-county'), zip = val('nsc-aud-mv-zip'), type = val('nsc-aud-mv-type');
