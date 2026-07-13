@@ -153,18 +153,53 @@ router.post('/submit-venue', async (req, res) => {
 });
 
 // ─── Audition submission ───────────────────────────────────
-router.post('/submit-audition', validateWebhook, async (req, res) => {
+router.post('/submit-audition', async (req, res) => {
   try {
     const d = req.body;
     const audition = new Audition({
-      show: { title: d.show_title || d.title || 'Untitled' },
+      linkedCompanyId: toId(d.linkedCompanyId),
+      linkedVenueId:   toId(d.linkedVenueId),
+      show: {
+        title:    d.title,
+        author:   d.author    || undefined,
+        composer: d.composer  || undefined,
+        showType: Array.isArray(d.showType) ? d.showType : (d.showType ? [d.showType] : []),
+        showDates: {
+          opens:  d.productionOpens  ? new Date(d.productionOpens)  : undefined,
+          closes: d.productionCloses ? new Date(d.productionCloses) : undefined,
+        },
+      },
+      rehearsalStart: d.rehearsalStart ? new Date(d.rehearsalStart) : undefined,
+      auditionDates: Array.isArray(d.auditionDates) ? d.auditionDates.map(function(ad) {
+        return {
+          date:      ad.date      ? new Date(ad.date) : undefined,
+          startTime: ad.startTime || undefined,
+          endTime:   ad.endTime   || undefined,
+          format:    ad.format    || undefined,
+        };
+      }) : [],
+      ageRanges:   Array.isArray(d.ageRanges) ? d.ageRanges : (d.ageRanges ? [d.ageRanges] : []),
+      genderOpen:   d.genderOpen   === true || d.genderOpen   === 'true',
+      genderMale:   d.genderMale   === true || d.genderMale   === 'true',
+      genderFemale: d.genderFemale === true || d.genderFemale === 'true',
+      requirements: {
+        preparedSong:    d.preparedSong   === true || d.preparedSong   === 'true',
+        songLength:      d.songLength     || undefined,
+        coldReading:     d.coldReading    === true || d.coldReading    === 'true',
+        headshot:        d.headshot       === true || d.headshot       === 'true',
+        resume:          d.resume         === true || d.resume         === 'true',
+        callbacks:       d.callbacks      || undefined,
+        conflictDates:   d.conflictDates  || undefined,
+        additionalNotes: d.additionalNotes || undefined,
+      },
       contactName:      d.contactName,
       contactEmail:     d.contactEmail,
-      contactPhone:     d.contactPhone,
+      contactPhone:     d.contactPhone    || undefined,
       submittedByEmail: d.contactEmail,
+      status: 'pending',
     });
     await audition.save();
-    console.log(`[webhook] New audition submission: ${audition._id}`);
+    console.log(`[webhook] New audition submission: ${audition._id} — ${d.title}`);
     res.status(200).json({ received: true, id: audition._id });
   } catch (err) {
     console.error('[webhook] /submit-audition error:', err);

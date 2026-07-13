@@ -1,0 +1,781 @@
+<!-- ============================================================
+     NSC — Submit an Audition  |  Loaded via CDN into GHL page
+     ============================================================ -->
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@1,700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --midnight: #1E3A5F;
+  --navy:     #3D5A80;
+  --blue:     #6699C2;
+  --deep:     #4477A1;
+  --tint:     #D6E6F5;
+  --off:      #F5F3EE;
+  --near-black: #1A1A1A;
+  --red:      #c0392b;
+  --green:    #2a7a2a;
+}
+
+#nsc-audition-wizard * { box-sizing: border-box; }
+#nsc-audition-wizard { font-family: 'Lato', sans-serif; color: var(--near-black); max-width: 720px; margin: 0 auto; padding: 0 16px 48px; }
+
+/* Progress */
+.nsc-progress { display: flex; justify-content: space-between; margin-bottom: 36px; position: relative; }
+.nsc-progress::before { content:''; position:absolute; top:18px; left:0; right:0; height:2px; background:var(--tint); z-index:0; }
+.nsc-step-dot { display:flex; flex-direction:column; align-items:center; gap:6px; z-index:1; }
+.nsc-step-dot .dot { width:36px; height:36px; border-radius:50%; background:#fff; border:2px solid #ccc; display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:700; color:#999; transition:all .25s; }
+.nsc-step-dot .label { font-size:11px; color:#999; text-align:center; line-height:1.3; }
+.nsc-step-dot.active .dot { background:var(--midnight); border-color:var(--midnight); color:#fff; }
+.nsc-step-dot.active .label { color:var(--midnight); font-weight:700; }
+.nsc-step-dot.done .dot { background:var(--blue); border-color:var(--blue); color:#fff; }
+.nsc-step-dot.done .label { color:var(--blue); }
+
+/* Panels */
+.nsc-panel { display:none; }
+.nsc-panel.active { display:block; }
+
+/* Fields */
+.nsc-field { margin-bottom:18px; }
+.nsc-field label { display:block; font-size:13px; font-weight:700; margin-bottom:6px; color:var(--midnight); }
+.nsc-field input[type=text],
+.nsc-field input[type=email],
+.nsc-field input[type=tel],
+.nsc-field input[type=date],
+.nsc-field input[type=time],
+.nsc-field select,
+.nsc-field textarea { width:100%; padding:10px 12px; border:1px solid #ccc; border-radius:5px; font-size:14px; font-family:'Lato',sans-serif; color:var(--near-black); }
+.nsc-field input:focus, .nsc-field select:focus, .nsc-field textarea:focus { outline:none; border-color:var(--blue); box-shadow:0 0 0 3px rgba(102,153,194,.15); }
+.nsc-field-row { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+.nsc-field-hint { font-size:12px; color:#777; margin-top:4px; }
+.nsc-field-error { color:var(--red); font-size:12px; margin-top:4px; display:none; }
+.nsc-section-label { font-size:11px; font-weight:700; letter-spacing:.8px; text-transform:uppercase; color:var(--blue); margin:28px 0 14px; border-bottom:1px solid var(--tint); padding-bottom:6px; }
+
+/* Check groups */
+.nsc-check-group { display:flex; flex-wrap:wrap; gap:8px; margin-top:4px; }
+.nsc-check-item { display:flex; align-items:center; gap:6px; background:var(--off); border:1px solid #ddd; border-radius:20px; padding:5px 12px; font-size:13px; cursor:pointer; transition:all .15s; }
+.nsc-check-item:hover { border-color:var(--blue); }
+.nsc-check-item input { margin:0; accent-color:var(--midnight); }
+.nsc-check-item:has(input:checked) { background:var(--tint); border-color:var(--blue); color:var(--midnight); font-weight:700; }
+
+/* Audition date rows */
+.aud-date-row { background:var(--off); border:1px solid #e0e0e0; border-radius:6px; padding:14px; margin-bottom:12px; position:relative; }
+.aud-date-row .remove-date { position:absolute; top:10px; right:12px; background:none; border:none; color:#999; font-size:18px; cursor:pointer; line-height:1; }
+.aud-date-row .remove-date:hover { color:var(--red); }
+
+/* Modals */
+.nsc-modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.55); z-index:9000; align-items:center; justify-content:center; }
+.nsc-modal-overlay.open { display:flex; }
+.nsc-modal { background:#fff; border-radius:10px; padding:28px; width:100%; max-width:480px; max-height:90vh; overflow-y:auto; }
+.nsc-modal h3 { margin:0 0 20px; color:var(--midnight); font-size:18px; }
+.nsc-modal .nsc-field label { color:var(--midnight); }
+.nsc-modal-error { color:var(--red); font-size:13px; margin-bottom:12px; display:none; }
+.nsc-modal-actions { display:flex; gap:10px; margin-top:20px; }
+
+/* Buttons */
+.nsc-btn { display:inline-block; padding:11px 24px; border-radius:5px; font-size:15px; font-weight:700; font-family:'Lato',sans-serif; cursor:pointer; border:none; transition:background .15s; }
+.nsc-btn-primary { background:var(--midnight); color:#fff; }
+.nsc-btn-primary:hover { background:var(--navy); }
+.nsc-btn-primary:disabled { background:#aaa; cursor:not-allowed; }
+.nsc-btn-secondary { background:#fff; color:var(--midnight); border:2px solid var(--midnight); }
+.nsc-btn-secondary:hover { background:var(--tint); }
+.nsc-btn-submit { background:var(--deep); color:#fff; width:100%; padding:14px; font-size:16px; }
+.nsc-btn-submit:hover { background:var(--midnight); }
+.nsc-btn-add { background:none; border:1px dashed var(--blue); color:var(--deep); padding:8px 16px; border-radius:5px; font-size:13px; font-weight:700; cursor:pointer; font-family:'Lato',sans-serif; }
+.nsc-btn-add:hover { background:var(--tint); }
+
+/* Add links */
+.nsc-add-link { font-size:13px; color:var(--deep); cursor:pointer; text-decoration:underline; display:inline-block; margin-top:6px; }
+.nsc-add-link.disabled { color:#aaa; pointer-events:none; }
+
+/* Nav */
+.nsc-step-nav { display:flex; justify-content:space-between; align-items:center; margin-top:32px; padding-top:20px; border-top:1px solid #eee; }
+
+/* Review step */
+.nsc-review-section { background:var(--off); border-radius:6px; padding:14px 18px; margin-bottom:14px; }
+.nsc-review-section h4 { margin:0 0 10px; font-size:13px; text-transform:uppercase; letter-spacing:.5px; color:var(--blue); display:flex; justify-content:space-between; align-items:center; }
+.nsc-review-section h4 a { font-size:12px; color:var(--deep); cursor:pointer; text-transform:none; letter-spacing:0; }
+.nsc-review-row { display:flex; gap:12px; font-size:14px; margin-bottom:6px; }
+.nsc-review-row .rl { color:#666; min-width:140px; flex-shrink:0; }
+.nsc-review-row .rv { color:var(--near-black); font-weight:600; }
+
+/* Legal */
+.nsc-legal { display:flex; gap:10px; align-items:flex-start; font-size:13px; line-height:1.5; cursor:pointer; }
+.nsc-legal input { margin-top:3px; accent-color:var(--midnight); flex-shrink:0; }
+
+/* Error banner */
+.nsc-error-banner { background:#fdecea; border:1px solid #f5c6c2; color:var(--red); border-radius:5px; padding:12px 16px; margin-bottom:16px; font-size:14px; display:none; }
+
+@media (max-width:540px) {
+  .nsc-field-row { grid-template-columns:1fr; }
+  .nsc-progress .label { display:none; }
+}
+</style>
+
+<div id="nsc-audition-wizard">
+
+  <!-- Progress indicator -->
+  <div class="nsc-progress">
+    <div class="nsc-step-dot active" data-step="1"><div class="dot">1</div><div class="label">Company<br>&amp; Venue</div></div>
+    <div class="nsc-step-dot" data-step="2"><div class="dot">2</div><div class="label">Show<br>Info</div></div>
+    <div class="nsc-step-dot" data-step="3"><div class="dot">3</div><div class="label">Audition<br>Dates</div></div>
+    <div class="nsc-step-dot" data-step="4"><div class="dot">4</div><div class="label">Requirements</div></div>
+    <div class="nsc-step-dot" data-step="5"><div class="dot">5</div><div class="label">Contact<br>&amp; Submit</div></div>
+  </div>
+
+  <!-- ── Step 1: Company & Venue ── -->
+  <div class="nsc-panel active" id="nsc-aud-step-1">
+    <div class="nsc-section-label">Theater Company</div>
+    <div class="nsc-field">
+      <label>Company <span style="color:var(--red)">*</span></label>
+      <select id="nsc-aud-company">
+        <option value="">— Select Your Theater Company —</option>
+      </select>
+      <span class="nsc-add-link disabled" id="nsc-aud-add-company-link" onclick="nscAudOpenCompanyModal()">+ Add New Company</span>
+    </div>
+
+    <div class="nsc-section-label">Audition Venue</div>
+    <div class="nsc-field">
+      <label>Venue <span style="color:var(--red)">*</span></label>
+      <select id="nsc-aud-venue" disabled>
+        <option value="">— Select a Venue —</option>
+      </select>
+      <span class="nsc-add-link disabled" id="nsc-aud-add-venue-link" onclick="nscAudOpenVenueModal()">+ Add New Venue</span>
+    </div>
+
+    <div class="nsc-step-nav">
+      <span></span>
+      <button class="nsc-btn nsc-btn-primary" id="nsc-aud-next-1" disabled onclick="nscAudGoTo(2)">Next →</button>
+    </div>
+  </div>
+
+  <!-- ── Step 2: Show Info ── -->
+  <div class="nsc-panel" id="nsc-aud-step-2">
+    <div class="nsc-section-label">Show Information</div>
+    <div class="nsc-field">
+      <label>Show Title <span style="color:var(--red)">*</span></label>
+      <input type="text" id="nsc-aud-title" maxlength="200" required>
+      <div class="nsc-field-error" id="nsc-aud-title-error">Please enter the show title.</div>
+    </div>
+    <div class="nsc-field-row">
+      <div class="nsc-field">
+        <label>Author / Playwright <span style="color:var(--red)">*</span></label>
+        <input type="text" id="nsc-aud-author" maxlength="200">
+        <div class="nsc-field-error" id="nsc-aud-author-error">Please enter the author.</div>
+      </div>
+      <div class="nsc-field" id="nsc-aud-composer-wrap" style="display:none">
+        <label>Composer</label>
+        <input type="text" id="nsc-aud-composer" maxlength="200">
+      </div>
+    </div>
+
+    <div class="nsc-field">
+      <label>Show Type <span style="color:var(--red)">*</span></label>
+      <div class="nsc-check-group" id="nsc-aud-showtype-group">
+        <label class="nsc-check-item"><input type="checkbox" value="musical" id="nsc-aud-st-musical"> Musical</label>
+        <label class="nsc-check-item"><input type="checkbox" value="play"> Play</label>
+        <label class="nsc-check-item"><input type="checkbox" value="drama"> Drama</label>
+        <label class="nsc-check-item"><input type="checkbox" value="comedy"> Comedy</label>
+        <label class="nsc-check-item"><input type="checkbox" value="one_act"> One Act</label>
+        <label class="nsc-check-item"><input type="checkbox" value="revue"> Revue</label>
+        <label class="nsc-check-item"><input type="checkbox" value="opera"> Opera</label>
+        <label class="nsc-check-item"><input type="checkbox" value="operetta"> Operetta</label>
+        <label class="nsc-check-item"><input type="checkbox" value="fringe"> Fringe</label>
+        <label class="nsc-check-item"><input type="checkbox" value="immersive"> Immersive</label>
+        <label class="nsc-check-item"><input type="checkbox" value="improv"> Improv</label>
+        <label class="nsc-check-item"><input type="checkbox" value="childrens"> Children's / Family</label>
+        <label class="nsc-check-item"><input type="checkbox" value="other"> Other</label>
+      </div>
+      <div class="nsc-field-error" id="nsc-aud-showtype-error">Please select at least one show type.</div>
+    </div>
+
+    <div class="nsc-section-label">Production Dates <span style="font-weight:300;text-transform:none;letter-spacing:0;color:#888;font-size:11px">— Optional</span></div>
+    <div class="nsc-field-row">
+      <div class="nsc-field">
+        <label>Opening Night</label>
+        <input type="date" id="nsc-aud-prod-opens">
+      </div>
+      <div class="nsc-field">
+        <label>Closing Night</label>
+        <input type="date" id="nsc-aud-prod-closes">
+      </div>
+    </div>
+    <div class="nsc-field">
+      <label>Rehearsals Begin</label>
+      <input type="date" id="nsc-aud-rehearsal-start">
+    </div>
+
+    <div class="nsc-step-nav">
+      <button class="nsc-btn nsc-btn-secondary" onclick="nscAudGoTo(1)">← Back</button>
+      <button class="nsc-btn nsc-btn-primary" onclick="nscAudValidate2()">Next →</button>
+    </div>
+  </div>
+
+  <!-- ── Step 3: Audition Dates ── -->
+  <div class="nsc-panel" id="nsc-aud-step-3">
+    <div class="nsc-section-label">Audition Dates &amp; Times</div>
+    <div id="nsc-aud-dates-container"></div>
+    <button type="button" class="nsc-btn-add" onclick="nscAudAddDateRow()">+ Add Audition Date</button>
+    <div class="nsc-field-error" id="nsc-aud-dates-error" style="margin-top:8px">Please add at least one audition date.</div>
+
+    <div class="nsc-step-nav">
+      <button class="nsc-btn nsc-btn-secondary" onclick="nscAudGoTo(2)">← Back</button>
+      <button class="nsc-btn nsc-btn-primary" onclick="nscAudValidate3()">Next →</button>
+    </div>
+  </div>
+
+  <!-- ── Step 4: Requirements ── -->
+  <div class="nsc-panel" id="nsc-aud-step-4">
+    <div class="nsc-section-label">Who We're Looking For</div>
+    <div class="nsc-field">
+      <label>Age Ranges</label>
+      <div class="nsc-check-group">
+        <label class="nsc-check-item"><input type="checkbox" class="nsc-aud-age" value="children"> Children</label>
+        <label class="nsc-check-item"><input type="checkbox" class="nsc-aud-age" value="teens"> Teens</label>
+        <label class="nsc-check-item"><input type="checkbox" class="nsc-aud-age" value="young_adults"> Young Adults</label>
+        <label class="nsc-check-item"><input type="checkbox" class="nsc-aud-age" value="adults"> Adults</label>
+        <label class="nsc-check-item"><input type="checkbox" class="nsc-aud-age" value="seniors"> Seniors</label>
+        <label class="nsc-check-item"><input type="checkbox" class="nsc-aud-age" value="all"> All Ages</label>
+      </div>
+    </div>
+    <div class="nsc-field">
+      <label>Gender</label>
+      <div class="nsc-check-group">
+        <label class="nsc-check-item"><input type="checkbox" id="nsc-aud-gender-open"> Open to All</label>
+        <label class="nsc-check-item"><input type="checkbox" id="nsc-aud-gender-male"> Seeking Male Performers</label>
+        <label class="nsc-check-item"><input type="checkbox" id="nsc-aud-gender-female"> Seeking Female Performers</label>
+      </div>
+    </div>
+
+    <div class="nsc-section-label">What to Prepare</div>
+    <div class="nsc-field">
+      <div class="nsc-check-group" style="flex-direction:column;align-items:flex-start;gap:10px">
+        <label class="nsc-check-item" style="border-radius:6px;width:100%">
+          <input type="checkbox" id="nsc-aud-req-song" onchange="nscAudToggleSongLength()"> Prepared Song Required
+        </label>
+        <div id="nsc-aud-song-length-wrap" style="display:none;width:100%;padding-left:8px">
+          <div class="nsc-field" style="margin-bottom:0">
+            <label>Song Length</label>
+            <input type="text" id="nsc-aud-song-length" placeholder='e.g. "16 bars" or "full song"'>
+          </div>
+        </div>
+        <label class="nsc-check-item" style="border-radius:6px;width:100%">
+          <input type="checkbox" id="nsc-aud-req-reading"> Cold Reading Required
+        </label>
+        <label class="nsc-check-item" style="border-radius:6px;width:100%">
+          <input type="checkbox" id="nsc-aud-req-headshot"> Headshot Required
+        </label>
+        <label class="nsc-check-item" style="border-radius:6px;width:100%">
+          <input type="checkbox" id="nsc-aud-req-resume"> Resume Required
+        </label>
+      </div>
+    </div>
+
+    <div class="nsc-field">
+      <label>Callback Information</label>
+      <input type="text" id="nsc-aud-callbacks" placeholder='e.g. "Callbacks scheduled for November 10"'>
+    </div>
+    <div class="nsc-field">
+      <label>Conflict Dates</label>
+      <input type="text" id="nsc-aud-conflicts" placeholder='e.g. "Dec 24–26, Jan 1"'>
+    </div>
+    <div class="nsc-field">
+      <label>Additional Notes</label>
+      <textarea id="nsc-aud-notes" rows="4" placeholder="Any other requirements, special instructions, or information for auditioners…"></textarea>
+    </div>
+
+    <div class="nsc-step-nav">
+      <button class="nsc-btn nsc-btn-secondary" onclick="nscAudGoTo(3)">← Back</button>
+      <button class="nsc-btn nsc-btn-primary" onclick="nscAudGoTo(5)">Next →</button>
+    </div>
+  </div>
+
+  <!-- ── Step 5: Contact & Submit ── -->
+  <div class="nsc-panel" id="nsc-aud-step-5">
+    <div class="nsc-section-label">Review Your Submission</div>
+
+    <div class="nsc-review-section">
+      <h4>Company &amp; Venue <a onclick="nscAudGoTo(1)">Edit</a></h4>
+      <div class="nsc-review-row"><span class="rl">Company</span><span class="rv" id="nsc-aud-rv-company">—</span></div>
+      <div class="nsc-review-row"><span class="rl">Venue</span><span class="rv" id="nsc-aud-rv-venue">—</span></div>
+    </div>
+
+    <div class="nsc-review-section">
+      <h4>Show Info <a onclick="nscAudGoTo(2)">Edit</a></h4>
+      <div class="nsc-review-row"><span class="rl">Title</span><span class="rv" id="nsc-aud-rv-title">—</span></div>
+      <div class="nsc-review-row"><span class="rl">Author</span><span class="rv" id="nsc-aud-rv-author">—</span></div>
+      <div class="nsc-review-row" id="nsc-aud-rv-composer-row" style="display:none"><span class="rl">Composer</span><span class="rv" id="nsc-aud-rv-composer">—</span></div>
+      <div class="nsc-review-row"><span class="rl">Show Type</span><span class="rv" id="nsc-aud-rv-showtype">—</span></div>
+      <div class="nsc-review-row"><span class="rl">Production Dates</span><span class="rv" id="nsc-aud-rv-proddates">—</span></div>
+      <div class="nsc-review-row"><span class="rl">Rehearsals Begin</span><span class="rv" id="nsc-aud-rv-rehearsal">—</span></div>
+    </div>
+
+    <div class="nsc-review-section">
+      <h4>Audition Dates <a onclick="nscAudGoTo(3)">Edit</a></h4>
+      <div id="nsc-aud-rv-dates">—</div>
+    </div>
+
+    <div class="nsc-review-section">
+      <h4>Requirements <a onclick="nscAudGoTo(4)">Edit</a></h4>
+      <div class="nsc-review-row"><span class="rl">Age Ranges</span><span class="rv" id="nsc-aud-rv-ages">—</span></div>
+      <div class="nsc-review-row"><span class="rl">Gender</span><span class="rv" id="nsc-aud-rv-gender">—</span></div>
+      <div class="nsc-review-row"><span class="rl">Prepared Song</span><span class="rv" id="nsc-aud-rv-song">—</span></div>
+      <div class="nsc-review-row"><span class="rl">Cold Reading</span><span class="rv" id="nsc-aud-rv-reading">—</span></div>
+      <div class="nsc-review-row"><span class="rl">Headshot</span><span class="rv" id="nsc-aud-rv-headshot">—</span></div>
+      <div class="nsc-review-row"><span class="rl">Resume</span><span class="rv" id="nsc-aud-rv-resume">—</span></div>
+      <div class="nsc-review-row" id="nsc-aud-rv-callbacks-row"><span class="rl">Callbacks</span><span class="rv" id="nsc-aud-rv-callbacks">—</span></div>
+      <div class="nsc-review-row" id="nsc-aud-rv-conflicts-row"><span class="rl">Conflict Dates</span><span class="rv" id="nsc-aud-rv-conflicts">—</span></div>
+    </div>
+
+    <div class="nsc-section-label">Contact Info <span style="font-weight:300;text-transform:none;letter-spacing:0;color:#888;font-size:11px">— Internal use only</span></div>
+    <div class="nsc-field">
+      <label>Contact Name <span style="color:var(--red)">*</span></label>
+      <input type="text" id="nsc-aud-contact-name">
+      <div class="nsc-field-error" id="nsc-aud-contact-name-error">Please enter the contact name.</div>
+    </div>
+    <div class="nsc-field-row">
+      <div class="nsc-field">
+        <label>Contact Email <span style="color:var(--red)">*</span></label>
+        <input type="email" id="nsc-aud-contact-email">
+        <div class="nsc-field-error" id="nsc-aud-contact-email-error">Please enter the contact email.</div>
+      </div>
+      <div class="nsc-field">
+        <label>Contact Phone</label>
+        <input type="tel" id="nsc-aud-contact-phone" placeholder="(336) 555-1234">
+      </div>
+    </div>
+
+    <div class="nsc-field" style="margin-top:20px">
+      <label class="nsc-legal">
+        <input type="checkbox" id="nsc-aud-agree">
+        <span>I confirm that I am authorized to submit this audition notice on behalf of <strong id="nsc-aud-agree-company">[your company]</strong> and agree to the <a href="/about" target="_blank">Neighborhood Stage Carolinas submission guidelines</a>.</span>
+      </label>
+      <div class="nsc-field-error" id="nsc-aud-agree-error">You must confirm before submitting.</div>
+    </div>
+
+    <div class="nsc-error-banner" id="nsc-aud-submit-error">Something went wrong. Please try again or contact us at info@neighborhoodstage.com.</div>
+
+    <div class="nsc-step-nav">
+      <button class="nsc-btn nsc-btn-secondary" onclick="nscAudGoTo(4)">← Back</button>
+      <button class="nsc-btn nsc-btn-submit" id="nsc-aud-submit-btn" onclick="nscAudSubmit()">Submit for Review</button>
+    </div>
+  </div>
+
+</div><!-- end #nsc-audition-wizard -->
+
+<!-- ── Add New Company Modal ── -->
+<div class="nsc-modal-overlay" id="nsc-aud-company-modal">
+  <div class="nsc-modal">
+    <h3>Add New Company</h3>
+    <div class="nsc-modal-error" id="nsc-aud-company-modal-error"></div>
+    <div class="nsc-field"><label>Company Name <span style="color:var(--red)">*</span></label><input type="text" id="nsc-aud-mc-name" required></div>
+    <div class="nsc-field"><label>Website</label><input type="url" id="nsc-aud-mc-website" placeholder="https://"></div>
+    <div class="nsc-field"><label>Primary Region / City <span style="color:var(--red)">*</span></label><input type="text" id="nsc-aud-mc-region" placeholder='e.g. "Winston-Salem"'></div>
+    <div class="nsc-field"><label>Contact Name <span style="color:var(--red)">*</span></label><input type="text" id="nsc-aud-mc-contact-name"></div>
+    <div class="nsc-field"><label>Contact Email <span style="color:var(--red)">*</span></label><input type="email" id="nsc-aud-mc-contact-email"></div>
+    <div class="nsc-field"><label>Contact Phone</label><input type="tel" id="nsc-aud-mc-contact-phone"></div>
+    <div class="nsc-modal-actions">
+      <button class="nsc-btn nsc-btn-primary" id="nsc-aud-company-save-btn" onclick="nscAudSaveCompany()">Save Company</button>
+      <button class="nsc-btn nsc-btn-secondary" onclick="nscAudCloseModal('nsc-aud-company-modal')">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── Add New Venue Modal ── -->
+<div class="nsc-modal-overlay" id="nsc-aud-venue-modal">
+  <div class="nsc-modal">
+    <h3>Add New Venue</h3>
+    <div class="nsc-modal-error" id="nsc-aud-venue-modal-error"></div>
+    <div class="nsc-field"><label>Venue Name <span style="color:var(--red)">*</span></label><input type="text" id="nsc-aud-mv-name" required></div>
+    <div class="nsc-field"><label>Address <span style="color:var(--red)">*</span></label><input type="text" id="nsc-aud-mv-address"></div>
+    <div class="nsc-field-row">
+      <div class="nsc-field"><label>City <span style="color:var(--red)">*</span></label><input type="text" id="nsc-aud-mv-city"></div>
+      <div class="nsc-field">
+        <label>State <span style="color:var(--red)">*</span></label>
+        <select id="nsc-aud-mv-state" onchange="nscAudUpdateCounties(this.value)">
+          <option value="">—</option>
+          <option value="NC">NC</option>
+          <option value="SC">SC</option>
+        </select>
+      </div>
+    </div>
+    <div class="nsc-field">
+      <label>County <span style="color:var(--red)">*</span></label>
+      <select id="nsc-aud-mv-county" disabled>
+        <option value="">— Select State First —</option>
+      </select>
+    </div>
+    <div class="nsc-field"><label>Zip <span style="color:var(--red)">*</span></label><input type="text" id="nsc-aud-mv-zip"></div>
+    <div class="nsc-field">
+      <label>Venue Type <span style="color:var(--red)">*</span></label>
+      <select id="nsc-aud-mv-type">
+        <option value="">— Select —</option>
+        <option value="proscenium">Proscenium</option>
+        <option value="black_box">Black Box</option>
+        <option value="thrust">Thrust</option>
+        <option value="arena">Arena</option>
+        <option value="outdoor">Outdoor</option>
+        <option value="other">Other</option>
+      </select>
+    </div>
+    <div class="nsc-field"><label>Seating Capacity</label><input type="number" id="nsc-aud-mv-capacity" min="0"></div>
+    <div class="nsc-modal-actions">
+      <button class="nsc-btn nsc-btn-primary" id="nsc-aud-venue-save-btn" onclick="nscAudSaveVenue()">Save Venue</button>
+      <button class="nsc-btn nsc-btn-secondary" onclick="nscAudCloseModal('nsc-aud-venue-modal')">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  var RAILWAY_URL = 'https://neighborhoodstagecarolinas-production.up.railway.app';
+  var CDN = 'https://cdn.neighborhoodstage.com/data';
+
+  var audState = {
+    companyId: '', companyName: '',
+    venueId:   '', venueName:   '',
+    currentStep: 1,
+  };
+
+  var _allCompanies = [], _allVenues = [];
+
+  /* ── Helpers ── */
+  function el(id) { return document.getElementById(id); }
+  function val(id) { var e = el(id); return e ? e.value.trim() : ''; }
+  function hide(id) { var e = el(id); if (e) e.style.display = 'none'; }
+  function show(id) { var e = el(id); if (e) e.style.display = ''; }
+  function rv(id, text) { var e = el(id); if (e) e.textContent = text || '—'; }
+
+  function getPending() {
+    try { return JSON.parse(sessionStorage.getItem('nsc_pending') || '{"companies":[],"venues":[]}'); }
+    catch(e) { return { companies: [], venues: [] }; }
+  }
+  function savePending(p) { sessionStorage.setItem('nsc_pending', JSON.stringify(p)); }
+
+  /* ── County data ── */
+  var COUNTIES = {
+    NC: ['Alamance','Alexander','Alleghany','Anson','Ashe','Avery','Beaufort','Bertie','Bladen','Brunswick','Buncombe','Burke','Cabarrus','Caldwell','Camden','Carteret','Caswell','Catawba','Chatham','Cherokee','Chowan','Clay','Cleveland','Columbus','Craven','Cumberland','Currituck','Dare','Davidson','Davie','Duplin','Durham','Edgecombe','Forsyth','Franklin','Gaston','Gates','Graham','Granville','Greene','Guilford','Halifax','Harnett','Haywood','Henderson','Hertford','Hoke','Hyde','Iredell','Jackson','Johnston','Jones','Lee','Lenoir','Lincoln','McDowell','Macon','Madison','Martin','Mecklenburg','Mitchell','Montgomery','Moore','Nash','New Hanover','Northampton','Onslow','Orange','Pamlico','Pasquotank','Pender','Perquimans','Person','Pitt','Polk','Randolph','Richmond','Robeson','Rockingham','Rowan','Rutherford','Sampson','Scotland','Stanly','Stokes','Surry','Swain','Transylvania','Tyrrell','Union','Vance','Wake','Warren','Washington','Watauga','Wayne','Wilkes','Wilson','Yadkin','Yancey'],
+    SC: ['Abbeville','Aiken','Allendale','Anderson','Bamberg','Barnwell','Beaufort','Berkeley','Calhoun','Charleston','Cherokee','Chester','Chesterfield','Clarendon','Colleton','Darlington','Dillon','Dorchester','Edgefield','Fairfield','Florence','Georgetown','Greenville','Greenwood','Hampton','Horry','Jasper','Kershaw','Lancaster','Laurens','Lee','Lexington','McCormick','Marion','Marlboro','Newberry','Oconee','Orangeburg','Pickens','Richland','Saluda','Spartanburg','Sumter','Union','Williamsburg','York']
+  };
+
+  window.nscAudUpdateCounties = function(stateVal) {
+    var sel = el('nsc-aud-mv-county');
+    sel.innerHTML = '<option value="">— Select County —</option>';
+    if (!stateVal || !COUNTIES[stateVal]) { sel.disabled = true; sel.innerHTML = '<option value="">— Select State First —</option>'; return; }
+    COUNTIES[stateVal].forEach(function(c) {
+      var opt = document.createElement('option'); opt.value = c; opt.textContent = c + ' County'; sel.appendChild(opt);
+    });
+    sel.disabled = false;
+  };
+
+  /* ── Step navigation ── */
+  window.nscAudGoTo = function(step) {
+    document.querySelectorAll('#nsc-audition-wizard .nsc-panel').forEach(function(p) { p.classList.remove('active'); });
+    var panel = el('nsc-aud-step-' + step);
+    if (panel) panel.classList.add('active');
+    document.querySelectorAll('#nsc-audition-wizard .nsc-step-dot').forEach(function(d) {
+      var n = parseInt(d.getAttribute('data-step'), 10);
+      d.classList.remove('active','done');
+      if (n === step) d.classList.add('active');
+      else if (n < step) d.classList.add('done');
+    });
+    if (step === 5) nscAudPopulateReview();
+    audState.currentStep = step;
+    window.scrollTo(0, 0);
+  };
+
+  /* ── Load CDN data ── */
+  function loadData() {
+    Promise.all([
+      fetch(CDN + '/companies.json').then(function(r){return r.json();}).catch(function(){return [];}),
+      fetch(CDN + '/venues.json').then(function(r){return r.json();}).catch(function(){return [];})
+    ]).then(function(results) {
+      var pending = getPending();
+      _allCompanies = (results[0] || []).concat(pending.companies);
+      _allVenues    = (results[1] || []).concat(pending.venues);
+      populateCompanyDropdown();
+    });
+  }
+
+  function populateCompanyDropdown() {
+    var sel = el('nsc-aud-company');
+    _allCompanies.slice().sort(function(a,b){return a.name.localeCompare(b.name);}).forEach(function(c) {
+      var opt = document.createElement('option'); opt.value = c._id||c.id; opt.textContent = c.name + (c.city ? ' ('+c.city+')' : ''); sel.appendChild(opt);
+    });
+    el('nsc-aud-add-company-link').classList.remove('disabled');
+  }
+
+  function loadVenues(companyId) {
+    var sel = el('nsc-aud-venue'); sel.innerHTML = '<option value="">— Select a Venue —</option>'; sel.disabled = true;
+    var company = _allCompanies.find(function(c){return (c._id||c.id)===companyId;});
+    var homeIds = (company && company.homeVenueIds) ? company.homeVenueIds.map(String) : [];
+    var pending = getPending();
+    var pendingVenues = pending.venues.filter(function(v){return v.linkedCompanyId===companyId;});
+    var filtered = _allVenues.filter(function(v){ return homeIds.indexOf(String(v._id||v.id||''))!==-1; }).concat(pendingVenues);
+    filtered.sort(function(a,b){return a.name.localeCompare(b.name);}).forEach(function(v) {
+      var opt = document.createElement('option'); opt.value = v._id||v.id; opt.textContent = v.name+(v.city?' — '+v.city:''); sel.appendChild(opt);
+    });
+    sel.disabled = false;
+    el('nsc-aud-add-venue-link').classList.remove('disabled');
+  }
+
+  /* ── Step 1 wiring ── */
+  el('nsc-aud-company').addEventListener('change', function() {
+    audState.companyId   = this.value;
+    audState.companyName = this.options[this.selectedIndex].text;
+    audState.venueId     = ''; audState.venueName = '';
+    el('nsc-aud-next-1').disabled = true;
+    el('nsc-aud-agree-company').textContent = audState.companyName || '[your company]';
+    if (this.value) { loadVenues(this.value); el('nsc-aud-add-venue-link').classList.remove('disabled'); }
+    else { el('nsc-aud-venue').innerHTML = '<option value="">— Select a Venue —</option>'; el('nsc-aud-venue').disabled = true; el('nsc-aud-add-venue-link').classList.add('disabled'); }
+  });
+
+  el('nsc-aud-venue').addEventListener('change', function() {
+    audState.venueId   = this.value;
+    audState.venueName = this.options[this.selectedIndex].text;
+    el('nsc-aud-next-1').disabled = !(audState.companyId && audState.venueId);
+  });
+
+  /* ── Step 2: Musical → show Composer ── */
+  el('nsc-aud-st-musical').addEventListener('change', function() {
+    el('nsc-aud-composer-wrap').style.display = this.checked ? '' : 'none';
+    if (!this.checked) el('nsc-aud-composer').value = '';
+  });
+
+  window.nscAudValidate2 = function() {
+    var ok = true;
+    if (!val('nsc-aud-title'))  { show('nsc-aud-title-error');  ok = false; } else { hide('nsc-aud-title-error'); }
+    if (!val('nsc-aud-author')) { show('nsc-aud-author-error'); ok = false; } else { hide('nsc-aud-author-error'); }
+    var types = document.querySelectorAll('#nsc-aud-showtype-group input:checked');
+    if (types.length === 0) { show('nsc-aud-showtype-error'); ok = false; } else { hide('nsc-aud-showtype-error'); }
+    if (ok) nscAudGoTo(3);
+  };
+
+  /* ── Step 3: Audition date rows ── */
+  var _dateRowCount = 0;
+
+  window.nscAudAddDateRow = function() {
+    _dateRowCount++;
+    var id = _dateRowCount;
+    var div = document.createElement('div');
+    div.className = 'aud-date-row';
+    div.id = 'aud-date-row-' + id;
+    div.innerHTML =
+      '<button type="button" class="remove-date" onclick="nscAudRemoveDateRow('+id+')" title="Remove">×</button>' +
+      '<div class="nsc-field-row" style="margin-bottom:10px">' +
+        '<div class="nsc-field" style="margin-bottom:0"><label>Date</label><input type="date" id="aud-date-'+id+'"></div>' +
+        '<div class="nsc-field" style="margin-bottom:0"><label>Format</label><select id="aud-format-'+id+'"><option value="">— Select —</option><option value="open call">Open Call</option><option value="by appointment">By Appointment</option><option value="virtual">Virtual</option></select></div>' +
+      '</div>' +
+      '<div class="nsc-field-row">' +
+        '<div class="nsc-field" style="margin-bottom:0"><label>Start Time</label><input type="time" id="aud-start-'+id+'"></div>' +
+        '<div class="nsc-field" style="margin-bottom:0"><label>End Time</label><input type="time" id="aud-end-'+id+'"></div>' +
+      '</div>';
+    el('nsc-aud-dates-container').appendChild(div);
+    hide('nsc-aud-dates-error');
+  };
+
+  window.nscAudRemoveDateRow = function(id) {
+    var row = el('aud-date-row-' + id);
+    if (row) row.remove();
+  };
+
+  function getAuditionDates() {
+    var dates = [];
+    document.querySelectorAll('.aud-date-row').forEach(function(row) {
+      var id = row.id.replace('aud-date-row-','');
+      var date = el('aud-date-'+id) ? el('aud-date-'+id).value : '';
+      if (!date) return;
+      dates.push({
+        date:      date,
+        startTime: el('aud-start-'+id)  ? el('aud-start-'+id).value  : '',
+        endTime:   el('aud-end-'+id)    ? el('aud-end-'+id).value    : '',
+        format:    el('aud-format-'+id) ? el('aud-format-'+id).value : '',
+      });
+    });
+    return dates;
+  }
+
+  window.nscAudValidate3 = function() {
+    var dates = getAuditionDates();
+    if (dates.length === 0) { show('nsc-aud-dates-error'); return; }
+    hide('nsc-aud-dates-error');
+    nscAudGoTo(4);
+  };
+
+  /* ── Step 4: song length toggle ── */
+  window.nscAudToggleSongLength = function() {
+    el('nsc-aud-song-length-wrap').style.display = el('nsc-aud-req-song').checked ? '' : 'none';
+  };
+
+  /* ── Step 5: populate review ── */
+  function fmt(dateStr) {
+    if (!dateStr) return '—';
+    var d = new Date(dateStr + 'T00:00:00'); return d.toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' });
+  }
+  function fmtTime(t) { if (!t) return ''; var p=t.split(':'); var h=parseInt(p[0]); var m=p[1]; var ampm=h>=12?'pm':'am'; h=h%12||12; return h+(m!=='00'?':'+m:'')+ampm; }
+
+  function nscAudPopulateReview() {
+    rv('nsc-aud-rv-company', audState.companyName);
+    rv('nsc-aud-rv-venue',   audState.venueName);
+    rv('nsc-aud-rv-title',   val('nsc-aud-title'));
+    rv('nsc-aud-rv-author',  val('nsc-aud-author'));
+    var composer = val('nsc-aud-composer');
+    if (composer) { rv('nsc-aud-rv-composer', composer); show('nsc-aud-rv-composer-row'); } else { hide('nsc-aud-rv-composer-row'); }
+    var types = Array.from(document.querySelectorAll('#nsc-aud-showtype-group input:checked')).map(function(c){return c.value.charAt(0).toUpperCase()+c.value.slice(1).replace(/_/g,' ');});
+    rv('nsc-aud-rv-showtype', types.join(', ') || '—');
+    var opens = val('nsc-aud-prod-opens'), closes = val('nsc-aud-prod-closes');
+    rv('nsc-aud-rv-proddates', opens||closes ? (opens?fmt(opens):'?')+' – '+(closes?fmt(closes):'?') : '—');
+    rv('nsc-aud-rv-rehearsal', val('nsc-aud-rehearsal-start') ? fmt(val('nsc-aud-rehearsal-start')) : '—');
+
+    var datesHtml = getAuditionDates().map(function(d) {
+      var line = fmt(d.date);
+      if (d.startTime) line += ' · ' + fmtTime(d.startTime) + (d.endTime ? ' – ' + fmtTime(d.endTime) : '');
+      if (d.format) line += ' (' + d.format + ')';
+      return '<div class="nsc-review-row"><span class="rv">' + line + '</span></div>';
+    }).join('');
+    el('nsc-aud-rv-dates').innerHTML = datesHtml || '<span style="color:#999">—</span>';
+
+    var ages = Array.from(document.querySelectorAll('.nsc-aud-age:checked')).map(function(c){return c.value.replace(/_/g,' ');});
+    rv('nsc-aud-rv-ages', ages.length ? ages.join(', ') : '—');
+    var gender = [];
+    if (el('nsc-aud-gender-open').checked)   gender.push('Open to all');
+    if (el('nsc-aud-gender-male').checked)   gender.push('Male');
+    if (el('nsc-aud-gender-female').checked) gender.push('Female');
+    rv('nsc-aud-rv-gender', gender.length ? gender.join(', ') : '—');
+
+    var songReq = el('nsc-aud-req-song').checked;
+    rv('nsc-aud-rv-song', songReq ? 'Yes' + (val('nsc-aud-song-length') ? ' (' + val('nsc-aud-song-length') + ')' : '') : 'No');
+    rv('nsc-aud-rv-reading',  el('nsc-aud-req-reading').checked  ? 'Yes' : 'No');
+    rv('nsc-aud-rv-headshot', el('nsc-aud-req-headshot').checked ? 'Yes' : 'No');
+    rv('nsc-aud-rv-resume',   el('nsc-aud-req-resume').checked   ? 'Yes' : 'No');
+    rv('nsc-aud-rv-callbacks', val('nsc-aud-callbacks') || '—');
+    rv('nsc-aud-rv-conflicts', val('nsc-aud-conflicts') || '—');
+  }
+
+  /* ── Submit ── */
+  window.nscAudSubmit = function() {
+    var ok = true;
+    if (!val('nsc-aud-contact-name'))  { show('nsc-aud-contact-name-error');  ok = false; } else { hide('nsc-aud-contact-name-error'); }
+    if (!val('nsc-aud-contact-email')) { show('nsc-aud-contact-email-error'); ok = false; } else { hide('nsc-aud-contact-email-error'); }
+    if (!el('nsc-aud-agree').checked)  { show('nsc-aud-agree-error');         ok = false; } else { hide('nsc-aud-agree-error'); }
+    if (!ok) return;
+
+    var btn = el('nsc-aud-submit-btn');
+    btn.disabled = true; btn.textContent = 'Submitting…';
+    hide('nsc-aud-submit-error');
+
+    var showTypes = Array.from(document.querySelectorAll('#nsc-aud-showtype-group input:checked')).map(function(c){return c.value;});
+    var ageRanges = Array.from(document.querySelectorAll('.nsc-aud-age:checked')).map(function(c){return c.value;});
+
+    var payload = {
+      linkedCompanyId:  audState.companyId,
+      linkedVenueId:    audState.venueId,
+      title:            val('nsc-aud-title'),
+      author:           val('nsc-aud-author'),
+      composer:         val('nsc-aud-composer')        || null,
+      showType:         showTypes,
+      productionOpens:  val('nsc-aud-prod-opens')      || null,
+      productionCloses: val('nsc-aud-prod-closes')     || null,
+      rehearsalStart:   val('nsc-aud-rehearsal-start') || null,
+      auditionDates:    getAuditionDates(),
+      ageRanges:        ageRanges,
+      genderOpen:       el('nsc-aud-gender-open').checked,
+      genderMale:       el('nsc-aud-gender-male').checked,
+      genderFemale:     el('nsc-aud-gender-female').checked,
+      preparedSong:     el('nsc-aud-req-song').checked,
+      songLength:       val('nsc-aud-song-length')     || null,
+      coldReading:      el('nsc-aud-req-reading').checked,
+      headshot:         el('nsc-aud-req-headshot').checked,
+      resume:           el('nsc-aud-req-resume').checked,
+      callbacks:        val('nsc-aud-callbacks')       || null,
+      conflictDates:    val('nsc-aud-conflicts')       || null,
+      additionalNotes:  val('nsc-aud-notes')           || null,
+      contactName:      val('nsc-aud-contact-name'),
+      contactEmail:     val('nsc-aud-contact-email'),
+      contactPhone:     val('nsc-aud-contact-phone')   || null,
+    };
+
+    fetch(RAILWAY_URL + '/webhook/submit-audition', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      if (data.received) { window.location.href = '/thank-you/audition'; }
+      else { show('nsc-aud-submit-error'); btn.disabled = false; btn.textContent = 'Submit for Review'; }
+    })
+    .catch(function() {
+      show('nsc-aud-submit-error'); btn.disabled = false; btn.textContent = 'Submit for Review';
+    });
+  };
+
+  /* ── Company modal ── */
+  window.nscAudOpenCompanyModal = function() { el('nsc-aud-company-modal').classList.add('open'); };
+  window.nscAudCloseModal = function(id) { el(id).classList.remove('open'); };
+
+  window.nscAudSaveCompany = function() {
+    var name = val('nsc-aud-mc-name'), region = val('nsc-aud-mc-region'), contactName = val('nsc-aud-mc-contact-name'), contactEmail = val('nsc-aud-mc-contact-email');
+    var errEl = el('nsc-aud-company-modal-error');
+    if (!name || !region || !contactName || !contactEmail) { errEl.textContent = 'Please fill in all required fields.'; errEl.style.display='block'; return; }
+    errEl.style.display = 'none';
+    var btn = el('nsc-aud-company-save-btn'); btn.disabled = true; btn.textContent = 'Saving…';
+    fetch(RAILWAY_URL + '/webhook/submit-company', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, region, website: val('nsc-aud-mc-website')||null, contactName, contactEmail, contactPhone: val('nsc-aud-mc-contact-phone')||null }),
+    })
+    .then(function(r){return r.json();})
+    .then(function(data) {
+      if (!data.id) { errEl.textContent = 'Save failed. Please try again.'; errEl.style.display='block'; btn.disabled=false; btn.textContent='Save Company'; return; }
+      var newCo = { _id: data.id, id: data.id, name: data.name };
+      var pending = getPending(); pending.companies.push(newCo); savePending(pending);
+      _allCompanies.push(newCo);
+      var sel = el('nsc-aud-company');
+      var opt = document.createElement('option'); opt.value = data.id; opt.textContent = data.name; sel.appendChild(opt); sel.value = data.id;
+      audState.companyId = data.id; audState.companyName = data.name;
+      el('nsc-aud-agree-company').textContent = data.name;
+      el('nsc-aud-add-venue-link').classList.remove('disabled');
+      loadVenues(data.id);
+      nscAudCloseModal('nsc-aud-company-modal');
+      ['nsc-aud-mc-name','nsc-aud-mc-website','nsc-aud-mc-region','nsc-aud-mc-contact-name','nsc-aud-mc-contact-email','nsc-aud-mc-contact-phone'].forEach(function(id){var e=el(id);if(e)e.value='';});
+      btn.disabled=false; btn.textContent='Save Company';
+    })
+    .catch(function(){ errEl.textContent='Save failed. Please try again.'; errEl.style.display='block'; btn.disabled=false; btn.textContent='Save Company'; });
+  };
+
+  /* ── Venue modal ── */
+  window.nscAudOpenVenueModal = function() { el('nsc-aud-venue-modal').classList.add('open'); };
+
+  window.nscAudSaveVenue = function() {
+    var name = val('nsc-aud-mv-name'), address = val('nsc-aud-mv-address'), city = val('nsc-aud-mv-city'), state_ = val('nsc-aud-mv-state'), county = val('nsc-aud-mv-county'), zip = val('nsc-aud-mv-zip'), type = val('nsc-aud-mv-type');
+    var errEl = el('nsc-aud-venue-modal-error');
+    if (!name || !address || !city || !state_ || !county || !zip || !type) { errEl.textContent = 'Please fill in all required fields.'; errEl.style.display='block'; return; }
+    errEl.style.display = 'none';
+    var btn = el('nsc-aud-venue-save-btn'); btn.disabled=true; btn.textContent='Saving…';
+    fetch(RAILWAY_URL + '/webhook/submit-venue', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, address, city, state: state_, county, zip, type, capacity: val('nsc-aud-mv-capacity') ? parseInt(val('nsc-aud-mv-capacity'),10) : null, linkedCompanyId: audState.companyId }),
+    })
+    .then(function(r){return r.json();})
+    .then(function(data) {
+      if (!data.id) { errEl.textContent='Save failed. Please try again.'; errEl.style.display='block'; btn.disabled=false; btn.textContent='Save Venue'; return; }
+      var newVenue = { _id: data.id, id: data.id, name: data.name, city: city, linkedCompanyId: audState.companyId };
+      var pending = getPending(); pending.venues.push(newVenue); savePending(pending);
+      _allVenues.push(newVenue);
+      var sel = el('nsc-aud-venue');
+      var opt = document.createElement('option'); opt.value = data.id; opt.textContent = data.name + (city ? ' — ' + city : ''); sel.appendChild(opt); sel.value = data.id;
+      audState.venueId = data.id; audState.venueName = data.name;
+      el('nsc-aud-next-1').disabled = false;
+      nscAudCloseModal('nsc-aud-venue-modal');
+      ['nsc-aud-mv-name','nsc-aud-mv-address','nsc-aud-mv-city','nsc-aud-mv-state','nsc-aud-mv-zip','nsc-aud-mv-type','nsc-aud-mv-capacity'].forEach(function(id){var e=el(id);if(e)e.value='';});
+      nscAudUpdateCounties('');
+      btn.disabled=false; btn.textContent='Save Venue';
+    })
+    .catch(function(){ errEl.textContent='Save failed. Please try again.'; errEl.style.display='block'; btn.disabled=false; btn.textContent='Save Venue'; });
+  };
+
+  /* ── Add first date row and boot ── */
+  nscAudAddDateRow();
+  loadData();
+
+})();
+</script>
