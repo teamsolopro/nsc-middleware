@@ -4,6 +4,7 @@ const session = require('express-session');
 const mongoose = require('mongoose');
 const path = require('path');
 
+const cors = require('cors');
 const { MongoStore } = require('connect-mongo');
 const webhookRoutes = require('./routes/webhook');
 const adminRoutes = require('./routes/admin');
@@ -22,13 +23,7 @@ app.set('views', path.join(__dirname, 'views'));
 app.use('/public', express.static(path.join(__dirname, 'public')));
 
 // CORS — webhook routes accept submissions from any origin (all go to pending queue)
-app.use('/webhook', (req, res, next) => {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-  if (req.method === 'OPTIONS') return res.sendStatus(204);
-  next();
-});
+app.use('/webhook', cors());
 
 // Body parsing
 app.use(express.json());
