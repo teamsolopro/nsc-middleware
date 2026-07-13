@@ -3,6 +3,7 @@ const router = express.Router();
 const multer = require('multer');
 const { S3Client, PutObjectCommand } = require('@aws-sdk/client-s3');
 const { validateWebhook } = require('../middleware/validateWebhook');
+const { geocodeAddress } = require('../lib/geocode');
 const Audition = require('../models/Audition');
 const Production = require('../models/Production');
 const Review = require('../models/Review');
@@ -132,6 +133,7 @@ router.post('/submit-company', async (req, res) => {
 router.post('/submit-venue', async (req, res) => {
   try {
     const d = req.body;
+    const coords = await geocodeAddress({ address: d.address, city: d.city, state: d.state, zip: d.zip });
     const venue = new Venue({
       name:            d.name,
       address:         d.address      || undefined,
@@ -142,9 +144,11 @@ router.post('/submit-venue', async (req, res) => {
       region:          d.region       || undefined,
       website:         d.website      || undefined,
       parkingNotes:    d.parkingNotes || undefined,
+      lat:             coords ? coords.lat : undefined,
+      lng:             coords ? coords.lng : undefined,
     });
     await venue.save();
-    console.log(`[webhook] New venue submission: ${venue._id} — ${d.name}`);
+    console.log(`[webhook] New venue submission: ${venue._id} — ${d.name}${coords ? ` (${coords.lat.toFixed(4)}, ${coords.lng.toFixed(4)})` : ' (no geocode)'}`);
     res.status(200).json({ received: true, id: venue._id, name: venue.name });
   } catch (err) {
     console.error('[webhook] /submit-venue error:', err);

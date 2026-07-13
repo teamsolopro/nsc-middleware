@@ -6,6 +6,7 @@ const Audition = require('../models/Audition');
 const Production = require('../models/Production');
 const Company = require('../models/Company');
 const Venue = require('../models/Venue');
+const { geocodeAddress } = require('../lib/geocode');
 
 // Login
 router.get('/login', (req, res) => {
@@ -215,13 +216,33 @@ router.get('/venues', requireAuth, async (req, res) => {
 });
 
 router.post('/venues', requireAuth, async (req, res) => {
-  await Venue.create(req.body);
+  const d = req.body;
+  const coords = await geocodeAddress({ address: d.address, city: d.city, state: d.state, zip: d.zip });
+  await Venue.create({ ...d, lat: coords ? coords.lat : undefined, lng: coords ? coords.lng : undefined });
   res.redirect('/admin/venues');
 });
 
 router.put('/venues/:id', requireAuth, async (req, res) => {
-  await Venue.findByIdAndUpdate(req.params.id, req.body);
+  const d = req.body;
+  const coords = await geocodeAddress({ address: d.address, city: d.city, state: d.state, zip: d.zip });
+  await Venue.findByIdAndUpdate(req.params.id, { ...d, lat: coords ? coords.lat : undefined, lng: coords ? coords.lng : undefined });
   res.redirect('/admin/venues');
+});
+
+// Geocode all venues that are missing coordinates
+router.post('/venues/geocode-all', requireAuth, async (req, res) => {
+  const venues = await Venue.find({ $or: [{ lat: null }, { lat: { $exists: false } }] });
+  let updated = 0;
+  for (const v of venues) {
+    const coords = await geocodeAddress({ address: v.address, city: v.city, state: v.state, zip: v.zip });
+    if (coords) {
+      await Venue.findByIdAndUpdate(v._id, { lat: coords.lat, lng: coords.lng });
+      updated++;
+    }
+    // Small delay to be polite to the Census API
+    await new Promise(r => setTimeout(r, 300));
+  }
+  res.json({ total: venues.length, updated });
 });
 
 // Auditions
