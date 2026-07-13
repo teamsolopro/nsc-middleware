@@ -46,7 +46,8 @@
     var title    = esc((p.show && p.show.title) || 'Untitled');
     var author   = (p.show && p.show.author)   ? 'by ' + esc(p.show.author)   : '';
     var composer = (p.show && p.show.composer) ? 'Music by ' + esc(p.show.composer) : '';
-    var showType = (p.show && p.show.type) ? p.show.type.charAt(0).toUpperCase() + p.show.type.slice(1) : '';
+    var _types = (p.show && p.show.showType && p.show.showType.length) ? p.show.showType : (p.show && p.show.type ? [p.show.type] : []);
+    var showType = _types.map(function(t){ return t.charAt(0).toUpperCase() + t.slice(1).replace(/_/g,' '); }).join(' / ');
     var rating   = (p.show && p.show.familyRating) || '';
     var runtime  = (p.show && p.show.runtime) || '';
     var warnings = (p.show && p.show.contentWarnings) || '';

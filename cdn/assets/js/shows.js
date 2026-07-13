@@ -62,7 +62,8 @@
     var closes = p.dates && p.dates.closes ? formatDate(p.dates.closes) : '';
     var dateRange = (opens && closes) ? opens + ' &ndash; ' + closes : opens || '';
 
-    var showType   = (p.show && p.show.type) ? p.show.type.charAt(0).toUpperCase() + p.show.type.slice(1) : 'Production';
+    var _types = (p.show && p.show.showType && p.show.showType.length) ? p.show.showType : (p.show && p.show.type ? [p.show.type] : []);
+    var showType = _types.length ? _types.map(function(t){ return t.charAt(0).toUpperCase() + t.slice(1).replace(/_/g,' '); }).join(' / ') : 'Production';
     var rating     = (p.show && p.show.familyRating) ? ' &middot; ' + p.show.familyRating : '';
     var title      = esc((p.show && p.show.title) || 'Untitled');
     var author     = (p.show && p.show.author) ? ' by ' + esc(p.show.author) : '';
