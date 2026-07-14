@@ -31,7 +31,7 @@ async function runExport() {
       .populate('linkedCompanyId', 'name slug city state region logoUrl website')
       .populate('linkedVenueId', 'name address city state zip mapUrl lat lng')
       .lean(),
-    Company.find({ verified: true }).select('name slug city state region website logoUrl homeVenueIds').lean(),
+    Company.find({ verified: true }).select('name slug city state region website logoUrl bio socialLinks homeVenueIds').lean(),
     Venue.find().select('name address city state zip county region lat lng mapUrl website linkedCompanyId').lean(),
   ]);
 

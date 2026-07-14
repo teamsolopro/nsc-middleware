@@ -4,6 +4,20 @@
   <meta charset="UTF-8">
   <title>NSC Admin — Companies</title>
   <link rel="stylesheet" href="/public/admin.css">
+  <style>
+    .edit-form { padding: 16px 0; }
+    .edit-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .edit-grid label { display: flex; flex-direction: column; font-size: 12px; font-weight: 600; gap: 4px; }
+    .edit-grid label input, .edit-grid label select, .edit-grid label textarea { font-size: 14px; padding: 6px 8px; border: 1px solid #ccc; border-radius: 4px; }
+    .edit-grid .full { grid-column: span 2; }
+    .edit-grid h4 { grid-column: span 2; margin: 10px 0 2px; font-size: 13px; text-transform: uppercase; letter-spacing: .5px; color: #555; border-bottom: 1px solid #eee; padding-bottom: 4px; }
+    .btn-danger { background: #c00; color: #fff; border: none; }
+    .btn-danger:hover { background: #900; }
+    .logo-thumb { max-height: 60px; max-width: 160px; border-radius: 4px; display: block; margin-top: 6px; border: 1px solid #eee; padding: 4px; background: #fff; }
+    .logo-upload-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 4px; }
+    .logo-upload-row input[type=file] { font-size: 13px; }
+    .logo-upload-status { font-size: 12px; color: #666; }
+  </style>
 </head>
 <body>
   <%- include('_nav') %>
@@ -12,7 +26,7 @@
 
     <details class="form-panel">
       <summary>Add Company</summary>
-      <form method="POST" action="/admin/companies">
+      <form method="POST" action="/admin/companies" id="add-company-form">
         <label>Name <input type="text" name="name" required></label>
         <label>Slug <input type="text" name="slug" required placeholder="charlotte-players"></label>
         <label>City <input type="text" name="city"></label>
@@ -38,6 +52,17 @@
           </select>
         </label>
         <label>Website <input type="url" name="website"></label>
+
+        <label>Logo
+          <div class="logo-upload-row">
+            <input type="file" id="add-logo-file" accept="image/*">
+            <span class="logo-upload-status" id="add-logo-status"></span>
+          </div>
+          <img id="add-logo-preview" class="logo-thumb" style="display:none" alt="Logo preview">
+          <input type="hidden" name="logoUrl" id="add-logo-url">
+        </label>
+
+        <label>Bio <textarea name="bio" rows="3" placeholder="About this theater company…"></textarea></label>
         <label>Contact Name <input type="text" name="contactName"></label>
         <label>Contact Email <input type="email" name="contactEmail"></label>
         <label>Contact Phone <input type="tel" name="contactPhone"></label>
@@ -49,6 +74,7 @@
     <table>
       <thead>
         <tr>
+          <th>Logo</th>
           <th>Name</th>
           <th>City</th>
           <th>State</th>
@@ -60,6 +86,7 @@
       <tbody>
         <% companies.forEach(c => { %>
           <tr>
+            <td><% if (c.logoUrl) { %><img src="<%= c.logoUrl %>" class="logo-thumb" alt="logo"><% } else { %>—<% } %></td>
             <td><strong><%= c.name %></strong></td>
             <td><%= c.city %></td>
             <td><%= c.state %></td>
@@ -73,9 +100,10 @@
             </td>
           </tr>
           <tr id="edit-<%= c._id %>" style="display:none">
-            <td colspan="6">
+            <td colspan="7">
               <form method="POST" action="/admin/companies/<%= c._id %>" class="edit-form">
                 <div class="edit-grid">
+                  <h4>Identity</h4>
                   <label>Name <input type="text" name="name" value="<%= c.name %>" required></label>
                   <label>Slug <input type="text" name="slug" value="<%= c.slug %>"></label>
                   <label>City <input type="text" name="city" value="<%= c.city %>"></label>
@@ -95,11 +123,38 @@
                     </select>
                   </label>
                   <label>Website <input type="url" name="website" value="<%= c.website %>"></label>
+
+                  <div class="full">
+                    <label style="font-size:12px;font-weight:600;margin-bottom:4px;display:block">Logo</label>
+                    <div class="logo-upload-row">
+                      <input type="file" id="edit-logo-file-<%= c._id %>" accept="image/*" onchange="uploadLogo(this, '<%= c._id %>')">
+                      <span class="logo-upload-status" id="edit-logo-status-<%= c._id %>"></span>
+                    </div>
+                    <% if (c.logoUrl) { %>
+                      <img src="<%= c.logoUrl %>" class="logo-thumb" id="edit-logo-preview-<%= c._id %>" alt="Logo">
+                    <% } else { %>
+                      <img class="logo-thumb" id="edit-logo-preview-<%= c._id %>" style="display:none" alt="Logo preview">
+                    <% } %>
+                    <input type="hidden" name="logoUrl" id="edit-logo-url-<%= c._id %>" value="<%= c.logoUrl || '' %>">
+                  </div>
+
+                  <label class="full">Bio <textarea name="bio" rows="3"><%= c.bio %></textarea></label>
+
+                  <h4>Contact</h4>
                   <label>Contact Name <input type="text" name="contactName" value="<%= c.contactName %>"></label>
                   <label>Contact Email <input type="email" name="contactEmail" value="<%= c.contactEmail %>"></label>
                   <label>Contact Phone <input type="tel" name="contactPhone" value="<%= c.contactPhone %>"></label>
-                  <label>Bio <textarea name="bio" rows="3"><%= c.bio %></textarea></label>
-                  <label><input type="checkbox" name="verified" <%- c.verified ? 'checked' : '' %>> Verified (shows in public dropdowns)</label>
+
+                  <h4>Social Links</h4>
+                  <label>Facebook <input type="url" name="socialLinks.facebook" value="<%= c.socialLinks && c.socialLinks.facebook %>"></label>
+                  <label>Instagram <input type="url" name="socialLinks.instagram" value="<%= c.socialLinks && c.socialLinks.instagram %>"></label>
+                  <label>Twitter/X <input type="url" name="socialLinks.twitter" value="<%= c.socialLinks && c.socialLinks.twitter %>"></label>
+
+                  <div class="full">
+                    <label style="flex-direction:row;gap:8px;font-size:14px;font-weight:normal">
+                      <input type="checkbox" name="verified" <%- c.verified ? 'checked' : '' %>> Verified (shows in public dropdowns)
+                    </label>
+                  </div>
                 </div>
                 <div style="margin-top:12px;display:flex;gap:8px">
                   <button type="submit" class="btn">Save Changes</button>
@@ -113,20 +168,48 @@
     </table>
   </main>
 
-  <style>
-    .edit-form { padding: 16px 0; }
-    .edit-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-    .edit-grid label { display: flex; flex-direction: column; font-size: 12px; font-weight: 600; gap: 4px; }
-    .edit-grid label input, .edit-grid label select, .edit-grid label textarea { font-size: 14px; padding: 6px 8px; border: 1px solid #ccc; border-radius: 4px; }
-    .edit-grid label:last-child { grid-column: span 2; }
-    .btn-danger { background: #c00; color: #fff; border: none; }
-    .btn-danger:hover { background: #900; }
-  </style>
-
   <script>
     function toggleEdit(id) {
       var row = document.getElementById('edit-' + id);
       row.style.display = row.style.display === 'none' ? '' : 'none';
+    }
+
+    // Add-form logo upload
+    document.getElementById('add-logo-file').addEventListener('change', function () {
+      uploadLogoFile(this, 'add-logo-url', 'add-logo-preview', 'add-logo-status');
+    });
+
+    function uploadLogo(input, companyId) {
+      uploadLogoFile(
+        input,
+        'edit-logo-url-' + companyId,
+        'edit-logo-preview-' + companyId,
+        'edit-logo-status-' + companyId
+      );
+    }
+
+    function uploadLogoFile(input, urlFieldId, previewId, statusId) {
+      var file = input.files[0];
+      if (!file) return;
+      var status = document.getElementById(statusId);
+      var preview = document.getElementById(previewId);
+      var urlField = document.getElementById(urlFieldId);
+      status.textContent = 'Uploading…';
+      var formData = new FormData();
+      formData.append('file', file);
+      fetch('/admin/upload-logo', { method: 'POST', body: formData })
+        .then(function (r) { return r.json(); })
+        .then(function (data) {
+          if (data.url) {
+            urlField.value = data.url;
+            preview.src = data.url;
+            preview.style.display = 'block';
+            status.textContent = 'Uploaded ✓';
+          } else {
+            status.textContent = 'Error: ' + (data.error || 'Upload failed');
+          }
+        })
+        .catch(function () { status.textContent = 'Upload failed'; });
     }
   </script>
 </body>

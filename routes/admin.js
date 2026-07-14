@@ -1,12 +1,44 @@
 const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcrypt');
+const multer = require('multer');
+const { S3Client, PutObjectCommand } = require('@aws-sdk/client-s3');
 const { requireAuth } = require('../middleware/auth');
 const Audition = require('../models/Audition');
 const Production = require('../models/Production');
 const Company = require('../models/Company');
 const Venue = require('../models/Venue');
 const { geocodeAddress } = require('../lib/geocode');
+
+const logoUpload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 2 * 1024 * 1024 } });
+
+router.post('/upload-logo', requireAuth, logoUpload.single('file'), async (req, res) => {
+  try {
+    if (!req.file) return res.status(400).json({ error: 'No file provided' });
+    const ext = req.file.originalname.split('.').pop().toLowerCase();
+    if (!['jpg', 'jpeg', 'png', 'webp', 'svg'].includes(ext)) {
+      return res.status(400).json({ error: 'Only JPG, PNG, WebP, and SVG files are allowed' });
+    }
+    const { CDN_ACCOUNT_ID, CDN_ACCESS_KEY_ID, CDN_SECRET_ACCESS_KEY, CDN_BUCKET_NAME } = process.env;
+    if (!CDN_ACCOUNT_ID) return res.status(500).json({ error: 'CDN not configured' });
+    const key = `media/logos/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+    const client = new S3Client({
+      region: 'auto',
+      endpoint: `https://${CDN_ACCOUNT_ID}.r2.cloudflarestorage.com`,
+      credentials: { accessKeyId: CDN_ACCESS_KEY_ID, secretAccessKey: CDN_SECRET_ACCESS_KEY },
+    });
+    await client.send(new PutObjectCommand({
+      Bucket: CDN_BUCKET_NAME,
+      Key: key,
+      Body: req.file.buffer,
+      ContentType: req.file.mimetype,
+    }));
+    res.json({ url: `https://cdn.neighborhoodstage.com/${key}` });
+  } catch (err) {
+    console.error('[admin] /upload-logo error:', err);
+    res.status(500).json({ error: 'Upload failed' });
+  }
+});
 
 // Login
 router.get('/login', (req, res) => {
@@ -83,6 +115,8 @@ router.post('/companies', requireAuth, async (req, res) => {
       state:        d.state        || undefined,
       region:       d.region       || undefined,
       website:      d.website      || undefined,
+      logoUrl:      d.logoUrl      || undefined,
+      bio:          d.bio          || undefined,
       contactName:  d.contactName  || undefined,
       contactEmail: d.contactEmail || undefined,
       contactPhone: d.contactPhone || undefined,
@@ -96,10 +130,15 @@ router.post('/companies', requireAuth, async (req, res) => {
 });
 
 router.post('/companies/:id', requireAuth, async (req, res) => {
-  const { name, slug, city, state, region, website, contactName, contactEmail, contactPhone, bio, verified } = req.body;
+  const d = req.body;
   await Company.findByIdAndUpdate(req.params.id, {
-    name, slug, city, state, region, website, contactName, contactEmail, contactPhone, bio,
-    verified: verified === 'on',
+    name: d.name, slug: d.slug, city: d.city, state: d.state, region: d.region,
+    website: d.website, logoUrl: d.logoUrl || undefined, bio: d.bio,
+    contactName: d.contactName, contactEmail: d.contactEmail, contactPhone: d.contactPhone,
+    'socialLinks.facebook':  d['socialLinks.facebook']  || undefined,
+    'socialLinks.instagram': d['socialLinks.instagram'] || undefined,
+    'socialLinks.twitter':   d['socialLinks.twitter']   || undefined,
+    verified: d.verified === 'on',
   });
   res.redirect('/admin/companies');
 });
