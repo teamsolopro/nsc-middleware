@@ -196,14 +196,14 @@
                   <label class="full">Title <input type="text" name="title" value="<%= a.show && a.show.title %>" required></label>
                   <label>Author <input type="text" name="author" value="<%= a.show && a.show.author %>"></label>
                   <label>Composer <input type="text" name="composer" value="<%= a.show && a.show.composer %>"></label>
-                  <label>Show Type
-                    <select name="showType">
-                      <option value="">—</option>
-                      <% ['musical','play','improv','opera','dance','other'].forEach(function(t) { %>
-                        <option value="<%= t %>" <%- (a.show && a.show.type) === t ? 'selected' : '' %>><%= t.charAt(0).toUpperCase()+t.slice(1) %></option>
+                  <div class="full">
+                    <label style="font-size:12px;font-weight:600;margin-bottom:4px;display:block">Show Type</label>
+                    <div class="checkbox-row">
+                      <% ['musical','play','drama','comedy','one_act','revue','opera','operetta','fringe','immersive','improv','childrens','other'].forEach(function(t) { %>
+                        <label><input type="checkbox" name="showType" value="<%= t %>" <%- a.show && a.show.showType && a.show.showType.indexOf(t) > -1 ? 'checked' : '' %>> <%= t.replace('_',' ') %></label>
                       <% }) %>
-                    </select>
-                  </label>
+                    </div>
+                  </div>
                   <label>Union Status
                     <select name="unionType">
                       <option value="">—</option>

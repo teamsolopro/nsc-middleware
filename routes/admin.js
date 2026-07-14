@@ -332,7 +332,7 @@ router.post('/auditions/:id', requireAuth, async (req, res) => {
     'show.author':      d.author,
     'show.composer':    d.composer,
     'show.description': d.description,
-    'show.type':        d.showType           || undefined,
+    'show.showType':    Array.isArray(d.showType) ? d.showType : (d.showType ? [d.showType] : []),
     'show.unionType':   d.unionType          || undefined,
     'show.showDates.opens':  d.showOpens  || undefined,
     'show.showDates.closes': d.showCloses || undefined,
