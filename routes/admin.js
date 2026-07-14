@@ -175,6 +175,7 @@ router.post('/productions/:id', requireAuth, async (req, res) => {
     'show.author':         d.author,
     'show.composer':       d.composer,
     'show.description':    d.description,
+    'show.showType':       Array.isArray(d.showType) ? d.showType : (d.showType ? [d.showType] : []),
     'show.familyRating':   d.familyRating,
     'show.posterImageUrl': d.posterImageUrl || undefined,
     'show.runtime':        d.runtime,

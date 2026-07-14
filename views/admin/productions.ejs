@@ -14,6 +14,8 @@
     .btn-danger { background: #c00; color: #fff; border: none; }
     .btn-danger:hover { background: #900; }
     .poster-thumb { max-height: 80px; border-radius: 4px; display: block; margin-top: 6px; }
+    .checkbox-row { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 4px; }
+    .checkbox-row label { flex-direction: row; gap: 4px; font-size: 14px; font-weight: normal; text-transform: capitalize; }
   </style>
 </head>
 <body>
@@ -134,6 +136,14 @@
                   <label class="full">Title <input type="text" name="title" value="<%= p.show && p.show.title %>" required></label>
                   <label>Author <input type="text" name="author" value="<%= p.show && p.show.author %>"></label>
                   <label>Composer <input type="text" name="composer" value="<%= p.show && p.show.composer %>"></label>
+                  <div class="full">
+                    <label style="font-size:12px;font-weight:600;margin-bottom:4px;display:block">Show Type</label>
+                    <div class="checkbox-row">
+                      <% ['musical','play','drama','comedy','one_act','revue','opera','operetta','fringe','immersive','improv','childrens','other'].forEach(function(t) { %>
+                        <label><input type="checkbox" name="showType" value="<%= t %>" <%- p.show && p.show.showType && p.show.showType.indexOf(t) > -1 ? 'checked' : '' %>> <%= t.replace('_',' ') %></label>
+                      <% }) %>
+                    </div>
+                  </div>
                   <label>Family Rating
                     <select name="familyRating">
                       <option value="">—</option>
