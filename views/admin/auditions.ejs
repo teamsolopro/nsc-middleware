@@ -4,6 +4,18 @@
   <meta charset="UTF-8">
   <title>NSC Admin — Auditions</title>
   <link rel="stylesheet" href="/public/admin.css">
+  <style>
+    .edit-form { padding: 16px 0; }
+    .edit-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .edit-grid label { display: flex; flex-direction: column; font-size: 12px; font-weight: 600; gap: 4px; }
+    .edit-grid label input, .edit-grid label select, .edit-grid label textarea { font-size: 14px; padding: 6px 8px; border: 1px solid #ccc; border-radius: 4px; }
+    .edit-grid .full { grid-column: span 2; }
+    .edit-grid h4 { grid-column: span 2; margin: 10px 0 2px; font-size: 13px; text-transform: uppercase; letter-spacing: .5px; color: #555; border-bottom: 1px solid #eee; padding-bottom: 4px; }
+    .btn-danger { background: #c00; color: #fff; border: none; }
+    .btn-danger:hover { background: #900; }
+    .checkbox-row { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 4px; }
+    .checkbox-row label { flex-direction: row; gap: 4px; font-size: 14px; font-weight: normal; text-transform: capitalize; }
+  </style>
 </head>
 <body>
   <%- include('_nav') %>
@@ -160,6 +172,7 @@
             <td><%= a.show && a.show.showDates && a.show.showDates.opens ? new Date(a.show.showDates.opens).toLocaleDateString() : '—' %></td>
             <td><span class="status-badge status-<%= a.status %>"><%= a.status %></span></td>
             <td>
+              <button class="btn-sm" onclick="toggleEdit('<%= a._id %>')">Edit</button>
               <form method="POST" action="/admin/auditions/<%= a._id %>/status" style="display:inline">
                 <% if (a.status !== 'published') { %>
                   <input type="hidden" name="status" value="published">
@@ -170,7 +183,131 @@
                 <% } %>
               </form>
               <form method="POST" action="/admin/auditions/<%= a._id %>/delete" style="display:inline" onsubmit="return confirm('Delete this audition?')">
-                <button type="submit" class="btn btn-reject btn-sm">Delete</button>
+                <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+              </form>
+            </td>
+          </tr>
+          <tr id="edit-<%= a._id %>" style="display:none">
+            <td colspan="6">
+              <form method="POST" action="/admin/auditions/<%= a._id %>" class="edit-form">
+                <div class="edit-grid">
+
+                  <h4>Show Info</h4>
+                  <label class="full">Title <input type="text" name="title" value="<%= a.show && a.show.title %>" required></label>
+                  <label>Author <input type="text" name="author" value="<%= a.show && a.show.author %>"></label>
+                  <label>Composer <input type="text" name="composer" value="<%= a.show && a.show.composer %>"></label>
+                  <label>Show Type
+                    <select name="showType">
+                      <option value="">—</option>
+                      <% ['musical','play','improv','opera','dance','other'].forEach(function(t) { %>
+                        <option value="<%= t %>" <%- (a.show && a.show.type) === t ? 'selected' : '' %>><%= t.charAt(0).toUpperCase()+t.slice(1) %></option>
+                      <% }) %>
+                    </select>
+                  </label>
+                  <label>Union Status
+                    <select name="unionType">
+                      <option value="">—</option>
+                      <% ['AEA','non-union','both'].forEach(function(u) { %>
+                        <option value="<%= u %>" <%- (a.show && a.show.unionType) === u ? 'selected' : '' %>><%= u %></option>
+                      <% }) %>
+                    </select>
+                  </label>
+                  <label class="full">Description <textarea name="description" rows="3"><%= a.show && a.show.description %></textarea></label>
+
+                  <h4>Company, Venue &amp; Linked Production</h4>
+                  <label>Company
+                    <select name="linkedCompanyId">
+                      <option value="">— Not linked —</option>
+                      <% companies.forEach(function(c) { %>
+                        <option value="<%= c._id %>" <%- String(a.linkedCompanyId && a.linkedCompanyId._id) === String(c._id) ? 'selected' : '' %>><%= c.name %></option>
+                      <% }) %>
+                    </select>
+                  </label>
+                  <label>Venue
+                    <select name="linkedVenueId">
+                      <option value="">— Not linked —</option>
+                      <% venues.forEach(function(v) { %>
+                        <option value="<%= v._id %>" <%- String(a.linkedVenueId && a.linkedVenueId._id) === String(v._id) ? 'selected' : '' %>><%= v.name %></option>
+                      <% }) %>
+                    </select>
+                  </label>
+                  <label class="full">Linked Production
+                    <select name="linkedProductionId">
+                      <option value="">— None —</option>
+                      <% productions.forEach(function(p) { %>
+                        <option value="<%= p._id %>" <%- String(a.linkedProductionId) === String(p._id) ? 'selected' : '' %>><%= p.show && p.show.title %></option>
+                      <% }) %>
+                    </select>
+                  </label>
+
+                  <h4>Audition Dates</h4>
+                  <% for (var i = 0; i < 3; i++) { var ad = a.auditionDates && a.auditionDates[i]; %>
+                    <label>Date <input type="date" name="auditionDate" value="<%= ad && ad.date ? new Date(ad.date).toISOString().slice(0,10) : '' %>"></label>
+                    <label>Start Time <input type="time" name="auditionStartTime" value="<%= ad && ad.startTime || '' %>"></label>
+                    <label>End Time <input type="time" name="auditionEndTime" value="<%= ad && ad.endTime || '' %>"></label>
+                    <label>Format
+                      <select name="auditionFormat">
+                        <option value="">—</option>
+                        <% ['open call','by appointment','virtual'].forEach(function(f) { %>
+                          <option value="<%= f %>" <%- (ad && ad.format) === f ? 'selected' : '' %>><%= f.charAt(0).toUpperCase()+f.slice(1) %></option>
+                        <% }) %>
+                      </select>
+                    </label>
+                  <% } %>
+
+                  <h4>Production Dates</h4>
+                  <label>Show Opens <input type="date" name="showOpens" value="<%= a.show && a.show.showDates && a.show.showDates.opens ? new Date(a.show.showDates.opens).toISOString().slice(0,10) : '' %>"></label>
+                  <label>Show Closes <input type="date" name="showCloses" value="<%= a.show && a.show.showDates && a.show.showDates.closes ? new Date(a.show.showDates.closes).toISOString().slice(0,10) : '' %>"></label>
+                  <label>Rehearsals Begin <input type="date" name="rehearsalStart" value="<%= a.rehearsalStart ? new Date(a.rehearsalStart).toISOString().slice(0,10) : '' %>"></label>
+
+                  <h4>Who They're Looking For</h4>
+                  <div class="full">
+                    <label style="font-size:12px;font-weight:600;margin-bottom:4px;display:block">Age Ranges</label>
+                    <div class="checkbox-row">
+                      <% ['children','teens','young_adults','adults','seniors','all'].forEach(function(ag) { %>
+                        <label><input type="checkbox" name="ageRanges" value="<%= ag %>" <%- a.ageRanges && a.ageRanges.indexOf(ag) > -1 ? 'checked' : '' %>> <%= ag.replace('_',' ') %></label>
+                      <% }) %>
+                    </div>
+                  </div>
+                  <div class="full">
+                    <div class="checkbox-row">
+                      <label><input type="checkbox" name="genderOpen" <%- a.genderOpen ? 'checked' : '' %>> Gender Open</label>
+                      <label><input type="checkbox" name="genderMale" <%- a.genderMale ? 'checked' : '' %>> Male Roles</label>
+                      <label><input type="checkbox" name="genderFemale" <%- a.genderFemale ? 'checked' : '' %>> Female Roles</label>
+                    </div>
+                  </div>
+
+                  <h4>Requirements</h4>
+                  <div class="full">
+                    <div class="checkbox-row">
+                      <label><input type="checkbox" name="preparedSong" <%- a.requirements && a.requirements.preparedSong ? 'checked' : '' %>> Prepared Song</label>
+                      <label><input type="checkbox" name="coldReading" <%- a.requirements && a.requirements.coldReading ? 'checked' : '' %>> Cold Reading</label>
+                      <label><input type="checkbox" name="headshot" <%- a.requirements && a.requirements.headshot ? 'checked' : '' %>> Headshot</label>
+                      <label><input type="checkbox" name="resume" <%- a.requirements && a.requirements.resume ? 'checked' : '' %>> Resume</label>
+                    </div>
+                  </div>
+                  <label>Song Length <input type="text" name="songLength" value="<%= a.requirements && a.requirements.songLength %>"></label>
+                  <label>Callback Notes <input type="text" name="callbacks" value="<%= a.requirements && a.requirements.callbacks %>"></label>
+                  <label class="full">Conflict Dates <input type="text" name="conflictDates" value="<%= a.requirements && a.requirements.conflictDates %>"></label>
+                  <label class="full">Additional Notes <textarea name="additionalNotes" rows="2"><%= a.requirements && a.requirements.additionalNotes %></textarea></label>
+
+                  <h4>Contact &amp; Admin</h4>
+                  <label>Contact Name <input type="text" name="contactName" value="<%= a.contactName %>"></label>
+                  <label>Contact Email <input type="email" name="contactEmail" value="<%= a.contactEmail %>"></label>
+                  <label>Contact Phone <input type="tel" name="contactPhone" value="<%= a.contactPhone %>"></label>
+                  <label class="full">Admin Notes <textarea name="adminNotes" rows="2"><%= a.adminNotes %></textarea></label>
+                  <label>Status
+                    <select name="status">
+                      <% ['pending','published','expired','rejected'].forEach(function(s) { %>
+                        <option value="<%= s %>" <%- a.status === s ? 'selected' : '' %>><%= s %></option>
+                      <% }) %>
+                    </select>
+                  </label>
+                </div>
+                <div style="margin-top:14px;display:flex;gap:8px">
+                  <button type="submit" class="btn">Save Changes</button>
+                  <button type="button" class="btn-sm" onclick="toggleEdit('<%= a._id %>')">Cancel</button>
+                </div>
               </form>
             </td>
           </tr>
@@ -181,5 +318,12 @@
       </tbody>
     </table>
   </main>
+
+  <script>
+    function toggleEdit(id) {
+      var row = document.getElementById('edit-' + id);
+      row.style.display = row.style.display === 'none' ? '' : 'none';
+    }
+  </script>
 </body>
 </html>

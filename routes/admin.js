@@ -322,6 +322,50 @@ router.post('/auditions', requireAuth, async (req, res) => {
   }
 });
 
+router.post('/auditions/:id', requireAuth, async (req, res) => {
+  const d = req.body;
+  await Audition.findByIdAndUpdate(req.params.id, {
+    linkedCompanyId:    d.linkedCompanyId    || undefined,
+    linkedVenueId:      d.linkedVenueId      || undefined,
+    linkedProductionId: d.linkedProductionId || undefined,
+    'show.title':       d.title,
+    'show.author':      d.author,
+    'show.composer':    d.composer,
+    'show.description': d.description,
+    'show.type':        d.showType           || undefined,
+    'show.unionType':   d.unionType          || undefined,
+    'show.showDates.opens':  d.showOpens  || undefined,
+    'show.showDates.closes': d.showCloses || undefined,
+    rehearsalStart: d.rehearsalStart || undefined,
+    auditionDates: d.auditionDate
+      ? (Array.isArray(d.auditionDate) ? d.auditionDate : [d.auditionDate]).map(function(date, i) {
+          const times = Array.isArray(d.auditionStartTime) ? d.auditionStartTime : [d.auditionStartTime];
+          const ends  = Array.isArray(d.auditionEndTime)   ? d.auditionEndTime   : [d.auditionEndTime];
+          const fmts  = Array.isArray(d.auditionFormat)    ? d.auditionFormat    : [d.auditionFormat];
+          return { date: date || undefined, startTime: times[i] || undefined, endTime: ends[i] || undefined, format: fmts[i] || undefined };
+        }).filter(function(ad) { return ad.date; })
+      : [],
+    ageRanges:    Array.isArray(d.ageRanges)   ? d.ageRanges   : (d.ageRanges   ? [d.ageRanges]   : []),
+    genderOpen:   d.genderOpen   === 'on',
+    genderMale:   d.genderMale   === 'on',
+    genderFemale: d.genderFemale === 'on',
+    'requirements.preparedSong':    d.preparedSong   === 'on',
+    'requirements.songLength':      d.songLength     || undefined,
+    'requirements.coldReading':     d.coldReading    === 'on',
+    'requirements.headshot':        d.headshot       === 'on',
+    'requirements.resume':          d.resume         === 'on',
+    'requirements.callbacks':       d.callbacks      || undefined,
+    'requirements.conflictDates':   d.conflictDates  || undefined,
+    'requirements.additionalNotes': d.additionalNotes || undefined,
+    contactName:  d.contactName,
+    contactEmail: d.contactEmail,
+    contactPhone: d.contactPhone,
+    adminNotes:   d.adminNotes,
+    status:       d.status,
+  });
+  res.redirect('/admin/auditions');
+});
+
 router.post('/auditions/:id/status', requireAuth, async (req, res) => {
   await Audition.findByIdAndUpdate(req.params.id, { status: req.body.status });
   res.redirect('/admin/auditions');
