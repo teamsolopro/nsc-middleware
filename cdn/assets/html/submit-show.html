@@ -735,8 +735,7 @@
 
     fetch(RAILWAY_URL + '/webhook/submit-company', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload),
+      body: new URLSearchParams(payload),
     })
       .then(function (r) { return r.json(); })
       .then(function (data) {
@@ -813,8 +812,7 @@
 
     fetch(RAILWAY_URL + '/webhook/submit-venue', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload),
+      body: new URLSearchParams(payload),
     })
       .then(function (r) { return r.json(); })
       .then(function (data) {

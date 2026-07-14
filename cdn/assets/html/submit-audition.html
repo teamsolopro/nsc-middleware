@@ -625,8 +625,8 @@
     errEl.style.display = 'none';
     var btn = el('nsc-aud-company-save-btn'); btn.disabled = true; btn.textContent = 'Saving…';
     fetch(RAILWAY_URL + '/webhook/submit-company', {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, city, state: state_, website: val('nsc-aud-mc-website')||null, contactName, contactEmail, contactPhone: val('nsc-aud-mc-contact-phone')||null }),
+      method: 'POST',
+      body: new URLSearchParams({ name, city, state: state_, website: val('nsc-aud-mc-website')||'', contactName, contactEmail, contactPhone: val('nsc-aud-mc-contact-phone')||'' }),
     })
     .then(function(r){return r.json();})
     .then(function(data) {
@@ -658,8 +658,8 @@
     errEl.style.display = 'none';
     var btn = el('nsc-aud-venue-save-btn'); btn.disabled=true; btn.textContent='Saving…';
     fetch(RAILWAY_URL + '/webhook/submit-venue', {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, address, city, state: state_, county, zip, type, capacity: val('nsc-aud-mv-capacity') ? parseInt(val('nsc-aud-mv-capacity'),10) : null, linkedCompanyId: audState.companyId }),
+      method: 'POST',
+      body: new URLSearchParams({ name, address, city, state: state_, county, zip, type, capacity: val('nsc-aud-mv-capacity')||'', linkedCompanyId: audState.companyId }),
     })
     .then(function(r){return r.json();})
     .then(function(data) {
