@@ -43,54 +43,25 @@
     </div>
   </div>
 
-  <!-- ── STEP 2: Show Details ── -->
+  <!-- ── STEP 2: Select Show ── -->
   <div class="nsc-panel" id="nsc-rr-step-2">
-    <h2>Show Details</h2>
+    <h2>Select Your Show</h2>
 
     <div class="nsc-field">
-      <label>Show Title <span class="req">*</span></label>
-      <input type="text" id="nsc-rr-title" maxlength="200" required>
-    </div>
-    <div class="nsc-field-row">
-      <div class="nsc-field">
-        <label>Author / Playwright</label>
-        <input type="text" id="nsc-rr-author" maxlength="200">
-      </div>
+      <label>Show <span class="req">*</span></label>
+      <select id="nsc-rr-show" required disabled>
+        <option value="">— Select a Company first —</option>
+      </select>
+      <a class="nsc-add-link disabled" id="nsc-rr-add-show-link" href="#">+ Show Not Listed? Add It</a>
     </div>
 
-    <div class="nsc-section-label">Show Type <span class="req">*</span></div>
-    <div class="nsc-check-group" id="nsc-rr-showtype-group">
-      <label class="nsc-check-item"><input type="checkbox" value="musical"> Musical</label>
-      <label class="nsc-check-item"><input type="checkbox" value="play"> Play</label>
-      <label class="nsc-check-item"><input type="checkbox" value="drama"> Drama</label>
-      <label class="nsc-check-item"><input type="checkbox" value="comedy"> Comedy</label>
-      <label class="nsc-check-item"><input type="checkbox" value="one_act"> One Act</label>
-      <label class="nsc-check-item"><input type="checkbox" value="revue"> Revue</label>
-      <label class="nsc-check-item"><input type="checkbox" value="opera"> Opera</label>
-      <label class="nsc-check-item"><input type="checkbox" value="operetta"> Operetta</label>
-      <label class="nsc-check-item"><input type="checkbox" value="fringe"> Fringe</label>
-      <label class="nsc-check-item"><input type="checkbox" value="immersive"> Immersive</label>
-      <label class="nsc-check-item"><input type="checkbox" value="improv"> Improv</label>
-      <label class="nsc-check-item"><input type="checkbox" value="childrens"> Children's / Family</label>
-      <label class="nsc-check-item"><input type="checkbox" value="other"> Other</label>
+    <!-- Summary of selected/entered show -->
+    <div id="nsc-rr-show-summary" style="display:none;background:#f5f3ee;border-radius:8px;padding:14px 16px;margin-top:8px;font-size:14px;color:#333;line-height:1.6">
+      <strong id="nsc-rr-ss-title"></strong><br>
+      <span id="nsc-rr-ss-dates" style="color:#555"></span><br>
+      <span id="nsc-rr-ss-type" style="color:#6699c2;font-size:12px;text-transform:uppercase;letter-spacing:.5px;font-weight:700"></span>
     </div>
-    <div class="nsc-field-error" id="nsc-rr-showtype-error" style="display:none">Please select at least one show type.</div>
-
-    <div class="nsc-section-label">Run Dates <span class="req">*</span></div>
-    <div class="nsc-field-row">
-      <div class="nsc-field">
-        <label>Opening Night <span class="req">*</span></label>
-        <input type="date" id="nsc-rr-opens" required>
-      </div>
-      <div class="nsc-field">
-        <label>Closing Night <span class="req">*</span></label>
-        <input type="date" id="nsc-rr-closes" required>
-      </div>
-    </div>
-    <div class="nsc-field">
-      <label>Showtimes</label>
-      <textarea id="nsc-rr-showtimes" rows="2" placeholder="e.g. Fridays &amp; Saturdays 7:30pm, Sundays 2:00pm"></textarea>
-    </div>
+    <div class="nsc-field-error" id="nsc-rr-show-error" style="display:none">Please select a show or add one.</div>
 
     <div class="nsc-btn-row">
       <button class="nsc-btn nsc-btn-ghost" onclick="nscRrGo(1)">← Back</button>
@@ -199,6 +170,44 @@
 
 </div><!-- #nsc-rr-wizard -->
 
+<!-- ── SHOW MODAL ── -->
+<div class="nsc-modal-backdrop" id="nsc-rr-show-modal">
+  <div class="nsc-modal">
+    <button class="nsc-modal-close" onclick="nscRrCloseModal('nsc-rr-show-modal')">&times;</button>
+    <h2>Add Show Details</h2>
+    <p class="nsc-modal-error" id="nsc-rr-show-modal-error"></p>
+    <div class="nsc-field"><label>Show Title <span class="req">*</span></label><input type="text" id="nsc-rr-ms-title" required></div>
+    <div class="nsc-field"><label>Author / Playwright</label><input type="text" id="nsc-rr-ms-author"></div>
+    <div class="nsc-section-label" style="margin-top:16px">Show Type <span class="req">*</span></div>
+    <div class="nsc-check-group" id="nsc-rr-ms-showtype-group">
+      <label class="nsc-check-item"><input type="checkbox" value="musical"> Musical</label>
+      <label class="nsc-check-item"><input type="checkbox" value="play"> Play</label>
+      <label class="nsc-check-item"><input type="checkbox" value="drama"> Drama</label>
+      <label class="nsc-check-item"><input type="checkbox" value="comedy"> Comedy</label>
+      <label class="nsc-check-item"><input type="checkbox" value="one_act"> One Act</label>
+      <label class="nsc-check-item"><input type="checkbox" value="revue"> Revue</label>
+      <label class="nsc-check-item"><input type="checkbox" value="opera"> Opera</label>
+      <label class="nsc-check-item"><input type="checkbox" value="operetta"> Operetta</label>
+      <label class="nsc-check-item"><input type="checkbox" value="fringe"> Fringe</label>
+      <label class="nsc-check-item"><input type="checkbox" value="immersive"> Immersive</label>
+      <label class="nsc-check-item"><input type="checkbox" value="improv"> Improv</label>
+      <label class="nsc-check-item"><input type="checkbox" value="childrens"> Children's / Family</label>
+      <label class="nsc-check-item"><input type="checkbox" value="other"> Other</label>
+    </div>
+    <div class="nsc-field-error" id="nsc-rr-ms-type-error" style="display:none">Please select at least one show type.</div>
+    <div class="nsc-section-label" style="margin-top:16px">Run Dates <span class="req">*</span></div>
+    <div class="nsc-field-row">
+      <div class="nsc-field"><label>Opening Night <span class="req">*</span></label><input type="date" id="nsc-rr-ms-opens"></div>
+      <div class="nsc-field"><label>Closing Night <span class="req">*</span></label><input type="date" id="nsc-rr-ms-closes"></div>
+    </div>
+    <div class="nsc-field"><label>Showtimes</label><textarea id="nsc-rr-ms-showtimes" rows="2" placeholder="e.g. Fri &amp; Sat 7:30pm, Sun 2:00pm"></textarea></div>
+    <div class="nsc-btn-row" style="border:none;padding:0;margin-top:24px">
+      <button class="nsc-btn nsc-btn-ghost" onclick="nscRrCloseModal('nsc-rr-show-modal')">Cancel</button>
+      <button class="nsc-btn nsc-btn-primary" id="nsc-rr-show-save-btn" onclick="nscRrSaveShow()">Use This Show</button>
+    </div>
+  </div>
+</div>
+
 <!-- ── COMPANY MODAL ── -->
 <div class="nsc-modal-backdrop" id="nsc-rr-company-modal">
   <div class="nsc-modal">
@@ -284,7 +293,11 @@
   var CDN         = 'https://cdn.neighborhoodstage.com/data';
   var THANK_YOU   = '/thank-you/review-request';
 
-  var state = { companyId: '', companyName: '', venueId: '', venueName: '' };
+  var state = {
+    companyId: '', companyName: '', venueId: '', venueName: '',
+    showId: null, showTitle: '', showAuthor: '', showTypes: [],
+    showOpens: '', showCloses: '', showShowtimes: '',
+  };
 
   var SESSION_KEY = 'nsc_rr_pending';
   function getPending() {
@@ -314,19 +327,89 @@
   };
 
   /* ── Load CDN data ── */
-  var _allCompanies = [];
-  var _allVenues    = [];
+  var _allCompanies   = [];
+  var _allVenues      = [];
+  var _allProductions = [];
 
   function loadData() {
     Promise.all([
       fetch(CDN + '/companies.json').then(function (r) { return r.json(); }).catch(function () { return []; }),
       fetch(CDN + '/venues.json').then(function (r) { return r.json(); }).catch(function () { return []; }),
+      fetch(CDN + '/productions.json').then(function (r) { return r.json(); }).catch(function () { return []; }),
     ]).then(function (results) {
       var pending = getPending();
-      _allCompanies = (results[0] || []).concat(pending.companies);
-      _allVenues    = (results[1] || []).concat(pending.venues);
+      _allCompanies   = (results[0] || []).concat(pending.companies);
+      _allVenues      = (results[1] || []).concat(pending.venues);
+      _allProductions = results[2] || [];
       populateCompanyDropdown();
     });
+  }
+
+  /* ── Show dropdown ── */
+  function loadShows(companyId) {
+    var sel = el('nsc-rr-show');
+    sel.innerHTML = '<option value="">— Select a Show —</option>';
+    sel.disabled = true;
+    hideEl('nsc-rr-show-summary');
+
+    var matched = _allProductions.filter(function (p) {
+      return p.linkedCompanyId && String(p.linkedCompanyId._id) === companyId;
+    }).sort(function (a, b) {
+      var ta = (a.show && a.show.title) || '';
+      var tb = (b.show && b.show.title) || '';
+      return ta.localeCompare(tb);
+    });
+
+    matched.forEach(function (p) {
+      var title  = (p.show && p.show.title) || 'Untitled';
+      var opens  = p.dates && p.dates.opens  ? new Date(p.dates.opens).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) : '';
+      var closes = p.dates && p.dates.closes ? new Date(p.dates.closes).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) : '';
+      var dates  = (opens && closes) ? ' (' + opens + ' – ' + closes + ')' : '';
+      var opt = document.createElement('option');
+      opt.value = p._id;
+      opt.textContent = title + dates;
+      sel.appendChild(opt);
+    });
+
+    sel.disabled = false;
+    el('nsc-rr-add-show-link').classList.remove('disabled');
+  }
+
+  function applyShowFromProduction(productionId) {
+    var p = null;
+    for (var i = 0; i < _allProductions.length; i++) {
+      if (_allProductions[i]._id === productionId) { p = _allProductions[i]; break; }
+    }
+    if (!p) { clearShowState(); return; }
+    var types = (p.show && p.show.showType && p.show.showType.length)
+      ? p.show.showType
+      : (p.show && p.show.type ? [p.show.type] : []);
+    state.showId       = p._id;
+    state.showTitle    = (p.show && p.show.title)    || '';
+    state.showAuthor   = (p.show && p.show.author)   || '';
+    state.showTypes    = types;
+    state.showOpens    = (p.dates && p.dates.opens)  ? new Date(p.dates.opens).toISOString().slice(0,10)  : '';
+    state.showCloses   = (p.dates && p.dates.closes) ? new Date(p.dates.closes).toISOString().slice(0,10) : '';
+    state.showShowtimes = p.showtimes || '';
+    renderShowSummary();
+  }
+
+  function clearShowState() {
+    state.showId = null; state.showTitle = ''; state.showAuthor = '';
+    state.showTypes = []; state.showOpens = ''; state.showCloses = ''; state.showShowtimes = '';
+    hideEl('nsc-rr-show-summary');
+  }
+
+  function renderShowSummary() {
+    if (!state.showTitle) { hideEl('nsc-rr-show-summary'); return; }
+    var opens  = state.showOpens  ? new Date(state.showOpens  + 'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) : '';
+    var closes = state.showCloses ? new Date(state.showCloses + 'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) : '';
+    var dates  = (opens && closes) ? opens + ' – ' + closes : opens || closes || '';
+    var typeStr = state.showTypes.map(function (t) { return t.charAt(0).toUpperCase() + t.slice(1).replace(/_/g,' '); }).join(' / ');
+    el('nsc-rr-ss-title').textContent = state.showTitle;
+    el('nsc-rr-ss-dates').textContent = dates;
+    el('nsc-rr-ss-type').textContent  = typeStr;
+    showEl('nsc-rr-show-summary');
   }
 
   function populateCompanyDropdown() {
@@ -369,6 +452,10 @@
     state.companyName = this.options[this.selectedIndex].text;
     state.venueId     = '';
     state.venueName   = '';
+    clearShowState();
+    el('nsc-rr-show').innerHTML = '<option value="">— Select a Show —</option>';
+    el('nsc-rr-show').disabled = true;
+    el('nsc-rr-add-show-link').classList.add('disabled');
     el('nsc-rr-next-1').disabled = true;
     if (this.value) {
       loadVenues(this.value);
@@ -383,9 +470,73 @@
     state.venueId   = this.value;
     state.venueName = this.options[this.selectedIndex].text;
     el('nsc-rr-next-1').disabled = !(state.companyId && state.venueId);
+    // Populate shows now that company is confirmed
+    if (state.companyId) loadShows(state.companyId);
   });
 
   el('nsc-rr-next-1').addEventListener('click', function () { nscRrGo(2); });
+
+  /* ── Show dropdown wiring ── */
+  el('nsc-rr-show').addEventListener('change', function () {
+    hideEl('nsc-rr-show-error');
+    if (this.value) {
+      applyShowFromProduction(this.value);
+    } else {
+      clearShowState();
+    }
+  });
+
+  el('nsc-rr-add-show-link').addEventListener('click', function (e) {
+    e.preventDefault();
+    if (this.classList.contains('disabled')) return;
+    // Clear modal fields
+    el('nsc-rr-ms-title').value = '';
+    el('nsc-rr-ms-author').value = '';
+    el('nsc-rr-ms-opens').value = '';
+    el('nsc-rr-ms-closes').value = '';
+    el('nsc-rr-ms-showtimes').value = '';
+    document.querySelectorAll('#nsc-rr-ms-showtype-group input').forEach(function (cb) { cb.checked = false; });
+    el('nsc-rr-ms-type-error').style.display = 'none';
+    el('nsc-rr-show-modal-error').textContent = '';
+    nscRrOpenModal('nsc-rr-show-modal');
+  });
+
+  window.nscRrSaveShow = function () {
+    var title  = el('nsc-rr-ms-title').value.trim();
+    var opens  = el('nsc-rr-ms-opens').value;
+    var closes = el('nsc-rr-ms-closes').value;
+    var types  = Array.from(document.querySelectorAll('#nsc-rr-ms-showtype-group input:checked')).map(function (c) { return c.value; });
+    var ok = true;
+    if (!title)          { el('nsc-rr-show-modal-error').textContent = 'Please enter the show title.'; ok = false; }
+    else if (!opens)     { el('nsc-rr-show-modal-error').textContent = 'Please enter the opening night.'; ok = false; }
+    else if (!closes)    { el('nsc-rr-show-modal-error').textContent = 'Please enter the closing night.'; ok = false; }
+    else if (closes < opens) { el('nsc-rr-show-modal-error').textContent = 'Closing night must be after opening night.'; ok = false; }
+    else if (types.length === 0) { el('nsc-rr-ms-type-error').style.display = 'block'; ok = false; }
+    if (!ok) return;
+    el('nsc-rr-ms-type-error').style.display = 'none';
+
+    state.showId        = null;
+    state.showTitle     = title;
+    state.showAuthor    = el('nsc-rr-ms-author').value.trim();
+    state.showTypes     = types;
+    state.showOpens     = opens;
+    state.showCloses    = closes;
+    state.showShowtimes = el('nsc-rr-ms-showtimes').value.trim();
+
+    // Add a custom option to the dropdown and select it
+    var sel = el('nsc-rr-show');
+    var existing = sel.querySelector('option[value="__custom__"]');
+    if (existing) sel.removeChild(existing);
+    var opt = document.createElement('option');
+    opt.value = '__custom__';
+    opt.textContent = title + ' (manually entered)';
+    sel.appendChild(opt);
+    sel.value = '__custom__';
+
+    renderShowSummary();
+    hideEl('nsc-rr-show-error');
+    nscRrCloseModal('nsc-rr-show-modal');
+  };
 
   /* ── Comp ticket toggle ── */
   el('nsc-rr-comp-yes').addEventListener('change', function () {
@@ -395,23 +546,13 @@
 
   /* ── Step 2 validation ── */
   window.nscRrValidateStep2 = function () {
-    var ok = true;
-    if (!val('nsc-rr-title')) { showErr('nsc-rr-title', 'Please enter the show title.'); ok = false; }
-    else                      { hideErr('nsc-rr-title'); }
-
-    var types = document.querySelectorAll('#nsc-rr-showtype-group input:checked');
-    if (types.length === 0) { el('nsc-rr-showtype-error').style.display = 'block'; ok = false; }
-    else                    { el('nsc-rr-showtype-error').style.display = 'none'; }
-
-    var opens  = val('nsc-rr-opens');
-    var closes = val('nsc-rr-closes');
-    if (!opens)            { showErr('nsc-rr-opens',  'Please enter the opening night.'); ok = false; }
-    else                   { hideErr('nsc-rr-opens'); }
-    if (!closes)           { showErr('nsc-rr-closes', 'Please enter the closing night.'); ok = false; }
-    else if (closes < opens) { showErr('nsc-rr-closes', 'Closing night must be after opening night.'); ok = false; }
-    else                   { hideErr('nsc-rr-closes'); }
-
-    if (ok) nscRrGo(3);
+    if (!state.showTitle) {
+      showEl('nsc-rr-show-error');
+      el('nsc-rr-show-error').textContent = 'Please select a show or add one using the link above.';
+      return;
+    }
+    hideEl('nsc-rr-show-error');
+    nscRrGo(3);
   };
 
   /* ── Step 3 validation ── */
@@ -436,21 +577,20 @@
   }
 
   function nscRrBuildReview() {
-    var types = Array.from(document.querySelectorAll('#nsc-rr-showtype-group input:checked'))
-      .map(function (c) { return c.parentElement.textContent.trim(); }).join(', ');
-    var opens  = val('nsc-rr-opens')  ? new Date(val('nsc-rr-opens')  + 'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) : '';
-    var closes = val('nsc-rr-closes') ? new Date(val('nsc-rr-closes') + 'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) : '';
-    var comps  = el('nsc-rr-comp-yes').checked
+    var typeStr = state.showTypes.map(function (t) { return t.charAt(0).toUpperCase() + t.slice(1).replace(/_/g,' '); }).join(', ');
+    var opens   = state.showOpens  ? new Date(state.showOpens  + 'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) : '';
+    var closes  = state.showCloses ? new Date(state.showCloses + 'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) : '';
+    var comps   = el('nsc-rr-comp-yes').checked
       ? (val('nsc-rr-comp-count') + ' comp ticket' + (val('nsc-rr-comp-count') === '1' ? '' : 's') + ' offered')
       : 'Not offering comps';
 
     rv('nsc-rv-company',  state.companyName);
     rv('nsc-rv-venue',    state.venueName);
-    rv('nsc-rv-title',    val('nsc-rr-title'));
-    rv('nsc-rv-author',   val('nsc-rr-author') || '—');
-    rv('nsc-rv-showtype', types);
-    rv('nsc-rv-dates',    opens && closes ? opens + ' – ' + closes : opens || closes);
-    rv('nsc-rv-showtimes', val('nsc-rr-showtimes') || '—');
+    rv('nsc-rv-title',    state.showTitle);
+    rv('nsc-rv-author',   state.showAuthor || '—');
+    rv('nsc-rv-showtype', typeStr || '—');
+    rv('nsc-rv-dates',    opens && closes ? opens + ' – ' + closes : opens || closes || '—');
+    rv('nsc-rv-showtimes', state.showShowtimes || '—');
     rv('nsc-rv-comps',    comps);
     rv('nsc-rv-contact',  val('nsc-rr-contact-name') + ' — ' + val('nsc-rr-contact-email'));
     rv('nsc-rv-notes',    val('nsc-rr-notes'), 'nsc-rv-notes-row');
@@ -469,20 +609,21 @@
       .map(function (c) { return c.value; });
 
     var payload = {
-      linkedCompanyId:  state.companyId,
-      linkedVenueId:    state.venueId,
-      title:            val('nsc-rr-title'),
-      author:           val('nsc-rr-author')       || null,
-      showType:         types,
-      runOpens:         val('nsc-rr-opens')         || null,
-      runCloses:        val('nsc-rr-closes')        || null,
-      showtimes:        val('nsc-rr-showtimes')     || null,
-      compTickets:      el('nsc-rr-comp-yes').checked,
-      compTicketCount:  val('nsc-rr-comp-count')    || null,
-      contactName:      val('nsc-rr-contact-name'),
-      contactEmail:     val('nsc-rr-contact-email'),
-      contactPhone:     val('nsc-rr-contact-phone') || null,
-      notes:            val('nsc-rr-notes')          || null,
+      linkedCompanyId:    state.companyId,
+      linkedVenueId:      state.venueId,
+      linkedProductionId: state.showId             || null,
+      title:              state.showTitle,
+      author:             state.showAuthor          || null,
+      showType:           state.showTypes,
+      runOpens:           state.showOpens           || null,
+      runCloses:          state.showCloses          || null,
+      showtimes:          state.showShowtimes        || null,
+      compTickets:        el('nsc-rr-comp-yes').checked,
+      compTicketCount:    val('nsc-rr-comp-count')  || null,
+      contactName:        val('nsc-rr-contact-name'),
+      contactEmail:       val('nsc-rr-contact-email'),
+      contactPhone:       val('nsc-rr-contact-phone') || null,
+      notes:              val('nsc-rr-notes')         || null,
     };
 
     fetch(RAILWAY_URL + '/webhook/submit-review-request', {

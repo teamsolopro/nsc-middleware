@@ -243,8 +243,9 @@ router.post('/submit-review-request', async (req, res) => {
   try {
     const d = req.body;
     const rr = new ReviewRequest({
-      linkedCompanyId: toId(d.linkedCompanyId),
-      linkedVenueId:   toId(d.linkedVenueId),
+      linkedCompanyId:    toId(d.linkedCompanyId),
+      linkedVenueId:      toId(d.linkedVenueId),
+      linkedProductionId: toId(d.linkedProductionId),
       show: {
         title:    d.title,
         author:   d.author   || undefined,

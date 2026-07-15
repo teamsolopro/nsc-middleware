@@ -2,8 +2,9 @@ const mongoose = require('mongoose');
 
 const reviewRequestSchema = new mongoose.Schema(
   {
-    linkedCompanyId: { type: mongoose.Schema.Types.ObjectId, ref: 'Company' },
-    linkedVenueId:   { type: mongoose.Schema.Types.ObjectId, ref: 'Venue' },
+    linkedCompanyId:    { type: mongoose.Schema.Types.ObjectId, ref: 'Company' },
+    linkedVenueId:      { type: mongoose.Schema.Types.ObjectId, ref: 'Venue' },
+    linkedProductionId: { type: mongoose.Schema.Types.ObjectId, ref: 'Production' },
 
     show: {
       title:    { type: String, required: true },
