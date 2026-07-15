@@ -75,26 +75,15 @@
 
     <div class="nsc-section-label">Comp Tickets</div>
     <p style="font-size:14px;color:#555;margin:0 0 16px">
-      Neighborhood Stage Carolinas requests up to 4 complimentary tickets for our reviewer and a guest.
+      Neighborhood Stage Carolinas requests up to 4 complimentary tickets for our reviewer and guests.
       Comps do not guarantee a positive review — our reviews are honest and independent.
     </p>
 
     <div class="nsc-field">
       <label style="flex-direction:row;align-items:center;gap:10px;font-size:15px;font-weight:400">
         <input type="checkbox" id="nsc-rr-comp-yes" style="width:18px;height:18px">
-        Yes, we are willing to offer comp tickets to the reviewer
+        Yes, we are willing to offer comp tickets to the reviewer and guests. (REQUIRED)
       </label>
-    </div>
-
-    <div class="nsc-field" id="nsc-rr-comp-count-field" style="display:none">
-      <label>How many comp tickets can you offer? <span class="req">*</span></label>
-      <select id="nsc-rr-comp-count">
-        <option value="">— Select —</option>
-        <option value="1">1 ticket</option>
-        <option value="2">2 tickets</option>
-        <option value="3">3 tickets</option>
-        <option value="4">4 tickets</option>
-      </select>
     </div>
 
     <div class="nsc-section-label" style="margin-top:24px">Contact Info <span style="font-weight:300;text-transform:none;color:#888;font-size:11px">— Internal use only, not displayed publicly</span></div>
@@ -538,11 +527,7 @@
     nscRrCloseModal('nsc-rr-show-modal');
   };
 
-  /* ── Comp ticket toggle ── */
-  el('nsc-rr-comp-yes').addEventListener('change', function () {
-    if (this.checked) { showEl('nsc-rr-comp-count-field'); }
-    else              { hideEl('nsc-rr-comp-count-field'); el('nsc-rr-comp-count').value = ''; }
-  });
+  /* ── Comp ticket toggle ── (no count field — up to 4 is the requirement) */
 
   /* ── Step 2 validation ── */
   window.nscRrValidateStep2 = function () {
@@ -558,9 +543,9 @@
   /* ── Step 3 validation ── */
   window.nscRrValidateStep3 = function () {
     var ok = true;
-    if (el('nsc-rr-comp-yes').checked && !val('nsc-rr-comp-count')) {
-      showErr('nsc-rr-comp-count', 'Please select the number of comp tickets.'); ok = false;
-    } else { hideErr('nsc-rr-comp-count'); }
+    if (!el('nsc-rr-comp-yes').checked) {
+      showErr('nsc-rr-comp-yes', 'Offering comp tickets is required to be considered for review.'); ok = false;
+    } else { hideErr('nsc-rr-comp-yes'); }
     if (!val('nsc-rr-contact-name'))  { showErr('nsc-rr-contact-name',  'Please enter your name.');  ok = false; }
     else                               { hideErr('nsc-rr-contact-name'); }
     if (!val('nsc-rr-contact-email')) { showErr('nsc-rr-contact-email', 'Please enter your email.'); ok = false; }
@@ -580,9 +565,7 @@
     var typeStr = state.showTypes.map(function (t) { return t.charAt(0).toUpperCase() + t.slice(1).replace(/_/g,' '); }).join(', ');
     var opens   = state.showOpens  ? new Date(state.showOpens  + 'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) : '';
     var closes  = state.showCloses ? new Date(state.showCloses + 'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) : '';
-    var comps   = el('nsc-rr-comp-yes').checked
-      ? (val('nsc-rr-comp-count') + ' comp ticket' + (val('nsc-rr-comp-count') === '1' ? '' : 's') + ' offered')
-      : 'Not offering comps';
+    var comps = el('nsc-rr-comp-yes').checked ? 'Up to 4 comp tickets offered' : 'Not offering comps';
 
     rv('nsc-rv-company',  state.companyName);
     rv('nsc-rv-venue',    state.venueName);
@@ -619,7 +602,6 @@
       runCloses:          state.showCloses          || null,
       showtimes:          state.showShowtimes        || null,
       compTickets:        el('nsc-rr-comp-yes').checked,
-      compTicketCount:    val('nsc-rr-comp-count')  || null,
       contactName:        val('nsc-rr-contact-name'),
       contactEmail:       val('nsc-rr-contact-email'),
       contactPhone:       val('nsc-rr-contact-phone') || null,
