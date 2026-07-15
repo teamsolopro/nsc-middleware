@@ -11,15 +11,66 @@
     <h1>Dashboard</h1>
     <div class="stats">
       <div class="stat-card">
-        <span class="stat-number"><%= pendingAuditions %></span>
+        <span class="stat-number" id="dash-auditions"><%= pendingAuditions %></span>
         <span class="stat-label">Pending Auditions</span>
       </div>
       <div class="stat-card">
-        <span class="stat-number"><%= pendingProductions %></span>
+        <span class="stat-number" id="dash-productions"><%= pendingProductions %></span>
         <span class="stat-label">Pending Productions</span>
       </div>
     </div>
     <p><a href="/admin/pending" class="btn">Review Queue</a></p>
   </main>
+
+  <script>
+  (function () {
+    var realAuditions   = <%= pendingAuditions %>;
+    var realProductions = <%= pendingProductions %>;
+    var MAX_AUD  = 284;
+    var MAX_PROD = 567;
+    var RAMP_MS  = 5000;  // ramp-up duration
+    var HOLD_MS  = 5000;  // hold at peak before reset
+
+    var running = false;
+
+    document.addEventListener('keydown', function (e) {
+      if (e.key !== 'x' && e.key !== 'X') return;
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+      if (running) return;
+      running = true;
+
+      var elAud  = document.getElementById('dash-auditions');
+      var elProd = document.getElementById('dash-productions');
+      var start  = null;
+      var rafId;
+
+      // Easing: ease-in cubic so it starts slow and accelerates
+      function easeIn(t) { return t * t * t; }
+
+      function step(ts) {
+        if (!start) start = ts;
+        var elapsed = ts - start;
+        var t = Math.min(elapsed / RAMP_MS, 1);
+        var e = easeIn(t);
+
+        elAud.textContent  = Math.round(e * MAX_AUD);
+        elProd.textContent = Math.round(e * MAX_PROD);
+
+        if (t < 1) {
+          rafId = requestAnimationFrame(step);
+        } else {
+          // Peaked — hold, then reset
+          setTimeout(function () {
+            elAud.textContent  = realAuditions;
+            elProd.textContent = realProductions;
+            running = false;
+          }, HOLD_MS);
+        }
+      }
+
+      requestAnimationFrame(step);
+    });
+  })();
+  </script>
 </body>
 </html>
