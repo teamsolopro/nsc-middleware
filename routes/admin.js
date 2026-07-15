@@ -8,6 +8,7 @@ const Audition = require('../models/Audition');
 const Production = require('../models/Production');
 const Company = require('../models/Company');
 const Venue = require('../models/Venue');
+const ReviewRequest = require('../models/ReviewRequest');
 const { geocodeAddress } = require('../lib/geocode');
 
 const logoUpload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 2 * 1024 * 1024 } });
@@ -414,6 +415,40 @@ router.post('/auditions/:id/status', requireAuth, async (req, res) => {
 router.post('/auditions/:id/delete', requireAuth, async (req, res) => {
   await Audition.findByIdAndDelete(req.params.id);
   res.redirect('/admin/auditions');
+});
+
+// Review Requests
+router.get('/review-requests', requireAuth, async (req, res) => {
+  const requests = await ReviewRequest.find()
+    .populate('linkedCompanyId', 'name')
+    .populate('linkedVenueId', 'name city')
+    .sort({ submittedAt: -1 });
+  res.render('admin/review-requests', { requests });
+});
+
+router.post('/review-requests/:id', requireAuth, async (req, res) => {
+  const d = req.body;
+  await ReviewRequest.findByIdAndUpdate(req.params.id, {
+    status:       d.status,
+    reviewerName: d.reviewerName || undefined,
+    adminNotes:   d.adminNotes   || undefined,
+    'show.title':     d.title,
+    'show.author':    d.author    || undefined,
+    'show.showtimes': d.showtimes || undefined,
+    'show.runDates.opens':  d.runOpens  ? new Date(d.runOpens)  : undefined,
+    'show.runDates.closes': d.runCloses ? new Date(d.runCloses) : undefined,
+    compTickets:     d.compTickets === 'on',
+    compTicketCount: d.compTicketCount ? parseInt(d.compTicketCount, 10) : undefined,
+    contactName:  d.contactName,
+    contactEmail: d.contactEmail,
+    contactPhone: d.contactPhone || undefined,
+  });
+  res.redirect('/admin/review-requests');
+});
+
+router.post('/review-requests/:id/delete', requireAuth, async (req, res) => {
+  await ReviewRequest.findByIdAndDelete(req.params.id);
+  res.redirect('/admin/review-requests');
 });
 
 module.exports = router;

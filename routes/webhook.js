@@ -12,6 +12,7 @@ router.options('*', cors());
 const Audition = require('../models/Audition');
 const Production = require('../models/Production');
 const Review = require('../models/Review');
+const ReviewRequest = require('../models/ReviewRequest');
 const Company = require('../models/Company');
 const Venue = require('../models/Venue');
 const stripPrice = v => v ? parseFloat(v.replace(/[^0-9.]/g, '')) || v : undefined;
@@ -234,6 +235,39 @@ router.post('/submit-review', validateWebhook, async (req, res) => {
   } catch (err) {
     console.error('[webhook] /submit-review error:', err);
     res.status(500).json({ error: 'Failed to save review submission' });
+  }
+});
+
+// ─── Review request submission ────────────────────────────
+router.post('/submit-review-request', async (req, res) => {
+  try {
+    const d = req.body;
+    const rr = new ReviewRequest({
+      linkedCompanyId: toId(d.linkedCompanyId),
+      linkedVenueId:   toId(d.linkedVenueId),
+      show: {
+        title:    d.title,
+        author:   d.author   || undefined,
+        showType: Array.isArray(d.showType) ? d.showType : (d.showType ? [d.showType] : []),
+        runDates: {
+          opens:  d.runOpens  ? new Date(d.runOpens)  : undefined,
+          closes: d.runCloses ? new Date(d.runCloses) : undefined,
+        },
+        showtimes: d.showtimes || undefined,
+      },
+      compTickets:     d.compTickets === true || d.compTickets === 'true',
+      compTicketCount: d.compTicketCount ? parseInt(d.compTicketCount, 10) : undefined,
+      contactName:  d.contactName,
+      contactEmail: d.contactEmail,
+      contactPhone: d.contactPhone || undefined,
+      notes:        d.notes        || undefined,
+    });
+    await rr.save();
+    console.log(`[webhook] New review request: ${rr._id} — ${d.title}`);
+    res.status(200).json({ received: true, id: rr._id });
+  } catch (err) {
+    console.error('[webhook] /submit-review-request error:', err);
+    res.status(500).json({ error: 'Failed to save review request' });
   }
 });
 

@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>NSC Admin — Review Requests</title>
+  <link rel="stylesheet" href="/public/admin.css">
+  <style>
+    .edit-form { padding: 16px 0; }
+    .edit-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .edit-grid label { display: flex; flex-direction: column; font-size: 12px; font-weight: 600; gap: 4px; }
+    .edit-grid label input, .edit-grid label select, .edit-grid label textarea { font-size: 14px; padding: 6px 8px; border: 1px solid #ccc; border-radius: 4px; }
+    .edit-grid .full { grid-column: span 2; }
+    .edit-grid h4 { grid-column: span 2; margin: 10px 0 2px; font-size: 13px; text-transform: uppercase; letter-spacing: .5px; color: #555; border-bottom: 1px solid #eee; padding-bottom: 4px; }
+    .btn-danger { background: #c00; color: #fff; border: none; }
+    .btn-danger:hover { background: #900; }
+    .status-badge { display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .4px; }
+    .status-pending          { background: #fff3cd; color: #856404; }
+    .status-reviewer_assigned { background: #cfe2ff; color: #084298; }
+    .status-review_pending   { background: #d1ecf1; color: #0c5460; }
+    .status-review_completed { background: #d4edda; color: #155724; }
+    .status-not_reviewed     { background: #f8d7da; color: #721c24; }
+  </style>
+</head>
+<body>
+  <%- include('_nav') %>
+  <main>
+    <h1>Review Requests</h1>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Show</th>
+          <th>Company</th>
+          <th>Run Dates</th>
+          <th>Comps</th>
+          <th>Submitted</th>
+          <th>Status</th>
+          <th>Reviewer</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% requests.forEach(function(r) { %>
+          <%
+            var opens  = r.show && r.show.runDates && r.show.runDates.opens  ? new Date(r.show.runDates.opens).toLocaleDateString()  : '—';
+            var closes = r.show && r.show.runDates && r.show.runDates.closes ? new Date(r.show.runDates.closes).toLocaleDateString() : '—';
+          %>
+          <tr>
+            <td><strong><%= r.show && r.show.title %></strong></td>
+            <td><%= r.linkedCompanyId && r.linkedCompanyId.name || '—' %></td>
+            <td style="white-space:nowrap"><%= opens %> &ndash; <%= closes %></td>
+            <td><%= r.compTickets ? (r.compTicketCount || '?') + ' tickets' : 'No' %></td>
+            <td style="white-space:nowrap"><%= new Date(r.submittedAt).toLocaleDateString() %></td>
+            <td><span class="status-badge status-<%= r.status %>"><%= r.status.replace(/_/g,' ') %></span></td>
+            <td><%= r.reviewerName || '—' %></td>
+            <td>
+              <button class="btn-sm" onclick="toggleEdit('<%= r._id %>')">Edit</button>
+              <form method="POST" action="/admin/review-requests/<%= r._id %>/delete" style="display:inline" onsubmit="return confirm('Delete this review request?')">
+                <button type="submit" class="btn-sm btn-danger">Delete</button>
+              </form>
+            </td>
+          </tr>
+          <tr id="edit-<%= r._id %>" style="display:none">
+            <td colspan="8">
+              <form method="POST" action="/admin/review-requests/<%= r._id %>" class="edit-form">
+                <div class="edit-grid">
+
+                  <h4>Status &amp; Assignment</h4>
+                  <label>Status
+                    <select name="status">
+                      <% ['pending','reviewer_assigned','review_pending','review_completed','not_reviewed'].forEach(function(s) { %>
+                        <option value="<%= s %>" <%- r.status === s ? 'selected' : '' %>><%= s.replace(/_/g,' ') %></option>
+                      <% }) %>
+                    </select>
+                  </label>
+                  <label>Reviewer Name <input type="text" name="reviewerName" value="<%= r.reviewerName || '' %>" placeholder="Free-form for now"></label>
+                  <label class="full">Admin Notes <textarea name="adminNotes" rows="2"><%= r.adminNotes || '' %></textarea></label>
+
+                  <h4>Show Info</h4>
+                  <label>Title <input type="text" name="title" value="<%= r.show && r.show.title %>" required></label>
+                  <label>Author <input type="text" name="author" value="<%= r.show && r.show.author || '' %>"></label>
+                  <label>Opening Night <input type="date" name="runOpens" value="<%= r.show && r.show.runDates && r.show.runDates.opens ? new Date(r.show.runDates.opens).toISOString().slice(0,10) : '' %>"></label>
+                  <label>Closing Night <input type="date" name="runCloses" value="<%= r.show && r.show.runDates && r.show.runDates.closes ? new Date(r.show.runDates.closes).toISOString().slice(0,10) : '' %>"></label>
+                  <label class="full">Showtimes <input type="text" name="showtimes" value="<%= r.show && r.show.showtimes || '' %>"></label>
+
+                  <h4>Comp Tickets</h4>
+                  <div class="full">
+                    <label style="flex-direction:row;gap:8px;font-size:14px;font-weight:normal">
+                      <input type="checkbox" name="compTickets" <%- r.compTickets ? 'checked' : '' %>> Willing to offer comp tickets
+                    </label>
+                  </div>
+                  <label>Number of Comp Tickets
+                    <select name="compTicketCount">
+                      <option value="">—</option>
+                      <% [1,2,3,4].forEach(function(n) { %>
+                        <option value="<%= n %>" <%- r.compTicketCount === n ? 'selected' : '' %>><%= n %></option>
+                      <% }) %>
+                    </select>
+                  </label>
+
+                  <h4>Contact</h4>
+                  <label>Contact Name <input type="text" name="contactName" value="<%= r.contactName || '' %>"></label>
+                  <label>Contact Email <input type="email" name="contactEmail" value="<%= r.contactEmail || '' %>"></label>
+                  <label>Contact Phone <input type="tel" name="contactPhone" value="<%= r.contactPhone || '' %>"></label>
+
+                </div>
+                <div style="margin-top:14px;display:flex;gap:8px">
+                  <button type="submit" class="btn">Save Changes</button>
+                  <button type="button" class="btn-sm" onclick="toggleEdit('<%= r._id %>')">Cancel</button>
+                </div>
+              </form>
+            </td>
+          </tr>
+        <% }) %>
+        <% if (requests.length === 0) { %>
+          <tr><td colspan="8" style="text-align:center;color:#999;padding:2rem">No review requests yet.</td></tr>
+        <% } %>
+      </tbody>
+    </table>
+  </main>
+
+  <script>
+    function toggleEdit(id) {
+      var row = document.getElementById('edit-' + id);
+      row.style.display = row.style.display === 'none' ? '' : 'none';
+    }
+  </script>
+</body>
+</html>
