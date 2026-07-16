@@ -58,6 +58,43 @@ router.post('/upload-image', upload.single('file'), async (req, res) => {
   }
 });
 
+// ─── Company logo upload (from public Add Company modal) ──
+router.post('/upload-logo', upload.single('file'), async (req, res) => {
+  try {
+    if (!req.file) return res.status(400).json({ error: 'No file provided' });
+
+    const { CDN_ACCOUNT_ID, CDN_ACCESS_KEY_ID, CDN_SECRET_ACCESS_KEY, CDN_BUCKET_NAME } = process.env;
+    if (!CDN_ACCOUNT_ID || !CDN_ACCESS_KEY_ID || !CDN_SECRET_ACCESS_KEY || !CDN_BUCKET_NAME) {
+      return res.status(500).json({ error: 'CDN not configured' });
+    }
+
+    const ext = req.file.originalname.split('.').pop().toLowerCase();
+    if (!['jpg', 'jpeg', 'png', 'webp', 'svg'].includes(ext)) {
+      return res.status(400).json({ error: 'Only JPG, PNG, WebP, and SVG files are allowed' });
+    }
+
+    const key = `media/logos/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+    const client = new S3Client({
+      region: 'auto',
+      endpoint: `https://${CDN_ACCOUNT_ID}.r2.cloudflarestorage.com`,
+      credentials: { accessKeyId: CDN_ACCESS_KEY_ID, secretAccessKey: CDN_SECRET_ACCESS_KEY },
+    });
+
+    await client.send(new PutObjectCommand({
+      Bucket: CDN_BUCKET_NAME,
+      Key: key,
+      Body: req.file.buffer,
+      ContentType: req.file.mimetype,
+    }));
+
+    const url = `https://cdn.neighborhoodstage.com/${key}`;
+    res.status(200).json({ url });
+  } catch (err) {
+    console.error('[webhook] /upload-logo error:', err);
+    res.status(500).json({ error: 'Upload failed' });
+  }
+});
+
 // ─── Show submission ───────────────────────────────────────
 router.post('/submit-show', async (req, res) => {
   try {
@@ -109,18 +146,32 @@ router.post('/submit-show', async (req, res) => {
 router.post('/submit-company', async (req, res) => {
   try {
     const d = req.body;
-    const slug = d.name
+    const base = d.name
       .toLowerCase()
       .replace(/[^a-z0-9]+/g, '-')
       .replace(/^-|-$/g, '');
 
+    let slug = base;
+    let counter = 1;
+    while (await Company.exists({ slug })) {
+      counter += 1;
+      slug = `${base}-${counter}`;
+    }
+
     const company = new Company({
       name:         d.name,
-      slug:         slug + '-' + Date.now(),
+      slug,
       city:         d.city         || undefined,
       state:        d.state        || undefined,
       region:       d.region       || undefined,
       website:      d.website      || undefined,
+      logoUrl:      d.logoUrl      || undefined,
+      socialLinks: {
+        facebook:  d.facebook  || undefined,
+        instagram: d.instagram || undefined,
+        twitter:   d.twitter   || undefined,
+        tiktok:    d.tiktok    || undefined,
+      },
       contactName:  d.contactName,
       contactEmail: d.contactEmail,
       contactPhone: d.contactPhone || undefined,

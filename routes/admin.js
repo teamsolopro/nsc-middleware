@@ -139,6 +139,7 @@ router.post('/companies/:id', requireAuth, async (req, res) => {
     'socialLinks.facebook':  d['socialLinks.facebook']  || undefined,
     'socialLinks.instagram': d['socialLinks.instagram'] || undefined,
     'socialLinks.twitter':   d['socialLinks.twitter']   || undefined,
+    'socialLinks.tiktok':    d['socialLinks.tiktok']    || undefined,
     verified: d.verified === 'on',
   });
   res.redirect('/admin/companies');

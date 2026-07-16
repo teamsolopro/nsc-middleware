@@ -27,6 +27,7 @@ const companySchema = new mongoose.Schema(
       facebook: String,
       instagram: String,
       twitter: String,
+      tiktok: String,
     },
     contactName: String,
     contactEmail: String,

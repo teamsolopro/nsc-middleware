@@ -197,82 +197,7 @@
   </div>
 </div>
 
-<!-- ── COMPANY MODAL ── -->
-<div class="nsc-modal-backdrop" id="nsc-rr-company-modal">
-  <div class="nsc-modal">
-    <button class="nsc-modal-close" onclick="nscRrCloseModal('nsc-rr-company-modal')">&times;</button>
-    <h2>Add New Company</h2>
-    <p class="nsc-modal-error" id="nsc-rr-company-modal-error"></p>
-    <div class="nsc-field"><label>Company Name <span class="req">*</span></label><input type="text" id="nsc-rr-mc-name" required></div>
-    <div class="nsc-field"><label>Website</label><input type="url" id="nsc-rr-mc-website" placeholder="https://..."></div>
-    <div class="nsc-field-row">
-      <div class="nsc-field"><label>City <span class="req">*</span></label><input type="text" id="nsc-rr-mc-city" required></div>
-      <div class="nsc-field">
-        <label>State <span class="req">*</span></label>
-        <select id="nsc-rr-mc-state" required>
-          <option value="">—</option>
-          <option value="NC">NC</option>
-          <option value="SC">SC</option>
-        </select>
-      </div>
-    </div>
-    <div class="nsc-field"><label>Contact Name <span class="req">*</span></label><input type="text" id="nsc-rr-mc-contact-name" required></div>
-    <div class="nsc-field"><label>Contact Email <span class="req">*</span></label><input type="email" id="nsc-rr-mc-contact-email" required></div>
-    <div class="nsc-field"><label>Contact Phone</label><input type="tel" id="nsc-rr-mc-contact-phone"></div>
-    <div class="nsc-btn-row" style="border:none;padding:0;margin-top:24px">
-      <button class="nsc-btn nsc-btn-ghost" onclick="nscRrCloseModal('nsc-rr-company-modal')">Cancel</button>
-      <button class="nsc-btn nsc-btn-primary" id="nsc-rr-company-save-btn" onclick="nscRrSaveCompany()">Save Company</button>
-    </div>
-  </div>
-</div>
-
-<!-- ── VENUE MODAL ── -->
-<div class="nsc-modal-backdrop" id="nsc-rr-venue-modal">
-  <div class="nsc-modal">
-    <button class="nsc-modal-close" onclick="nscRrCloseModal('nsc-rr-venue-modal')">&times;</button>
-    <h2>Add New Venue</h2>
-    <p class="nsc-modal-error" id="nsc-rr-venue-modal-error"></p>
-    <div class="nsc-field"><label>Venue Name <span class="req">*</span></label><input type="text" id="nsc-rr-mv-name" required></div>
-    <div class="nsc-field"><label>Address <span class="req">*</span></label><input type="text" id="nsc-rr-mv-address" required></div>
-    <div class="nsc-field-row">
-      <div class="nsc-field"><label>City <span class="req">*</span></label><input type="text" id="nsc-rr-mv-city" required></div>
-      <div class="nsc-field">
-        <label>State <span class="req">*</span></label>
-        <select id="nsc-rr-mv-state" required onchange="nscRrUpdateCounties(this.value)">
-          <option value="">—</option>
-          <option value="NC">NC</option>
-          <option value="SC">SC</option>
-        </select>
-      </div>
-    </div>
-    <div class="nsc-field">
-      <label>County <span class="req">*</span></label>
-      <select id="nsc-rr-mv-county" required disabled>
-        <option value="">— Select State First —</option>
-      </select>
-    </div>
-    <div class="nsc-field-row">
-      <div class="nsc-field"><label>Zip <span class="req">*</span></label><input type="text" id="nsc-rr-mv-zip" required></div>
-      <div class="nsc-field">
-        <label>Venue Type <span class="req">*</span></label>
-        <select id="nsc-rr-mv-type" required>
-          <option value="">—</option>
-          <option value="proscenium">Proscenium</option>
-          <option value="black_box">Black Box</option>
-          <option value="thrust">Thrust</option>
-          <option value="arena">Arena</option>
-          <option value="outdoor">Outdoor</option>
-          <option value="other">Other</option>
-        </select>
-      </div>
-    </div>
-    <div class="nsc-field"><label>Seating Capacity</label><input type="number" id="nsc-rr-mv-capacity" min="0"></div>
-    <div class="nsc-btn-row" style="border:none;padding:0;margin-top:24px">
-      <button class="nsc-btn nsc-btn-ghost" onclick="nscRrCloseModal('nsc-rr-venue-modal')">Cancel</button>
-      <button class="nsc-btn nsc-btn-primary" id="nsc-rr-venue-save-btn" onclick="nscRrSaveVenue()">Save Venue</button>
-    </div>
-  </div>
-</div>
+<script src="https://cdn.neighborhoodstage.com/assets/js/nsc-modals.js"></script>
 
 <script>
 (function () {
@@ -630,157 +555,45 @@
       });
   };
 
-  /* ── County lists ── */
-  var NC_COUNTIES = ['Alamance','Alexander','Alleghany','Anson','Ashe','Avery','Beaufort','Bertie','Bladen','Brunswick','Buncombe','Burke','Cabarrus','Caldwell','Camden','Carteret','Caswell','Catawba','Chatham','Cherokee','Chowan','Clay','Cleveland','Columbus','Craven','Cumberland','Currituck','Dare','Davidson','Davie','Duplin','Durham','Edgecombe','Forsyth','Franklin','Gaston','Gates','Graham','Granville','Greene','Guilford','Halifax','Harnett','Haywood','Henderson','Hertford','Hoke','Hyde','Iredell','Jackson','Johnston','Jones','Lee','Lenoir','Lincoln','Macon','Madison','Martin','McDowell','Mecklenburg','Mitchell','Montgomery','Moore','Nash','New Hanover','Northampton','Onslow','Orange','Pamlico','Pasquotank','Pender','Perquimans','Person','Pitt','Polk','Randolph','Richmond','Robeson','Rockingham','Rowan','Rutherford','Sampson','Scotland','Stanly','Stokes','Surry','Swain','Transylvania','Tyrrell','Union','Vance','Wake','Warren','Washington','Watauga','Wayne','Wilkes','Wilson','Yadkin','Yancey'];
-  var SC_COUNTIES = ['Abbeville','Aiken','Allendale','Anderson','Bamberg','Barnwell','Beaufort','Berkeley','Calhoun','Charleston','Cherokee','Chester','Chesterfield','Clarendon','Colleton','Darlington','Dillon','Dorchester','Edgefield','Fairfield','Florence','Georgetown','Greenville','Greenwood','Hampton','Horry','Jasper','Kershaw','Lancaster','Laurens','Lee','Lexington','Marion','Marlboro','McCormick','Newberry','Oconee','Orangeburg','Pickens','Richland','Saluda','Spartanburg','Sumter','Union','Williamsburg','York'];
-
-  window.nscRrUpdateCounties = function (stateVal) {
-    var sel = el('nsc-rr-mv-county');
-    sel.innerHTML = '<option value="">— Select County —</option>';
-    var list = stateVal === 'NC' ? NC_COUNTIES : stateVal === 'SC' ? SC_COUNTIES : [];
-    list.forEach(function (c) {
-      var opt = document.createElement('option');
-      opt.value = c; opt.textContent = c;
-      sel.appendChild(opt);
-    });
-    sel.disabled = list.length === 0;
-  };
-
-  /* ── Modal helpers ── */
-  window.nscRrCloseModal = function (id) {
-    el(id).style.display = 'none';
-    document.body.style.overflow = '';
-  };
-  function nscRrOpenModal(id) {
-    el(id).style.display = 'flex';
-    document.body.style.overflow = 'hidden';
-  }
-
+  /* ── Company / Venue modals (shared via nsc-modals.js) ── */
   el('nsc-rr-add-company-link').addEventListener('click', function (e) {
     e.preventDefault();
     if (this.classList.contains('disabled')) return;
-    el('nsc-rr-mc-name').value = '';
-    el('nsc-rr-mc-website').value = '';
-    el('nsc-rr-mc-city').value = '';
-    el('nsc-rr-mc-state').value = '';
-    el('nsc-rr-mc-contact-name').value = '';
-    el('nsc-rr-mc-contact-email').value = '';
-    el('nsc-rr-mc-contact-phone').value = '';
-    el('nsc-rr-company-modal-error').textContent = '';
-    nscRrOpenModal('nsc-rr-company-modal');
+    NscModals.openCompany({
+      railwayUrl: RAILWAY_URL,
+      onSave: function (co) {
+        var newCo = { _id: co.id, id: co.id, name: co.name, city: co.city, state: co.state, homeVenueIds: [] };
+        _allCompanies.push(newCo);
+        var pending = getPending(); pending.companies.push(newCo); savePending(pending);
+        var sel = el('nsc-rr-company');
+        var opt = document.createElement('option');
+        opt.value = co.id; opt.textContent = co.name + (co.city ? ' (' + co.city + ')' : '');
+        sel.appendChild(opt);
+        sel.value = co.id;
+        sel.dispatchEvent(new Event('change'));
+      },
+    });
   });
 
   el('nsc-rr-add-venue-link').addEventListener('click', function (e) {
     e.preventDefault();
     if (this.classList.contains('disabled')) return;
-    el('nsc-rr-mv-name').value = '';
-    el('nsc-rr-mv-address').value = '';
-    el('nsc-rr-mv-city').value = '';
-    el('nsc-rr-mv-state').value = '';
-    el('nsc-rr-mv-zip').value = '';
-    el('nsc-rr-mv-type').value = '';
-    el('nsc-rr-mv-capacity').value = '';
-    el('nsc-rr-mv-county').innerHTML = '<option value="">— Select State First —</option>';
-    el('nsc-rr-mv-county').disabled = true;
-    el('nsc-rr-venue-modal-error').textContent = '';
-    nscRrOpenModal('nsc-rr-venue-modal');
-  });
-
-  /* ── Save Company ── */
-  window.nscRrSaveCompany = function () {
-    var name         = val('nsc-rr-mc-name');
-    var city         = val('nsc-rr-mc-city');
-    var state_       = val('nsc-rr-mc-state');
-    var contactName  = val('nsc-rr-mc-contact-name');
-    var contactEmail = val('nsc-rr-mc-contact-email');
-    if (!name || !city || !state_ || !contactName || !contactEmail) {
-      el('nsc-rr-company-modal-error').textContent = 'Please fill in all required fields.';
-      return;
-    }
-    var saveBtn = el('nsc-rr-company-save-btn');
-    saveBtn.disabled = true;
-    saveBtn.textContent = 'Saving…';
-
-    fetch(RAILWAY_URL + '/webhook/submit-company', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name: name, city: city, state: state_, website: val('nsc-rr-mc-website') || null, contactName: contactName, contactEmail: contactEmail, contactPhone: val('nsc-rr-mc-contact-phone') || null }),
-    })
-      .then(function (r) { return r.json(); })
-      .then(function (data) {
-        if (!data.id) throw new Error('No ID returned');
-        var newCo = { _id: data.id, id: data.id, name: data.name || name, city: city, state: state_, homeVenueIds: [] };
-        _allCompanies.push(newCo);
-        var pending = getPending();
-        pending.companies.push(newCo);
-        savePending(pending);
-
-        var sel = el('nsc-rr-company');
-        var opt = document.createElement('option');
-        opt.value = data.id; opt.textContent = name + (city ? ' (' + city + ')' : '');
-        sel.appendChild(opt);
-        sel.value = data.id;
-        sel.dispatchEvent(new Event('change'));
-
-        nscRrCloseModal('nsc-rr-company-modal');
-        saveBtn.disabled = false;
-        saveBtn.textContent = 'Save Company';
-      })
-      .catch(function () {
-        el('nsc-rr-company-modal-error').textContent = 'Unable to save company. Please try again.';
-        saveBtn.disabled = false;
-        saveBtn.textContent = 'Save Company';
-      });
-  };
-
-  /* ── Save Venue ── */
-  window.nscRrSaveVenue = function () {
-    var name    = val('nsc-rr-mv-name');
-    var address = val('nsc-rr-mv-address');
-    var city    = val('nsc-rr-mv-city');
-    var state_  = val('nsc-rr-mv-state');
-    var county  = val('nsc-rr-mv-county');
-    var zip     = val('nsc-rr-mv-zip');
-    var type    = val('nsc-rr-mv-type');
-    if (!name || !address || !city || !state_ || !county || !zip || !type) {
-      el('nsc-rr-venue-modal-error').textContent = 'Please fill in all required fields.';
-      return;
-    }
-    var saveBtn = el('nsc-rr-venue-save-btn');
-    saveBtn.disabled = true;
-    saveBtn.textContent = 'Saving…';
-
-    fetch(RAILWAY_URL + '/webhook/submit-venue', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name: name, address: address, city: city, state: state_, county: county, zip: zip, type: type, capacity: val('nsc-rr-mv-capacity') ? parseInt(val('nsc-rr-mv-capacity'), 10) : null, linkedCompanyId: state.companyId }),
-    })
-      .then(function (r) { return r.json(); })
-      .then(function (data) {
-        if (!data.id) throw new Error('No ID returned');
-        var newVenue = { _id: data.id, id: data.id, name: data.name || name, city: city, state: state_, linkedCompanyId: state.companyId };
+    NscModals.openVenue({
+      railwayUrl: RAILWAY_URL,
+      companyId: state.companyId,
+      onSave: function (venue) {
+        var newVenue = { _id: venue.id, id: venue.id, name: venue.name, city: venue.city, state: venue.state, linkedCompanyId: venue.linkedCompanyId };
         _allVenues.push(newVenue);
-        var pending = getPending();
-        pending.venues.push(newVenue);
-        savePending(pending);
-
+        var pending = getPending(); pending.venues.push(newVenue); savePending(pending);
         var sel = el('nsc-rr-venue');
         var opt = document.createElement('option');
-        opt.value = data.id; opt.textContent = name + (city ? ' — ' + city : '');
+        opt.value = venue.id; opt.textContent = venue.name + (venue.city ? ' — ' + venue.city : '');
         sel.appendChild(opt);
-        sel.value = data.id;
+        sel.value = venue.id;
         sel.dispatchEvent(new Event('change'));
-
-        nscRrCloseModal('nsc-rr-venue-modal');
-        saveBtn.disabled = false;
-        saveBtn.textContent = 'Save Venue';
-      })
-      .catch(function () {
-        el('nsc-rr-venue-modal-error').textContent = 'Unable to save venue. Please try again.';
-        saveBtn.disabled = false;
-        saveBtn.textContent = 'Save Venue';
-      });
-  };
+      },
+    });
+  });
 
   /* ── Init ── */
   loadData();
