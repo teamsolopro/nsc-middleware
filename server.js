@@ -3,6 +3,7 @@ const express = require('express');
 const session = require('express-session');
 const mongoose = require('mongoose');
 const path = require('path');
+const cron = require('node-cron');
 
 const cors = require('cors');
 const { MongoStore } = require('connect-mongo');
@@ -56,6 +57,25 @@ mongoose
   .then(() => {
     console.log('Connected to MongoDB');
     app.listen(PORT, () => console.log(`nsc-middleware listening on port ${PORT}`));
+
+    const { runExport } = require('./jobs/exportJson');
+    const { runBackup } = require('./jobs/backup');
+
+    // CDN export — every day at 3:00 AM ET
+    cron.schedule('0 3 * * *', async () => {
+      console.log('[cron] Running scheduled CDN export...');
+      try { await runExport(); console.log('[cron] CDN export done.'); }
+      catch (err) { console.error('[cron] CDN export failed:', err); }
+    }, { timezone: 'America/New_York' });
+
+    // MongoDB backup — every day at 2:00 AM ET
+    cron.schedule('0 2 * * *', async () => {
+      console.log('[cron] Running scheduled backup...');
+      try { await runBackup(); console.log('[cron] Backup done.'); }
+      catch (err) { console.error('[cron] Backup failed:', err); }
+    }, { timezone: 'America/New_York' });
+
+    console.log('[cron] Scheduled: backup at 2am ET, CDN export at 3am ET');
   })
   .catch((err) => {
     console.error('MongoDB connection error:', err);
