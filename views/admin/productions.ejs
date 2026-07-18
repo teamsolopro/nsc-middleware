@@ -17,6 +17,13 @@
     .poster-upload-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 4px; }
     .poster-upload-row input[type=file] { font-size: 13px; }
     .poster-upload-status { font-size: 12px; color: #666; }
+    th.sortable { cursor: pointer; user-select: none; white-space: nowrap; }
+    th.sortable:hover { background: #e8eef4; }
+    .sort-icon { display: inline-block; margin-left: 4px; opacity: .4; font-style: normal; font-size: 11px; }
+    th.sort-asc .sort-icon, th.sort-desc .sort-icon { opacity: 1; }
+    th.sort-asc .sort-icon::after  { content: ' ▲'; }
+    th.sort-desc .sort-icon::after { content: ' ▼'; }
+    th.sortable:not(.sort-asc):not(.sort-desc) .sort-icon::after { content: ' ⇅'; }
     .checkbox-row { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 4px; }
     .checkbox-row label { flex-direction: row; gap: 4px; font-size: 14px; font-weight: normal; text-transform: capitalize; }
   </style>
@@ -104,12 +111,12 @@
     <table>
       <thead>
         <tr>
-          <th>Title</th>
-          <th>Company</th>
-          <th>Venue</th>
-          <th>Opens</th>
-          <th>Closes</th>
-          <th>Status</th>
+          <th class="sortable" data-col="0">Title<i class="sort-icon"></i></th>
+          <th class="sortable" data-col="1">Company<i class="sort-icon"></i></th>
+          <th class="sortable" data-col="2">Venue<i class="sort-icon"></i></th>
+          <th class="sortable" data-col="3">Opens<i class="sort-icon"></i></th>
+          <th class="sortable" data-col="4">Closes<i class="sort-icon"></i></th>
+          <th class="sortable" data-col="5">Status<i class="sort-icon"></i></th>
           <th>Actions</th>
         </tr>
       </thead>
@@ -246,6 +253,71 @@
       var row = document.getElementById('edit-' + id);
       row.style.display = row.style.display === 'none' ? '' : 'none';
     }
+
+    (function () {
+      var tbody = document.querySelector('table tbody');
+      var lastCol = -1;
+      var asc = true;
+
+      function cellText(row, col) {
+        // For edit rows (colspan), skip — they travel with their data row
+        var cells = row.querySelectorAll('td');
+        if (!cells[col]) return '';
+        return cells[col].textContent.trim();
+      }
+
+      function sortTable(col) {
+        if (col === lastCol) {
+          asc = !asc;
+        } else {
+          asc = true;
+          lastCol = col;
+        }
+
+        // Collect data rows and their paired edit rows
+        var allRows = Array.from(tbody.querySelectorAll('tr'));
+        var pairs = [];
+        for (var i = 0; i < allRows.length; i++) {
+          var r = allRows[i];
+          if (r.id && r.id.startsWith('edit-')) continue; // skip, paired below
+          var editRow = allRows[i + 1];
+          pairs.push({ data: r, edit: (editRow && editRow.id && editRow.id.startsWith('edit-')) ? editRow : null });
+        }
+
+        pairs.sort(function (a, b) {
+          var av = cellText(a.data, col);
+          var bv = cellText(b.data, col);
+          // Dates: cols 3 and 4
+          if (col === 3 || col === 4) {
+            var ad = av === '—' ? 0 : new Date(av).getTime();
+            var bd = bv === '—' ? 0 : new Date(bv).getTime();
+            return asc ? ad - bd : bd - ad;
+          }
+          return asc ? av.localeCompare(bv) : bv.localeCompare(av);
+        });
+
+        // Re-append pairs in sorted order
+        pairs.forEach(function (p) {
+          tbody.appendChild(p.data);
+          if (p.edit) tbody.appendChild(p.edit);
+        });
+
+        // Update header indicators
+        document.querySelectorAll('th.sortable').forEach(function (th) {
+          th.classList.remove('sort-asc', 'sort-desc');
+          if (parseInt(th.dataset.col) === col) {
+            th.classList.add(asc ? 'sort-asc' : 'sort-desc');
+          }
+        });
+      }
+
+      document.querySelectorAll('th.sortable').forEach(function (th) {
+        th.addEventListener('click', function () {
+          sortTable(parseInt(this.dataset.col));
+        });
+      });
+    })();
+
 
     function uploadPoster(fileInput, urlId, previewId, statusId) {
       var file = fileInput.files[0];
