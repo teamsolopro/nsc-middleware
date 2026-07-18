@@ -64,22 +64,22 @@
 
         <h3>Company &amp; Venue</h3>
         <label>Company
-          <select name="linkedCompanyId">
+          <select name="linkedCompanyId" id="add-company-sel" onchange="filterVenues(this, 'add-venue-sel')">
             <option value="">— Not linked —</option>
             <% companies.forEach(c => { %><option value="<%= c._id %>"><%= c.name %></option><% }) %>
           </select>
         </label>
         <label>Venue
-          <select name="linkedVenueId">
+          <select name="linkedVenueId" id="add-venue-sel">
             <option value="">— Not linked —</option>
-            <% venues.forEach(v => { %><option value="<%= v._id %>"><%= v.name %></option><% }) %>
+            <% venues.forEach(v => { %><option value="<%= v._id %>" data-venue-id="<%= v._id %>"><%= v.name %></option><% }) %>
           </select>
         </label>
 
         <h3>Run Dates &amp; Showtimes</h3>
         <label>Opening Night <input type="date" name="opens"></label>
         <label>Closing Night <input type="date" name="closes"></label>
-        <label>Showtimes <input type="text" name="showtimes" placeholder="e.g. Fri & Sat 7:30pm, Sun 2:00pm"></label>
+        <label class="full">Showtimes <textarea name="showtimes" rows="3" placeholder="e.g. Fri & Sat 7:30pm&#10;Sun 2:00pm&#10;Matinees available"></textarea></label>
 
         <h3>Tickets</h3>
         <label>General Admission ($) <input type="number" name="ticketGeneral" step="0.01" min="0"></label>
@@ -192,7 +192,7 @@
 
                   <h4>Company &amp; Venue</h4>
                   <label>Company
-                    <select name="linkedCompanyId">
+                    <select name="linkedCompanyId" id="edit-company-<%= p._id %>" onchange="filterVenues(this, 'edit-venue-<%= p._id %>')">
                       <option value="">— Not linked —</option>
                       <% companies.forEach(c => { %>
                         <option value="<%= c._id %>" <%- String(p.linkedCompanyId && p.linkedCompanyId._id) === String(c._id) ? 'selected' : '' %>><%= c.name %></option>
@@ -200,10 +200,10 @@
                     </select>
                   </label>
                   <label>Venue
-                    <select name="linkedVenueId">
+                    <select name="linkedVenueId" id="edit-venue-<%= p._id %>">
                       <option value="">— Not linked —</option>
                       <% venues.forEach(v => { %>
-                        <option value="<%= v._id %>" <%- String(p.linkedVenueId && p.linkedVenueId._id) === String(v._id) ? 'selected' : '' %>><%= v.name %></option>
+                        <option value="<%= v._id %>" data-venue-id="<%= v._id %>" <%- String(p.linkedVenueId && p.linkedVenueId._id) === String(v._id) ? 'selected' : '' %>><%= v.name %></option>
                       <% }) %>
                     </select>
                   </label>
@@ -211,7 +211,7 @@
                   <h4>Run Dates &amp; Showtimes</h4>
                   <label>Opening Night <input type="date" name="opens" value="<%= p.dates && p.dates.opens ? new Date(p.dates.opens).toISOString().slice(0,10) : '' %>"></label>
                   <label>Closing Night <input type="date" name="closes" value="<%= p.dates && p.dates.closes ? new Date(p.dates.closes).toISOString().slice(0,10) : '' %>"></label>
-                  <label class="full">Showtimes <input type="text" name="showtimes" value="<%= p.showtimes %>"></label>
+                  <label class="full">Showtimes <textarea name="showtimes" rows="3"><%= p.showtimes %></textarea></label>
 
                   <h4>Tickets</h4>
                   <label>General Admission ($) <input type="number" name="ticketGeneral" step="0.01" min="0" value="<%= p.tickets && p.tickets.generalAdmission %>"></label>
@@ -252,6 +252,33 @@
   </main>
 
   <script>
+    // Company → homeVenueIds map (from server)
+    var COMPANY_VENUES = <%- JSON.stringify(
+      companies.reduce(function(acc, c) {
+        acc[String(c._id)] = (c.homeVenueIds || []).map(String);
+        return acc;
+      }, {})
+    ) %>;
+
+    function filterVenues(companySel, venueSelId) {
+      var companyId = companySel.value;
+      var venueSel  = document.getElementById(venueSelId);
+      var current   = venueSel.value;
+      var venueIds  = companyId ? (COMPANY_VENUES[companyId] || []) : null;
+
+      Array.from(venueSel.options).forEach(function (opt) {
+        if (!opt.value) return; // keep the "— Not linked —" option
+        var show = !venueIds || venueIds.indexOf(opt.dataset.venueId) !== -1;
+        opt.hidden   = !show;
+        opt.disabled = !show;
+      });
+
+      // If current selection is now hidden, reset to blank
+      if (current && venueSel.options[venueSel.selectedIndex] && venueSel.options[venueSel.selectedIndex].hidden) {
+        venueSel.value = '';
+      }
+    }
+
     function toggleEdit(id) {
       var row = document.getElementById('edit-' + id);
       row.style.display = row.style.display === 'none' ? '' : 'none';
