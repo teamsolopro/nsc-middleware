@@ -140,6 +140,9 @@
                   <button type="submit" class="btn btn-sm">Unpublish</button>
                 <% } %>
               </form>
+              <form method="POST" action="/admin/productions/<%= p._id %>/clone" style="display:inline" onsubmit="return confirm('Clone this production?')">
+                <button type="submit" class="btn btn-sm">Clone</button>
+              </form>
               <form method="POST" action="/admin/productions/<%= p._id %>/delete" style="display:inline" onsubmit="return confirm('Delete this production?')">
                 <button type="submit" class="btn btn-danger btn-sm">Delete</button>
               </form>

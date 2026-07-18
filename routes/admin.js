@@ -241,6 +241,16 @@ router.post('/productions/:id', requireAuth, async (req, res) => {
   res.redirect('/admin/productions');
 });
 
+router.post('/productions/:id/clone', requireAuth, async (req, res) => {
+  const src = await Production.findById(req.params.id).lean();
+  if (!src) return res.redirect('/admin/productions');
+  const { _id, createdAt, updatedAt, __v, ...rest } = src;
+  const clone = { ...rest, status: 'pending' };
+  if (clone.show) clone.show = { ...clone.show, title: (clone.show.title || 'Untitled') + ' (copy)' };
+  await Production.create(clone);
+  res.redirect('/admin/productions');
+});
+
 router.post('/productions/:id/status', requireAuth, async (req, res) => {
   await Production.findByIdAndUpdate(req.params.id, { status: req.body.status });
   res.redirect('/admin/productions');
