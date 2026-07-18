@@ -14,6 +14,9 @@
     .btn-danger { background: #c00; color: #fff; border: none; }
     .btn-danger:hover { background: #900; }
     .poster-thumb { max-height: 80px; border-radius: 4px; display: block; margin-top: 6px; }
+    .poster-upload-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 4px; }
+    .poster-upload-row input[type=file] { font-size: 13px; }
+    .poster-upload-status { font-size: 12px; color: #666; }
     .checkbox-row { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 4px; }
     .checkbox-row label { flex-direction: row; gap: 4px; font-size: 14px; font-weight: normal; text-transform: capitalize; }
   </style>
@@ -42,7 +45,14 @@
         </label>
         <label>Runtime <input type="text" name="runtime" placeholder="e.g. 2 hrs 15 min"></label>
         <label>Content Warnings <input type="text" name="contentWarnings"></label>
-        <label>Poster Image URL <input type="url" name="posterImageUrl"></label>
+        <label>Poster Image
+          <div class="poster-upload-row">
+            <input type="file" id="add-poster-file" accept="image/*" onchange="uploadPoster(this, 'add-poster-url', 'add-poster-preview', 'add-poster-status')">
+            <span class="poster-upload-status" id="add-poster-status"></span>
+          </div>
+          <img id="add-poster-preview" class="poster-thumb" style="display:none" alt="Poster preview">
+          <input type="hidden" name="posterImageUrl" id="add-poster-url">
+        </label>
         <label>Description <textarea name="description" rows="3"></textarea></label>
 
         <h3>Company &amp; Venue</h3>
@@ -157,11 +167,17 @@
                   <label class="full">Description <textarea name="description" rows="4"><%= p.show && p.show.description %></textarea></label>
 
                   <label class="full">
-                    Poster Image URL
-                    <input type="url" name="posterImageUrl" value="<%= p.show && p.show.posterImageUrl %>" id="poster-url-<%= p._id %>">
+                    Poster Image
+                    <div class="poster-upload-row">
+                      <input type="file" accept="image/*" onchange="uploadPoster(this, 'poster-url-<%= p._id %>', 'poster-preview-<%= p._id %>', 'poster-status-<%= p._id %>')">
+                      <span class="poster-upload-status" id="poster-status-<%= p._id %>"></span>
+                    </div>
                     <% if (p.show && p.show.posterImageUrl) { %>
-                      <img src="<%= p.show.posterImageUrl %>" class="poster-thumb" alt="Poster">
+                      <img src="<%= p.show.posterImageUrl %>" class="poster-thumb" id="poster-preview-<%= p._id %>" alt="Poster">
+                    <% } else { %>
+                      <img class="poster-thumb" id="poster-preview-<%= p._id %>" style="display:none" alt="Poster preview">
                     <% } %>
+                    <input type="hidden" name="posterImageUrl" id="poster-url-<%= p._id %>" value="<%= p.show && p.show.posterImageUrl || '' %>">
                   </label>
 
                   <h4>Company &amp; Venue</h4>
@@ -229,6 +245,29 @@
     function toggleEdit(id) {
       var row = document.getElementById('edit-' + id);
       row.style.display = row.style.display === 'none' ? '' : 'none';
+    }
+
+    function uploadPoster(fileInput, urlId, previewId, statusId) {
+      var file = fileInput.files[0];
+      if (!file) return;
+      var statusEl  = document.getElementById(statusId);
+      var previewEl = document.getElementById(previewId);
+      var urlEl     = document.getElementById(urlId);
+      statusEl.textContent = 'Uploading…';
+      var fd = new FormData();
+      fd.append('file', file);
+      fetch('/webhook/upload-image', { method: 'POST', body: fd })
+        .then(function (r) { return r.json(); })
+        .then(function (data) {
+          if (!data.url) throw new Error('No URL');
+          urlEl.value = data.url;
+          statusEl.textContent = 'Uploaded ✓';
+          previewEl.src = data.url;
+          previewEl.style.display = 'block';
+        })
+        .catch(function () {
+          statusEl.textContent = 'Upload failed — try again.';
+        });
     }
   </script>
 </body>
