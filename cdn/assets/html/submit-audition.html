@@ -156,6 +156,12 @@
           <input type="checkbox" id="nsc-aud-req-reading"> Cold Reading Required
         </label>
         <label class="nsc-check-item" style="border-radius:6px;width:100%">
+          <input type="checkbox" id="nsc-aud-req-prep-reading"> Prepared Reading Required
+        </label>
+        <label class="nsc-check-item" style="border-radius:6px;width:100%">
+          <input type="checkbox" id="nsc-aud-req-dance"> Dance Required
+        </label>
+        <label class="nsc-check-item" style="border-radius:6px;width:100%">
           <input type="checkbox" id="nsc-aud-req-headshot"> Headshot Required
         </label>
         <label class="nsc-check-item" style="border-radius:6px;width:100%">
@@ -214,6 +220,8 @@
       <div class="nsc-review-row"><span class="rl">Gender</span><span class="rv" id="nsc-aud-rv-gender">—</span></div>
       <div class="nsc-review-row"><span class="rl">Prepared Song</span><span class="rv" id="nsc-aud-rv-song">—</span></div>
       <div class="nsc-review-row"><span class="rl">Cold Reading</span><span class="rv" id="nsc-aud-rv-reading">—</span></div>
+      <div class="nsc-review-row"><span class="rl">Prepared Reading</span><span class="rv" id="nsc-aud-rv-prep-reading">—</span></div>
+      <div class="nsc-review-row"><span class="rl">Dance</span><span class="rv" id="nsc-aud-rv-dance">—</span></div>
       <div class="nsc-review-row"><span class="rl">Headshot</span><span class="rv" id="nsc-aud-rv-headshot">—</span></div>
       <div class="nsc-review-row"><span class="rl">Resume</span><span class="rv" id="nsc-aud-rv-resume">—</span></div>
       <div class="nsc-review-row" id="nsc-aud-rv-callbacks-row"><span class="rl">Callbacks</span><span class="rv" id="nsc-aud-rv-callbacks">—</span></div>
@@ -460,7 +468,9 @@
 
     var songReq = el('nsc-aud-req-song').checked;
     rv('nsc-aud-rv-song', songReq ? 'Yes' + (val('nsc-aud-song-length') ? ' (' + val('nsc-aud-song-length') + ')' : '') : 'No');
-    rv('nsc-aud-rv-reading',  el('nsc-aud-req-reading').checked  ? 'Yes' : 'No');
+    rv('nsc-aud-rv-reading',      el('nsc-aud-req-reading').checked      ? 'Yes' : 'No');
+    rv('nsc-aud-rv-prep-reading', el('nsc-aud-req-prep-reading').checked ? 'Yes' : 'No');
+    rv('nsc-aud-rv-dance',        el('nsc-aud-req-dance').checked        ? 'Yes' : 'No');
     rv('nsc-aud-rv-headshot', el('nsc-aud-req-headshot').checked ? 'Yes' : 'No');
     rv('nsc-aud-rv-resume',   el('nsc-aud-req-resume').checked   ? 'Yes' : 'No');
     rv('nsc-aud-rv-callbacks', val('nsc-aud-callbacks') || '—');
@@ -500,6 +510,8 @@
       preparedSong:     el('nsc-aud-req-song').checked,
       songLength:       val('nsc-aud-song-length')     || null,
       coldReading:      el('nsc-aud-req-reading').checked,
+      preparedReading:  el('nsc-aud-req-prep-reading').checked,
+      dance:            el('nsc-aud-req-dance').checked,
       headshot:         el('nsc-aud-req-headshot').checked,
       resume:           el('nsc-aud-req-resume').checked,
       callbacks:        val('nsc-aud-callbacks')       || null,

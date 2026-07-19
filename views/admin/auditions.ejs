@@ -54,7 +54,7 @@
 
         <h3>Company, Venue &amp; Linked Production</h3>
         <label>Company
-          <select name="linkedCompanyId">
+          <select name="linkedCompanyId" id="add-aud-company" onchange="filterVenues(this, 'add-aud-venue')">
             <option value="">— Not linked —</option>
             <% companies.forEach(c => { %>
               <option value="<%= c._id %>"><%= c.name %></option>
@@ -62,10 +62,10 @@
           </select>
         </label>
         <label>Venue
-          <select name="linkedVenueId">
+          <select name="linkedVenueId" id="add-aud-venue">
             <option value="">— Not linked —</option>
             <% venues.forEach(v => { %>
-              <option value="<%= v._id %>"><%= v.name %></option>
+              <option value="<%= v._id %>" data-venue-id="<%= v._id %>"><%= v.name %></option>
             <% }) %>
           </select>
         </label>
@@ -124,6 +124,8 @@
         <div style="display:flex;flex-wrap:wrap;gap:12px;margin-bottom:12px">
           <label style="flex-direction:row;gap:4px;font-size:14px"><input type="checkbox" name="preparedSong"> Prepared Song</label>
           <label style="flex-direction:row;gap:4px;font-size:14px"><input type="checkbox" name="coldReading"> Cold Reading</label>
+          <label style="flex-direction:row;gap:4px;font-size:14px"><input type="checkbox" name="preparedReading"> Prepared Reading</label>
+          <label style="flex-direction:row;gap:4px;font-size:14px"><input type="checkbox" name="dance"> Dance</label>
           <label style="flex-direction:row;gap:4px;font-size:14px"><input type="checkbox" name="headshot"> Headshot</label>
           <label style="flex-direction:row;gap:4px;font-size:14px"><input type="checkbox" name="resume"> Resume</label>
         </div>
@@ -213,7 +215,7 @@
 
                   <h4>Company, Venue &amp; Linked Production</h4>
                   <label>Company
-                    <select name="linkedCompanyId">
+                    <select name="linkedCompanyId" id="edit-aud-company-<%= a._id %>" onchange="filterVenues(this, 'edit-aud-venue-<%= a._id %>')">
                       <option value="">— Not linked —</option>
                       <% companies.forEach(function(c) { %>
                         <option value="<%= c._id %>" <%- String(a.linkedCompanyId && a.linkedCompanyId._id) === String(c._id) ? 'selected' : '' %>><%= c.name %></option>
@@ -221,10 +223,10 @@
                     </select>
                   </label>
                   <label>Venue
-                    <select name="linkedVenueId">
+                    <select name="linkedVenueId" id="edit-aud-venue-<%= a._id %>">
                       <option value="">— Not linked —</option>
                       <% venues.forEach(function(v) { %>
-                        <option value="<%= v._id %>" <%- String(a.linkedVenueId && a.linkedVenueId._id) === String(v._id) ? 'selected' : '' %>><%= v.name %></option>
+                        <option value="<%= v._id %>" data-venue-id="<%= v._id %>" <%- String(a.linkedVenueId && a.linkedVenueId._id) === String(v._id) ? 'selected' : '' %>><%= v.name %></option>
                       <% }) %>
                     </select>
                   </label>
@@ -279,6 +281,8 @@
                     <div class="checkbox-row">
                       <label><input type="checkbox" name="preparedSong" <%- a.requirements && a.requirements.preparedSong ? 'checked' : '' %>> Prepared Song</label>
                       <label><input type="checkbox" name="coldReading" <%- a.requirements && a.requirements.coldReading ? 'checked' : '' %>> Cold Reading</label>
+                      <label><input type="checkbox" name="preparedReading" <%- a.requirements && a.requirements.preparedReading ? 'checked' : '' %>> Prepared Reading</label>
+                      <label><input type="checkbox" name="dance" <%- a.requirements && a.requirements.dance ? 'checked' : '' %>> Dance</label>
                       <label><input type="checkbox" name="headshot" <%- a.requirements && a.requirements.headshot ? 'checked' : '' %>> Headshot</label>
                       <label><input type="checkbox" name="resume" <%- a.requirements && a.requirements.resume ? 'checked' : '' %>> Resume</label>
                     </div>
@@ -320,6 +324,27 @@
     function toggleEdit(id) {
       var row = document.getElementById('edit-' + id);
       row.style.display = row.style.display === 'none' ? '' : 'none';
+    }
+
+    var COMPANY_VENUES = <%- JSON.stringify(companies.reduce(function(acc, c) {
+      acc[String(c._id)] = (c.homeVenueIds || []).map(String);
+      return acc;
+    }, {})) %>;
+
+    function filterVenues(companySel, venueSelId) {
+      var companyId = companySel.value;
+      var venueSel = document.getElementById(venueSelId);
+      var allowed = companyId ? (COMPANY_VENUES[companyId] || []) : null;
+      var current = venueSel.value;
+      var stillVisible = false;
+      Array.from(venueSel.options).forEach(function(opt) {
+        if (!opt.value) return;
+        var hidden = allowed && allowed.indexOf(opt.getAttribute('data-venue-id')) === -1;
+        opt.hidden = hidden;
+        opt.disabled = hidden;
+        if (!hidden && opt.value === current) stillVisible = true;
+      });
+      if (!stillVisible) venueSel.value = '';
     }
   </script>
 </body>

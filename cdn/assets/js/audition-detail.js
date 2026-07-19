@@ -11,6 +11,10 @@
       .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
   }
 
+  function nl2br(str) {
+    return esc(str).replace(/\n/g, '<br>');
+  }
+
   function formatDate(dateStr) {
     if (!dateStr) return '';
     var d = new Date(dateStr);
@@ -119,13 +123,15 @@
         '<ul class="nsc-req-list">',
           checkItem('Prepared Song', req.preparedSong),
           checkItem('Cold Reading', req.coldReading),
+          checkItem('Prepared Reading', req.preparedReading),
+          checkItem('Dance', req.dance),
           checkItem('Headshot', req.headshot),
           checkItem('Resume', req.resume),
         '</ul>',
         req.songLength      ? '<p class="nsc-detail-meta"><strong>Song length:</strong> ' + esc(req.songLength) + '</p>' : '',
         req.callbacks       ? '<p class="nsc-detail-meta"><strong>Callbacks:</strong> ' + esc(req.callbacks) + '</p>' : '',
         req.conflictDates   ? '<p class="nsc-detail-meta"><strong>Conflict dates:</strong> ' + esc(req.conflictDates) + '</p>' : '',
-        req.additionalNotes ? '<p class="nsc-detail-meta"><strong>Additional notes:</strong> ' + esc(req.additionalNotes) + '</p>' : '',
+        req.additionalNotes ? '<p class="nsc-detail-meta"><strong>Additional notes:</strong> ' + nl2br(req.additionalNotes) + '</p>' : '',
       '</div>',
     ].join('');
 
@@ -153,7 +159,7 @@
             company  ? '<p class="nsc-detail-byline">Presented by ' + esc(company) + '</p>' : '',
           '</div>',
 
-          desc ? '<div class="nsc-detail-section"><p class="nsc-detail-desc">' + esc(desc) + '</p></div>' : '',
+          desc ? '<div class="nsc-detail-section"><p class="nsc-detail-desc">' + nl2br(desc) + '</p></div>' : '',
 
           '<div class="nsc-detail-section">',
             '<h2 class="nsc-detail-subheading">Audition Dates</h2>',

@@ -73,6 +73,8 @@ const auditionSchema = new mongoose.Schema(
       preparedSong: Boolean,
       songLength: String,
       coldReading: Boolean,
+      preparedReading: Boolean,
+      dance: Boolean,
       headshot: Boolean,
       resume: Boolean,
       callbacks: String,
