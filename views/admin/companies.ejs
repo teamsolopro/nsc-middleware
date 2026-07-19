@@ -152,6 +152,20 @@
                   <label>TikTok <input type="url" name="socialLinks.tiktok" value="<%= c.socialLinks && c.socialLinks.tiktok %>"></label>
 
                   <div class="full">
+                    <h4 style="margin:12px 0 6px;font-size:13px;text-transform:uppercase;letter-spacing:.5px;color:#555;border-bottom:1px solid #eee;padding-bottom:4px">Venues</h4>
+                    <div style="display:flex;flex-wrap:wrap;gap:8px 20px">
+                      <% venues.forEach(function(v) {
+                           var checked = (c.homeVenueIds || []).some(function(id){ return String(id) === String(v._id); });
+                      %>
+                        <label style="flex-direction:row;gap:6px;font-size:13px;font-weight:normal;align-items:center">
+                          <input type="checkbox" name="homeVenueIds" value="<%= v._id %>" <%- checked ? 'checked' : '' %>>
+                          <%= v.name %><% if (v.city) { %> <span style="color:#888;font-size:11px">(<%= v.city %>)</span><% } %>
+                        </label>
+                      <% }); %>
+                    </div>
+                  </div>
+
+                  <div class="full">
                     <label style="flex-direction:row;gap:8px;font-size:14px;font-weight:normal">
                       <input type="checkbox" name="verified" <%- c.verified ? 'checked' : '' %>> Verified (shows in public dropdowns)
                     </label>

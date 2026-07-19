@@ -100,8 +100,11 @@ router.post('/reject/:type/:id', requireAuth, async (req, res) => {
 
 // Companies
 router.get('/companies', requireAuth, async (req, res) => {
-  const companies = await Company.find().sort({ name: 1 });
-  res.render('admin/companies', { companies });
+  const [companies, venues] = await Promise.all([
+    Company.find().sort({ name: 1 }),
+    Venue.find().sort({ name: 1 }),
+  ]);
+  res.render('admin/companies', { companies, venues });
 });
 
 router.post('/companies', requireAuth, async (req, res) => {
@@ -132,6 +135,9 @@ router.post('/companies', requireAuth, async (req, res) => {
 
 router.post('/companies/:id', requireAuth, async (req, res) => {
   const d = req.body;
+  const homeVenueIds = d.homeVenueIds
+    ? (Array.isArray(d.homeVenueIds) ? d.homeVenueIds : [d.homeVenueIds])
+    : [];
   await Company.findByIdAndUpdate(req.params.id, {
     name: d.name, slug: d.slug, city: d.city, state: d.state, region: d.region,
     website: d.website, logoUrl: d.logoUrl || undefined, bio: d.bio,
@@ -140,6 +146,7 @@ router.post('/companies/:id', requireAuth, async (req, res) => {
     'socialLinks.instagram': d['socialLinks.instagram'] || undefined,
     'socialLinks.twitter':   d['socialLinks.twitter']   || undefined,
     'socialLinks.tiktok':    d['socialLinks.tiktok']    || undefined,
+    homeVenueIds,
     verified: d.verified === 'on',
   });
   res.redirect('/admin/companies');
