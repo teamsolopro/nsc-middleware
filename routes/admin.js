@@ -178,7 +178,7 @@ router.post('/productions', requireAuth, async (req, res) => {
         author:         d.author,
         composer:       d.composer,
         description:    d.description,
-        type:           d.showType,
+        showType:       Array.isArray(d.showType) ? d.showType : (d.showType ? [d.showType] : []),
         familyRating:   d.familyRating,
         posterImageUrl: d.posterImageUrl,
         runtime:        d.runtime,
@@ -327,7 +327,7 @@ router.post('/auditions', requireAuth, async (req, res) => {
         author:      d.author,
         composer:    d.composer,
         description: d.description,
-        type:        d.showType,
+        showType:    Array.isArray(d.showType) ? d.showType : (d.showType ? [d.showType] : []),
         showDates: {
           opens:  d.showOpens  || undefined,
           closes: d.showCloses || undefined,

@@ -33,9 +33,13 @@
     var showType = (p.show && p.show.type) ? p.show.type.charAt(0).toUpperCase() + p.show.type.slice(1) : 'Production';
     var rating   = (p.show && p.show.familyRating) ? ' · ' + p.show.familyRating : '';
     var title    = esc((p.show && p.show.title) || 'Untitled');
+    var poster   = (p.show && p.show.posterImageUrl)
+      ? '<img class="nsc-card-poster" src="' + esc(p.show.posterImageUrl) + '" alt="' + title + ' poster" loading="lazy">'
+      : '';
 
     return [
       '<div class="nsc-card">',
+        poster,
         '<span class="nsc-card-label">' + esc(showType) + esc(rating) + '</span>',
         '<h3 class="nsc-card-title">' + title + '</h3>',
         company   ? '<p class="nsc-card-company">' + esc(company) + '</p>' : '',

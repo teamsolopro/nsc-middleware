@@ -34,17 +34,14 @@
         <label>Title <input type="text" name="title" required></label>
         <label>Author <input type="text" name="author"></label>
         <label>Composer <input type="text" name="composer"></label>
-        <label>Show Type
-          <select name="showType">
-            <option value="">—</option>
-            <option value="musical">Musical</option>
-            <option value="play">Play</option>
-            <option value="improv">Improv</option>
-            <option value="opera">Opera</option>
-            <option value="dance">Dance</option>
-            <option value="other">Other</option>
-          </select>
-        </label>
+        <div class="full">
+          <label style="font-size:12px;font-weight:600;margin-bottom:4px;display:block">Show Type</label>
+          <div class="checkbox-row">
+            <% ['musical','play','drama','comedy','one_act','revue','opera','operetta','fringe','immersive','improv','childrens','other'].forEach(function(t) { %>
+              <label><input type="checkbox" name="showType" value="<%= t %>"> <%= t.replace('_',' ') %></label>
+            <% }) %>
+          </div>
+        </div>
         <label>Description <textarea name="description" rows="2"></textarea></label>
         <label>Union Status
           <select name="unionType">
