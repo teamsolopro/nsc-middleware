@@ -90,11 +90,11 @@
         <label class="full">Showtimes <textarea name="showtimes" rows="3" placeholder="e.g. Fri & Sat 7:30pm&#10;Sun 2:00pm&#10;Matinees available"></textarea></label>
 
         <h3>Tickets</h3>
-        <label>General Admission ($) <input type="number" name="ticketGeneral" step="0.01" min="0"></label>
-        <label>Adult ($) <input type="number" name="ticketAdult" step="0.01" min="0"></label>
-        <label>Senior ($) <input type="number" name="ticketSenior" step="0.01" min="0"></label>
-        <label>Student ($) <input type="number" name="ticketStudent" step="0.01" min="0"></label>
-        <label>Child ($) <input type="number" name="ticketChild" step="0.01" min="0"></label>
+        <label>General Admission <input type="text" name="ticketGeneral" placeholder="e.g. $20 or $15–$25"></label>
+        <label>Adult <input type="text" name="ticketAdult" placeholder="e.g. $22"></label>
+        <label>Senior <input type="text" name="ticketSenior" placeholder="e.g. $18"></label>
+        <label>Student <input type="text" name="ticketStudent" placeholder="e.g. $12"></label>
+        <label>Child <input type="text" name="ticketChild" placeholder="e.g. Free under 5"></label>
         <label>Booking URL <input type="url" name="ticketUrl"></label>
         <label>Box Office Phone <input type="tel" name="boxOfficePhone"></label>
         <label>Ticket Notes <input type="text" name="ticketNotes"></label>
@@ -222,11 +222,11 @@
                   <label class="full">Showtimes <textarea name="showtimes" rows="3"><%= p.showtimes %></textarea></label>
 
                   <h4>Tickets</h4>
-                  <label>General Admission ($) <input type="number" name="ticketGeneral" step="0.01" min="0" value="<%= p.tickets && p.tickets.generalAdmission %>"></label>
-                  <label>Adult ($) <input type="number" name="ticketAdult" step="0.01" min="0" value="<%= p.tickets && p.tickets.adult %>"></label>
-                  <label>Senior ($) <input type="number" name="ticketSenior" step="0.01" min="0" value="<%= p.tickets && p.tickets.senior %>"></label>
-                  <label>Student ($) <input type="number" name="ticketStudent" step="0.01" min="0" value="<%= p.tickets && p.tickets.student %>"></label>
-                  <label>Child ($) <input type="number" name="ticketChild" step="0.01" min="0" value="<%= p.tickets && p.tickets.child %>"></label>
+                  <label>General Admission <input type="text" name="ticketGeneral" placeholder="e.g. $20 or $15–$25" value="<%= p.tickets && p.tickets.generalAdmission %>"></label>
+                  <label>Adult <input type="text" name="ticketAdult" placeholder="e.g. $22" value="<%= p.tickets && p.tickets.adult %>"></label>
+                  <label>Senior <input type="text" name="ticketSenior" placeholder="e.g. $18" value="<%= p.tickets && p.tickets.senior %>"></label>
+                  <label>Student <input type="text" name="ticketStudent" placeholder="e.g. $12" value="<%= p.tickets && p.tickets.student %>"></label>
+                  <label>Child <input type="text" name="ticketChild" placeholder="e.g. Free under 5" value="<%= p.tickets && p.tickets.child %>"></label>
                   <label class="full">Booking URL <input type="url" name="ticketUrl" value="<%= p.tickets && p.tickets.bookingUrl %>"></label>
                   <label>Box Office Phone <input type="tel" name="boxOfficePhone" value="<%= p.tickets && p.tickets.boxOfficePhone %>"></label>
                   <label class="full">Ticket Notes <input type="text" name="ticketNotes" value="<%= p.tickets && p.tickets.notes %>"></label>
