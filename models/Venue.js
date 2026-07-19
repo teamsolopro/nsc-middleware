@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const REGIONS = require('../lib/regions');
 
 const venueSchema = new mongoose.Schema(
   {
@@ -8,26 +9,7 @@ const venueSchema = new mongoose.Schema(
     state: { type: String, enum: ['NC', 'SC'] },
     zip: String,
     county: String,
-    region: {
-      type: String,
-      enum: [
-        'Charlotte metro',
-        'Triad',
-        'Triangle',
-        'Wilmington / Cape Fear',
-        'Asheville / Western NC',
-        'Lowcountry',
-        'Upstate SC',
-        'Eastern NC',
-        'Sandhills',
-        'Piedmont',
-        'Outer Banks',
-        'Midlands',
-        'Pee Dee',
-        'Other NC',
-        'Other SC',
-      ],
-    },
+    region: { type: String, enum: REGIONS },
     parkingNotes: String,
     accessibilityNotes: String,
     mapUrl: String,

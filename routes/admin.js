@@ -8,6 +8,7 @@ const Audition = require('../models/Audition');
 const Production = require('../models/Production');
 const Company = require('../models/Company');
 const Venue = require('../models/Venue');
+const REGIONS = require('../lib/regions');
 const ReviewRequest = require('../models/ReviewRequest');
 const { geocodeAddress } = require('../lib/geocode');
 
@@ -104,7 +105,7 @@ router.get('/companies', requireAuth, async (req, res) => {
     Company.find().sort({ name: 1 }),
     Venue.find().sort({ name: 1 }),
   ]);
-  res.render('admin/companies', { companies, venues });
+  res.render('admin/companies', { companies, venues, regions: REGIONS });
 });
 
 router.post('/companies', requireAuth, async (req, res) => {
@@ -271,7 +272,7 @@ router.post('/productions/:id/delete', requireAuth, async (req, res) => {
 // Venues
 router.get('/venues', requireAuth, async (req, res) => {
   const venues = await Venue.find().sort({ name: 1 });
-  res.render('admin/venues', { venues });
+  res.render('admin/venues', { venues, regions: REGIONS });
 });
 
 router.post('/venues', requireAuth, async (req, res) => {

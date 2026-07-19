@@ -176,21 +176,7 @@
         <label>Region
           <select name="region">
             <option value="">—</option>
-            <option>Charlotte metro</option>
-            <option>Triad</option>
-            <option>Triangle</option>
-            <option>Wilmington / Cape Fear</option>
-            <option>Asheville / Western NC</option>
-            <option>Lowcountry</option>
-            <option>Upstate SC</option>
-            <option>Eastern NC</option>
-            <option>Sandhills</option>
-            <option>Piedmont</option>
-            <option>Outer Banks</option>
-            <option>Midlands</option>
-            <option>Pee Dee</option>
-            <option>Other NC</option>
-            <option>Other SC</option>
+            <% regions.forEach(r => { %><option><%= r %></option><% }) %>
           </select>
         </label>
         <label>Map URL <input type="url" name="mapUrl"></label>

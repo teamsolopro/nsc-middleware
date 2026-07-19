@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const REGIONS = require('../lib/regions');
 
 const companySchema = new mongoose.Schema(
   {
@@ -6,26 +7,7 @@ const companySchema = new mongoose.Schema(
     slug: { type: String, required: true, unique: true },
     city: String,
     state: { type: String, enum: ['NC', 'SC'] },
-    region: {
-      type: String,
-      enum: [
-        'Charlotte metro',
-        'Triad',
-        'Triangle',
-        'Wilmington / Cape Fear',
-        'Asheville / Western NC',
-        'Lowcountry',
-        'Upstate SC',
-        'Eastern NC',
-        'Sandhills',
-        'Piedmont',
-        'Outer Banks',
-        'Midlands',
-        'Pee Dee',
-        'Other NC',
-        'Other SC',
-      ],
-    },
+    region: { type: String, enum: REGIONS },
     website: String,
     logoUrl: String,
     bio: String,

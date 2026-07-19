@@ -40,21 +40,7 @@
         <label>Region
           <select name="region">
             <option value="">—</option>
-            <option>Charlotte metro</option>
-            <option>Triad</option>
-            <option>Triangle</option>
-            <option>Wilmington / Cape Fear</option>
-            <option>Asheville / Western NC</option>
-            <option>Lowcountry</option>
-            <option>Upstate SC</option>
-            <option>Eastern NC</option>
-            <option>Sandhills</option>
-            <option>Piedmont</option>
-            <option>Outer Banks</option>
-            <option>Midlands</option>
-            <option>Pee Dee</option>
-            <option>Other NC</option>
-            <option>Other SC</option>
+            <% regions.forEach(r => { %><option><%= r %></option><% }) %>
           </select>
         </label>
         <label>Website <input type="url" name="website"></label>
@@ -123,7 +109,7 @@
                   <label>Region
                     <select name="region">
                       <option value="">—</option>
-                      <% ['Charlotte metro','Triad','Triangle','Wilmington / Cape Fear','Asheville / Western NC','Lowcountry','Upstate SC','Eastern NC','Sandhills','Piedmont','Outer Banks','Midlands','Pee Dee','Other NC','Other SC'].forEach(r => { %>
+                      <% regions.forEach(r => { %>
                         <option <%- c.region === r ? 'selected' : '' %>><%= r %></option>
                       <% }) %>
                     </select>
