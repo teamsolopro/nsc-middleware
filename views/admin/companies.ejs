@@ -47,6 +47,12 @@
             <option>Asheville / Western NC</option>
             <option>Lowcountry</option>
             <option>Upstate SC</option>
+            <option>Eastern NC</option>
+            <option>Sandhills</option>
+            <option>Piedmont</option>
+            <option>Outer Banks</option>
+            <option>Midlands</option>
+            <option>Pee Dee</option>
             <option>Other NC</option>
             <option>Other SC</option>
           </select>
@@ -117,7 +123,7 @@
                   <label>Region
                     <select name="region">
                       <option value="">—</option>
-                      <% ['Charlotte metro','Triad','Triangle','Wilmington / Cape Fear','Asheville / Western NC','Lowcountry','Upstate SC','Other NC','Other SC'].forEach(r => { %>
+                      <% ['Charlotte metro','Triad','Triangle','Wilmington / Cape Fear','Asheville / Western NC','Lowcountry','Upstate SC','Eastern NC','Sandhills','Piedmont','Outer Banks','Midlands','Pee Dee','Other NC','Other SC'].forEach(r => { %>
                         <option <%- c.region === r ? 'selected' : '' %>><%= r %></option>
                       <% }) %>
                     </select>
