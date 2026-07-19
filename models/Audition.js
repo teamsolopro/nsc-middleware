@@ -26,7 +26,7 @@ const auditionSchema = new mongoose.Schema(
       },
       showType: [{
         type: String,
-        enum: ['musical', 'play', 'drama', 'comedy', 'one_act', 'revue', 'opera', 'operetta', 'fringe', 'immersive', 'improv', 'childrens', 'other'],
+        enum: ['musical', 'play', 'drama', 'comedy', 'one_act', 'revue', 'opera', 'operetta', 'fringe', 'immersive', 'improv', 'reading', 'childrens', 'other'],
       }],
       showDates: {
         opens: Date,

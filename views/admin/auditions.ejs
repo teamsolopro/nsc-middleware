@@ -37,7 +37,7 @@
         <div class="full">
           <label style="font-size:12px;font-weight:600;margin-bottom:4px;display:block">Show Type</label>
           <div class="checkbox-row">
-            <% ['musical','play','drama','comedy','one_act','revue','opera','operetta','fringe','immersive','improv','childrens','other'].forEach(function(t) { %>
+            <% ['musical','play','drama','comedy','one_act','revue','opera','operetta','fringe','immersive','improv','reading','childrens','other'].forEach(function(t) { %>
               <label><input type="checkbox" name="showType" value="<%= t %>"> <%= t.replace('_',' ') %></label>
             <% }) %>
           </div>
@@ -196,7 +196,7 @@
                   <div class="full">
                     <label style="font-size:12px;font-weight:600;margin-bottom:4px;display:block">Show Type</label>
                     <div class="checkbox-row">
-                      <% ['musical','play','drama','comedy','one_act','revue','opera','operetta','fringe','immersive','improv','childrens','other'].forEach(function(t) { %>
+                      <% ['musical','play','drama','comedy','one_act','revue','opera','operetta','fringe','immersive','improv','reading','childrens','other'].forEach(function(t) { %>
                         <label><input type="checkbox" name="showType" value="<%= t %>" <%- a.show && a.show.showType && a.show.showType.indexOf(t) > -1 ? 'checked' : '' %>> <%= t.replace('_',' ') %></label>
                       <% }) %>
                     </div>

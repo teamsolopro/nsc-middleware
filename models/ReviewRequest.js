@@ -9,7 +9,7 @@ const reviewRequestSchema = new mongoose.Schema(
     show: {
       title:    { type: String, required: true },
       author:   String,
-      showType: [{ type: String, enum: ['musical','play','drama','comedy','one_act','revue','opera','operetta','fringe','immersive','improv','childrens','other'] }],
+      showType: [{ type: String, enum: ['musical','play','drama','comedy','one_act','revue','opera','operetta','fringe','immersive','improv','reading','childrens','other'] }],
       runDates: { opens: Date, closes: Date },
       showtimes: String,
     },
