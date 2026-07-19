@@ -54,7 +54,7 @@
 
         <h3>Company, Venue &amp; Linked Production</h3>
         <label>Company
-          <select name="linkedCompanyId" id="add-aud-company" onchange="filterVenues(this, 'add-aud-venue')">
+          <select name="linkedCompanyId" id="add-aud-company" onchange="filterVenues(this, 'add-aud-venue'); filterProductions(this, 'add-aud-production')">
             <option value="">— Not linked —</option>
             <% companies.forEach(c => { %>
               <option value="<%= c._id %>"><%= c.name %></option>
@@ -70,10 +70,10 @@
           </select>
         </label>
         <label>Linked Production (optional)
-          <select name="linkedProductionId">
+          <select name="linkedProductionId" id="add-aud-production">
             <option value="">— None —</option>
             <% productions.forEach(p => { %>
-              <option value="<%= p._id %>"><%= p.show && p.show.title %></option>
+              <option value="<%= p._id %>" data-company-id="<%= p.linkedCompanyId %>"><%= p.show && p.show.title %></option>
             <% }) %>
           </select>
         </label>
@@ -215,7 +215,7 @@
 
                   <h4>Company, Venue &amp; Linked Production</h4>
                   <label>Company
-                    <select name="linkedCompanyId" id="edit-aud-company-<%= a._id %>" onchange="filterVenues(this, 'edit-aud-venue-<%= a._id %>')">
+                    <select name="linkedCompanyId" id="edit-aud-company-<%= a._id %>" onchange="filterVenues(this, 'edit-aud-venue-<%= a._id %>'); filterProductions(this, 'edit-aud-production-<%= a._id %>')">
                       <option value="">— Not linked —</option>
                       <% companies.forEach(function(c) { %>
                         <option value="<%= c._id %>" <%- String(a.linkedCompanyId && a.linkedCompanyId._id) === String(c._id) ? 'selected' : '' %>><%= c.name %></option>
@@ -231,10 +231,10 @@
                     </select>
                   </label>
                   <label class="full">Linked Production
-                    <select name="linkedProductionId">
+                    <select name="linkedProductionId" id="edit-aud-production-<%= a._id %>">
                       <option value="">— None —</option>
                       <% productions.forEach(function(p) { %>
-                        <option value="<%= p._id %>" <%- String(a.linkedProductionId) === String(p._id) ? 'selected' : '' %>><%= p.show && p.show.title %></option>
+                        <option value="<%= p._id %>" data-company-id="<%= p.linkedCompanyId %>" <%- String(a.linkedProductionId) === String(p._id) ? 'selected' : '' %>><%= p.show && p.show.title %></option>
                       <% }) %>
                     </select>
                   </label>
@@ -345,6 +345,21 @@
         if (!hidden && opt.value === current) stillVisible = true;
       });
       if (!stillVisible) venueSel.value = '';
+    }
+
+    function filterProductions(companySel, prodSelId) {
+      var companyId = companySel.value;
+      var prodSel = document.getElementById(prodSelId);
+      var current = prodSel.value;
+      var stillVisible = false;
+      Array.from(prodSel.options).forEach(function(opt) {
+        if (!opt.value) return;
+        var hidden = companyId && opt.getAttribute('data-company-id') !== companyId;
+        opt.hidden = hidden;
+        opt.disabled = hidden;
+        if (!hidden && opt.value === current) stillVisible = true;
+      });
+      if (!stillVisible) prodSel.value = '';
     }
   </script>
 </body>
