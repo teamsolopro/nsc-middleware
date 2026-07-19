@@ -3,7 +3,7 @@
 
   var CDN = 'https://cdn.neighborhoodstage.com/data/auditions.json';
   var GRID_ID = 'nsc-auditions-grid';
-  var MAX = 3;
+  var MAX = 5;
 
   function formatDate(dateStr) {
     if (!dateStr) return '';
