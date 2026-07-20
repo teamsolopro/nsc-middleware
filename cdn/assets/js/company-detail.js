@@ -156,6 +156,8 @@
       social.facebook  ? '<a class="nsc-co-social" href="' + esc(social.facebook)  + '" target="_blank" rel="noopener">Facebook</a>'  : '',
       social.instagram ? '<a class="nsc-co-social" href="' + esc(social.instagram) + '" target="_blank" rel="noopener">Instagram</a>' : '',
       social.twitter   ? '<a class="nsc-co-social" href="' + esc(social.twitter)   + '" target="_blank" rel="noopener">Twitter/X</a>' : '',
+      social.tiktok    ? '<a class="nsc-co-social" href="' + esc(social.tiktok)    + '" target="_blank" rel="noopener">TikTok</a>'    : '',
+      social.youtube   ? '<a class="nsc-co-social" href="' + esc(social.youtube)   + '" target="_blank" rel="noopener">YouTube</a>'   : '',
     ].filter(Boolean).join('');
 
     return '<div class="nsc-co-detail">' +

@@ -16,6 +16,7 @@ const companySchema = new mongoose.Schema(
       instagram: String,
       twitter: String,
       tiktok: String,
+      youtube: String,
     },
     contactName: String,
     contactEmail: String,

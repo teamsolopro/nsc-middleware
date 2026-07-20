@@ -86,6 +86,7 @@
       '    <div class="nsc-field"><label>Instagram</label><input type="url" id="nscm-mc-instagram" placeholder="https://instagram.com/..."></div>',
       '    <div class="nsc-field"><label>Twitter / X</label><input type="url" id="nscm-mc-twitter" placeholder="https://x.com/..."></div>',
       '    <div class="nsc-field"><label>TikTok</label><input type="url" id="nscm-mc-tiktok" placeholder="https://tiktok.com/@..."></div>',
+      '    <div class="nsc-field"><label>YouTube</label><input type="url" id="nscm-mc-youtube" placeholder="https://youtube.com/@..."></div>',
       '    <div class="nsc-field"><label>Contact Name <span class="req">*</span></label><input type="text" id="nscm-mc-contact-name"></div>',
       '    <div class="nsc-field"><label>Contact Email <span class="req">*</span></label><input type="email" id="nscm-mc-contact-email"></div>',
       '    <div class="nsc-field"><label>Contact Phone</label><input type="tel" id="nscm-mc-contact-phone"></div>',
@@ -172,7 +173,7 @@
 
   function resetCompanyForm() {
     ['nscm-mc-name','nscm-mc-website','nscm-mc-city','nscm-mc-state','nscm-mc-region',
-     'nscm-mc-facebook','nscm-mc-instagram','nscm-mc-twitter','nscm-mc-tiktok',
+     'nscm-mc-facebook','nscm-mc-instagram','nscm-mc-twitter','nscm-mc-tiktok','nscm-mc-youtube',
      'nscm-mc-contact-name','nscm-mc-contact-email','nscm-mc-contact-phone']
       .forEach(function (id) { var e = g(id); if (e) e.value = ''; });
     var logoFile = g('nscm-mc-logo-file'); if (logoFile) logoFile.value = '';
@@ -265,6 +266,7 @@
           instagram:    v('nscm-mc-instagram')       || null,
           twitter:      v('nscm-mc-twitter')         || null,
           tiktok:       v('nscm-mc-tiktok')          || null,
+          youtube:      v('nscm-mc-youtube')         || null,
           contactName:  contactName,
           contactEmail: contactEmail,
           contactPhone: v('nscm-mc-contact-phone')   || null,

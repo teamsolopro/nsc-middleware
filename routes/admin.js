@@ -147,6 +147,7 @@ router.post('/companies/:id', requireAuth, async (req, res) => {
     'socialLinks.instagram': d['socialLinks.instagram'] || undefined,
     'socialLinks.twitter':   d['socialLinks.twitter']   || undefined,
     'socialLinks.tiktok':    d['socialLinks.tiktok']    || undefined,
+    'socialLinks.youtube':   d['socialLinks.youtube']   || undefined,
     homeVenueIds,
     verified: d.verified === 'on',
   });
