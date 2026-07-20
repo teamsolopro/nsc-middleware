@@ -11,6 +11,10 @@
       .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
   }
 
+  function nl2br(str) {
+    return esc(str).replace(/\n/g, '<br>');
+  }
+
   function formatDate(dateStr) {
     if (!dateStr) return '';
     var d = new Date(dateStr);
@@ -143,7 +147,7 @@
             dateRange ? '<p class="nsc-detail-dates">🗓 ' + dateRange + '</p>' : '',
           '</div>',
 
-          desc ? '<div class="nsc-detail-section"><p class="nsc-detail-desc">' + esc(desc) + '</p></div>' : '',
+          desc ? '<div class="nsc-detail-section"><p class="nsc-detail-desc">' + nl2br(desc) + '</p></div>' : '',
           warnings ? '<div class="nsc-detail-section"><p class="nsc-detail-warning">⚠️ Content Advisory: ' + esc(warnings) + '</p></div>' : '',
           ticketSection,
           castSection,
