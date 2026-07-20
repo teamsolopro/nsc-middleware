@@ -29,7 +29,7 @@
 
   function formatCurrency(val) {
     if (val == null || val === '') return '';
-    return '$' + Number(val).toFixed(2).replace(/\.00$/, '');
+    return esc(String(val));
   }
 
   function getQueryParam(name) {
@@ -65,10 +65,11 @@
     // Tickets
     var ticketRows = [];
     if (p.tickets) {
-      if (p.tickets.generalAdmission != null) ticketRows.push(['General Admission', formatCurrency(p.tickets.generalAdmission)]);
-      if (p.tickets.senior != null)           ticketRows.push(['Senior', formatCurrency(p.tickets.senior)]);
-      if (p.tickets.student != null)          ticketRows.push(['Student', formatCurrency(p.tickets.student)]);
-      if (p.tickets.child != null)            ticketRows.push(['Child', formatCurrency(p.tickets.child)]);
+      if (p.tickets.generalAdmission) ticketRows.push(['General Admission', formatCurrency(p.tickets.generalAdmission)]);
+      if (p.tickets.adult)            ticketRows.push(['Adult',             formatCurrency(p.tickets.adult)]);
+      if (p.tickets.senior)           ticketRows.push(['Senior',           formatCurrency(p.tickets.senior)]);
+      if (p.tickets.student)          ticketRows.push(['Student',          formatCurrency(p.tickets.student)]);
+      if (p.tickets.child)            ticketRows.push(['Child',            formatCurrency(p.tickets.child)]);
     }
 
     var ticketSection = '';
