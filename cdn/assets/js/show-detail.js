@@ -39,6 +39,7 @@
 
   function renderDetail(p) {
     var company  = (p.linkedCompanyId && p.linkedCompanyId.name) || '';
+    var companySlug = (p.linkedCompanyId && p.linkedCompanyId.slug) || '';
     var companyWebsite = (p.linkedCompanyId && p.linkedCompanyId.website) || '';
     var venue    = (p.linkedVenueId && p.linkedVenueId.name) || '';
     var address  = (p.linkedVenueId && p.linkedVenueId.address) || '';
@@ -127,7 +128,9 @@
       companySection = [
         '<div class="nsc-detail-section">',
           '<h2 class="nsc-detail-subheading">Presented By</h2>',
-          '<p class="nsc-detail-company">' + esc(company) + '</p>',
+          companySlug
+            ? '<p class="nsc-detail-company"><a class="nsc-detail-link" href="/companies/detail?company=' + esc(companySlug) + '">' + esc(company) + '</a></p>'
+            : '<p class="nsc-detail-company">' + esc(company) + '</p>',
           companyWebsite ? '<a class="nsc-detail-link" href="' + esc(companyWebsite) + '" target="_blank" rel="noopener">Visit Website &rarr;</a>' : '',
         '</div>',
       ].join('');
