@@ -11,6 +11,10 @@
       .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
   }
 
+  function nl2br(str) {
+    return esc(str).replace(/\n/g, '<br>');
+  }
+
   function formatDate(dateStr) {
     if (!dateStr) return '';
     return new Date(dateStr).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
@@ -174,7 +178,7 @@
 
       // Bio
       (company.bio
-        ? '<section class="nsc-co-section"><p class="nsc-co-bio">' + esc(company.bio) + '</p></section>'
+        ? '<section class="nsc-co-section"><p class="nsc-co-bio">' + nl2br(company.bio) + '</p></section>'
         : '') +
 
       buildVenuesSection(company, venues) +
