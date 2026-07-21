@@ -290,6 +290,11 @@ router.put('/venues/:id', requireAuth, async (req, res) => {
   res.redirect('/admin/venues');
 });
 
+router.post('/venues/:id/delete', requireAuth, async (req, res) => {
+  await Venue.findByIdAndDelete(req.params.id);
+  res.redirect('/admin/venues');
+});
+
 // Geocode all venues that are missing coordinates
 router.post('/venues/geocode-all', requireAuth, async (req, res) => {
   const venues = await Venue.find({ $or: [{ lat: null }, { lat: { $exists: false } }] });

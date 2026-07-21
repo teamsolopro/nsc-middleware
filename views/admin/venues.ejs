@@ -4,6 +4,21 @@
   <meta charset="UTF-8">
   <title>NSC Admin — Venues</title>
   <link rel="stylesheet" href="/public/admin.css">
+  <style>
+    .edit-form { padding: 16px 0; }
+    .edit-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .edit-grid label { display: flex; flex-direction: column; font-size: 12px; font-weight: 600; gap: 4px; }
+    .edit-grid label input, .edit-grid label select, .edit-grid label textarea { font-size: 14px; padding: 6px 8px; border: 1px solid #ccc; border-radius: 4px; }
+    .edit-grid .full { grid-column: span 2; }
+    .edit-grid h4 { grid-column: span 2; margin: 10px 0 2px; font-size: 13px; text-transform: uppercase; letter-spacing: .5px; color: #555; border-bottom: 1px solid #eee; padding-bottom: 4px; }
+    .btn-danger { background: #c00; color: #fff; border: none; }
+    .btn-danger:hover { background: #900; }
+    th.sortable { cursor: pointer; user-select: none; white-space: nowrap; }
+    th.sortable .sort-icon { margin-left: 4px; font-size: 11px; color: #999; }
+    th.sort-asc .sort-icon::after { content: ' ▲'; color: #333; }
+    th.sort-desc .sort-icon::after { content: ' ▼'; color: #333; }
+    th:not(.sort-asc):not(.sort-desc) .sort-icon::after { content: ' ⇅'; }
+  </style>
 </head>
 <body>
   <%- include('_nav') %>
@@ -24,155 +39,40 @@
           </select>
         </label>
         <label>Zip <input type="text" name="zip"></label>
-        <label>County <select name="county" id="county" required>
-  <option value="">-- Select County --</option>
-  <option value="Alamance (NC)">Alamance (NC)</option>
-  <option value="Alexander (NC)">Alexander (NC)</option>
-  <option value="Alleghany (NC)">Alleghany (NC)</option>
-  <option value="Anson (NC)">Anson (NC)</option>
-  <option value="Ashe (NC)">Ashe (NC)</option>
-  <option value="Avery (NC)">Avery (NC)</option>
-  <option value="Beaufort (NC)">Beaufort (NC)</option>
-  <option value="Bertie (NC)">Bertie (NC)</option>
-  <option value="Bladen (NC)">Bladen (NC)</option>
-  <option value="Brunswick (NC)">Brunswick (NC)</option>
-  <option value="Buncombe (NC)">Buncombe (NC)</option>
-  <option value="Burke (NC)">Burke (NC)</option>
-  <option value="Cabarrus (NC)">Cabarrus (NC)</option>
-  <option value="Caldwell (NC)">Caldwell (NC)</option>
-  <option value="Camden (NC)">Camden (NC)</option>
-  <option value="Carteret (NC)">Carteret (NC)</option>
-  <option value="Caswell (NC)">Caswell (NC)</option>
-  <option value="Catawba (NC)">Catawba (NC)</option>
-  <option value="Chatham (NC)">Chatham (NC)</option>
-  <option value="Cherokee (NC)">Cherokee (NC)</option>
-  <option value="Chowan (NC)">Chowan (NC)</option>
-  <option value="Clay (NC)">Clay (NC)</option>
-  <option value="Cleveland (NC)">Cleveland (NC)</option>
-  <option value="Columbus (NC)">Columbus (NC)</option>
-  <option value="Craven (NC)">Craven (NC)</option>
-  <option value="Cumberland (NC)">Cumberland (NC)</option>
-  <option value="Currituck (NC)">Currituck (NC)</option>
-  <option value="Dare (NC)">Dare (NC)</option>
-  <option value="Davidson (NC)">Davidson (NC)</option>
-  <option value="Davie (NC)">Davie (NC)</option>
-  <option value="Duplin (NC)">Duplin (NC)</option>
-  <option value="Durham (NC)">Durham (NC)</option>
-  <option value="Edgecombe (NC)">Edgecombe (NC)</option>
-  <option value="Forsyth (NC)">Forsyth (NC)</option>
-  <option value="Franklin (NC)">Franklin (NC)</option>
-  <option value="Gaston (NC)">Gaston (NC)</option>
-  <option value="Gates (NC)">Gates (NC)</option>
-  <option value="Graham (NC)">Graham (NC)</option>
-  <option value="Granville (NC)">Granville (NC)</option>
-  <option value="Greene (NC)">Greene (NC)</option>
-  <option value="Guilford (NC)">Guilford (NC)</option>
-  <option value="Halifax (NC)">Halifax (NC)</option>
-  <option value="Harnett (NC)">Harnett (NC)</option>
-  <option value="Haywood (NC)">Haywood (NC)</option>
-  <option value="Henderson (NC)">Henderson (NC)</option>
-  <option value="Hertford (NC)">Hertford (NC)</option>
-  <option value="Hoke (NC)">Hoke (NC)</option>
-  <option value="Hyde (NC)">Hyde (NC)</option>
-  <option value="Iredell (NC)">Iredell (NC)</option>
-  <option value="Jackson (NC)">Jackson (NC)</option>
-  <option value="Johnston (NC)">Johnston (NC)</option>
-  <option value="Jones (NC)">Jones (NC)</option>
-  <option value="Lee (NC)">Lee (NC)</option>
-  <option value="Lenoir (NC)">Lenoir (NC)</option>
-  <option value="Lincoln (NC)">Lincoln (NC)</option>
-  <option value="Macon (NC)">Macon (NC)</option>
-  <option value="Madison (NC)">Madison (NC)</option>
-  <option value="Martin (NC)">Martin (NC)</option>
-  <option value="McDowell (NC)">McDowell (NC)</option>
-  <option value="Mecklenburg (NC)">Mecklenburg (NC)</option>
-  <option value="Mitchell (NC)">Mitchell (NC)</option>
-  <option value="Montgomery (NC)">Montgomery (NC)</option>
-  <option value="Moore (NC)">Moore (NC)</option>
-  <option value="Nash (NC)">Nash (NC)</option>
-  <option value="New Hanover (NC)">New Hanover (NC)</option>
-  <option value="Northampton (NC)">Northampton (NC)</option>
-  <option value="Onslow (NC)">Onslow (NC)</option>
-  <option value="Orange (NC)">Orange (NC)</option>
-  <option value="Pamlico (NC)">Pamlico (NC)</option>
-  <option value="Pasquotank (NC)">Pasquotank (NC)</option>
-  <option value="Pender (NC)">Pender (NC)</option>
-  <option value="Perquimans (NC)">Perquimans (NC)</option>
-  <option value="Person (NC)">Person (NC)</option>
-  <option value="Pitt (NC)">Pitt (NC)</option>
-  <option value="Polk (NC)">Polk (NC)</option>
-  <option value="Randolph (NC)">Randolph (NC)</option>
-  <option value="Richmond (NC)">Richmond (NC)</option>
-  <option value="Robeson (NC)">Robeson (NC)</option>
-  <option value="Rockingham (NC)">Rockingham (NC)</option>
-  <option value="Rowan (NC)">Rowan (NC)</option>
-  <option value="Rutherford (NC)">Rutherford (NC)</option>
-  <option value="Sampson (NC)">Sampson (NC)</option>
-  <option value="Scotland (NC)">Scotland (NC)</option>
-  <option value="Stanly (NC)">Stanly (NC)</option>
-  <option value="Stokes (NC)">Stokes (NC)</option>
-  <option value="Surry (NC)">Surry (NC)</option>
-  <option value="Swain (NC)">Swain (NC)</option>
-  <option value="Transylvania (NC)">Transylvania (NC)</option>
-  <option value="Tyrrell (NC)">Tyrrell (NC)</option>
-  <option value="Union (NC)">Union (NC)</option>
-  <option value="Vance (NC)">Vance (NC)</option>
-  <option value="Wake (NC)">Wake (NC)</option>
-  <option value="Warren (NC)">Warren (NC)</option>
-  <option value="Washington (NC)">Washington (NC)</option>
-  <option value="Watauga (NC)">Watauga (NC)</option>
-  <option value="Wayne (NC)">Wayne (NC)</option>
-  <option value="Wilkes (NC)">Wilkes (NC)</option>
-  <option value="Wilson (NC)">Wilson (NC)</option>
-  <option value="Yadkin (NC)">Yadkin (NC)</option>
-  <option value="Yancey (NC)">Yancey (NC)</option>
-  <option value="Abbeville (SC)">Abbeville (SC)</option>
-  <option value="Aiken (SC)">Aiken (SC)</option>
-  <option value="Allendale (SC)">Allendale (SC)</option>
-  <option value="Anderson (SC)">Anderson (SC)</option>
-  <option value="Bamberg (SC)">Bamberg (SC)</option>
-  <option value="Barnwell (SC)">Barnwell (SC)</option>
-  <option value="Beaufort (SC)">Beaufort (SC)</option>
-  <option value="Berkeley (SC)">Berkeley (SC)</option>
-  <option value="Calhoun (SC)">Calhoun (SC)</option>
-  <option value="Charleston (SC)">Charleston (SC)</option>
-  <option value="Cherokee (SC)">Cherokee (SC)</option>
-  <option value="Chester (SC)">Chester (SC)</option>
-  <option value="Chesterfield (SC)">Chesterfield (SC)</option>
-  <option value="Clarendon (SC)">Clarendon (SC)</option>
-  <option value="Colleton (SC)">Colleton (SC)</option>
-  <option value="Darlington (SC)">Darlington (SC)</option>
-  <option value="Dillon (SC)">Dillon (SC)</option>
-  <option value="Dorchester (SC)">Dorchester (SC)</option>
-  <option value="Edgefield (SC)">Edgefield (SC)</option>
-  <option value="Fairfield (SC)">Fairfield (SC)</option>
-  <option value="Florence (SC)">Florence (SC)</option>
-  <option value="Georgetown (SC)">Georgetown (SC)</option>
-  <option value="Greenville (SC)">Greenville (SC)</option>
-  <option value="Greenwood (SC)">Greenwood (SC)</option>
-  <option value="Hampton (SC)">Hampton (SC)</option>
-  <option value="Horry (SC)">Horry (SC)</option>
-  <option value="Jasper (SC)">Jasper (SC)</option>
-  <option value="Kershaw (SC)">Kershaw (SC)</option>
-  <option value="Lancaster (SC)">Lancaster (SC)</option>
-  <option value="Laurens (SC)">Laurens (SC)</option>
-  <option value="Lee (SC)">Lee (SC)</option>
-  <option value="Lexington (SC)">Lexington (SC)</option>
-  <option value="Marion (SC)">Marion (SC)</option>
-  <option value="Marlboro (SC)">Marlboro (SC)</option>
-  <option value="McCormick (SC)">McCormick (SC)</option>
-  <option value="Newberry (SC)">Newberry (SC)</option>
-  <option value="Oconee (SC)">Oconee (SC)</option>
-  <option value="Orangeburg (SC)">Orangeburg (SC)</option>
-  <option value="Pickens (SC)">Pickens (SC)</option>
-  <option value="Richland (SC)">Richland (SC)</option>
-  <option value="Saluda (SC)">Saluda (SC)</option>
-  <option value="Spartanburg (SC)">Spartanburg (SC)</option>
-  <option value="Sumter (SC)">Sumter (SC)</option>
-  <option value="Union (SC)">Union (SC)</option>
-  <option value="Williamsburg (SC)">Williamsburg (SC)</option>
-  <option value="York (SC)">York (SC)</option>
-</select></label>
+        <label>County
+          <select name="county">
+            <option value="">-- Select County --</option>
+            <% [
+              'Alamance (NC)','Alexander (NC)','Alleghany (NC)','Anson (NC)','Ashe (NC)','Avery (NC)',
+              'Beaufort (NC)','Bertie (NC)','Bladen (NC)','Brunswick (NC)','Buncombe (NC)','Burke (NC)',
+              'Cabarrus (NC)','Caldwell (NC)','Camden (NC)','Carteret (NC)','Caswell (NC)','Catawba (NC)',
+              'Chatham (NC)','Cherokee (NC)','Chowan (NC)','Clay (NC)','Cleveland (NC)','Columbus (NC)',
+              'Craven (NC)','Cumberland (NC)','Currituck (NC)','Dare (NC)','Davidson (NC)','Davie (NC)',
+              'Duplin (NC)','Durham (NC)','Edgecombe (NC)','Forsyth (NC)','Franklin (NC)','Gaston (NC)',
+              'Gates (NC)','Graham (NC)','Granville (NC)','Greene (NC)','Guilford (NC)','Halifax (NC)',
+              'Harnett (NC)','Haywood (NC)','Henderson (NC)','Hertford (NC)','Hoke (NC)','Hyde (NC)',
+              'Iredell (NC)','Jackson (NC)','Johnston (NC)','Jones (NC)','Lee (NC)','Lenoir (NC)',
+              'Lincoln (NC)','Macon (NC)','Madison (NC)','Martin (NC)','McDowell (NC)','Mecklenburg (NC)',
+              'Mitchell (NC)','Montgomery (NC)','Moore (NC)','Nash (NC)','New Hanover (NC)','Northampton (NC)',
+              'Onslow (NC)','Orange (NC)','Pamlico (NC)','Pasquotank (NC)','Pender (NC)','Perquimans (NC)',
+              'Person (NC)','Pitt (NC)','Polk (NC)','Randolph (NC)','Richmond (NC)','Robeson (NC)',
+              'Rockingham (NC)','Rowan (NC)','Rutherford (NC)','Sampson (NC)','Scotland (NC)','Stanly (NC)',
+              'Stokes (NC)','Surry (NC)','Swain (NC)','Transylvania (NC)','Tyrrell (NC)','Union (NC)',
+              'Vance (NC)','Wake (NC)','Warren (NC)','Washington (NC)','Watauga (NC)','Wayne (NC)',
+              'Wilkes (NC)','Wilson (NC)','Yadkin (NC)','Yancey (NC)',
+              'Abbeville (SC)','Aiken (SC)','Allendale (SC)','Anderson (SC)','Bamberg (SC)','Barnwell (SC)',
+              'Beaufort (SC)','Berkeley (SC)','Calhoun (SC)','Charleston (SC)','Cherokee (SC)','Chester (SC)',
+              'Chesterfield (SC)','Clarendon (SC)','Colleton (SC)','Darlington (SC)','Dillon (SC)',
+              'Dorchester (SC)','Edgefield (SC)','Fairfield (SC)','Florence (SC)','Georgetown (SC)',
+              'Greenville (SC)','Greenwood (SC)','Hampton (SC)','Horry (SC)','Jasper (SC)','Kershaw (SC)',
+              'Lancaster (SC)','Laurens (SC)','Lee (SC)','Lexington (SC)','Marion (SC)','Marlboro (SC)',
+              'McCormick (SC)','Newberry (SC)','Oconee (SC)','Orangeburg (SC)','Pickens (SC)','Richland (SC)',
+              'Saluda (SC)','Spartanburg (SC)','Sumter (SC)','Union (SC)','Williamsburg (SC)','York (SC)'
+            ].forEach(function(c) { %>
+              <option><%= c %></option>
+            <% }) %>
+          </select>
+        </label>
         <label>Region
           <select name="region">
             <option value="">—</option>
@@ -187,19 +87,144 @@
       </form>
     </details>
 
-    <table>
-      <thead><tr><th>Name</th><th>City</th><th>State</th><th>Region</th></tr></thead>
+    <table id="venues-table">
+      <thead>
+        <tr>
+          <th class="sortable" data-col="0">Name<span class="sort-icon"></span></th>
+          <th class="sortable" data-col="1">City<span class="sort-icon"></span></th>
+          <th class="sortable" data-col="2">State<span class="sort-icon"></span></th>
+          <th class="sortable" data-col="3">Region<span class="sort-icon"></span></th>
+          <th>Actions</th>
+        </tr>
+      </thead>
       <tbody>
         <% venues.forEach(v => { %>
-          <tr>
+          <tr data-id="<%= v._id %>">
             <td><%= v.name %></td>
             <td><%= v.city %></td>
             <td><%= v.state %></td>
             <td><%= v.region %></td>
+            <td>
+              <button class="btn-sm" onclick="toggleEdit('<%= v._id %>')">Edit</button>
+              <form method="POST" action="/admin/venues/<%= v._id %>/delete" style="display:inline" onsubmit="return confirm('Delete <%= v.name %>?')">
+                <button type="submit" class="btn-sm btn-danger">Delete</button>
+              </form>
+            </td>
+          </tr>
+          <tr id="edit-<%= v._id %>" style="display:none">
+            <td colspan="5">
+              <form method="POST" action="/admin/venues/<%= v._id %>" class="edit-form">
+                <div class="edit-grid">
+                  <h4>Identity</h4>
+                  <label class="full">Name <input type="text" name="name" value="<%= v.name %>" required></label>
+                  <label>Address <input type="text" name="address" value="<%= v.address %>"></label>
+                  <label>City <input type="text" name="city" value="<%= v.city %>"></label>
+                  <label>State
+                    <select name="state">
+                      <option value="">—</option>
+                      <option value="NC" <%- v.state === 'NC' ? 'selected' : '' %>>NC</option>
+                      <option value="SC" <%- v.state === 'SC' ? 'selected' : '' %>>SC</option>
+                    </select>
+                  </label>
+                  <label>Zip <input type="text" name="zip" value="<%= v.zip %>"></label>
+                  <label>County
+                    <select name="county">
+                      <option value="">-- Select County --</option>
+                      <% [
+                        'Alamance (NC)','Alexander (NC)','Alleghany (NC)','Anson (NC)','Ashe (NC)','Avery (NC)',
+                        'Beaufort (NC)','Bertie (NC)','Bladen (NC)','Brunswick (NC)','Buncombe (NC)','Burke (NC)',
+                        'Cabarrus (NC)','Caldwell (NC)','Camden (NC)','Carteret (NC)','Caswell (NC)','Catawba (NC)',
+                        'Chatham (NC)','Cherokee (NC)','Chowan (NC)','Clay (NC)','Cleveland (NC)','Columbus (NC)',
+                        'Craven (NC)','Cumberland (NC)','Currituck (NC)','Dare (NC)','Davidson (NC)','Davie (NC)',
+                        'Duplin (NC)','Durham (NC)','Edgecombe (NC)','Forsyth (NC)','Franklin (NC)','Gaston (NC)',
+                        'Gates (NC)','Graham (NC)','Granville (NC)','Greene (NC)','Guilford (NC)','Halifax (NC)',
+                        'Harnett (NC)','Haywood (NC)','Henderson (NC)','Hertford (NC)','Hoke (NC)','Hyde (NC)',
+                        'Iredell (NC)','Jackson (NC)','Johnston (NC)','Jones (NC)','Lee (NC)','Lenoir (NC)',
+                        'Lincoln (NC)','Macon (NC)','Madison (NC)','Martin (NC)','McDowell (NC)','Mecklenburg (NC)',
+                        'Mitchell (NC)','Montgomery (NC)','Moore (NC)','Nash (NC)','New Hanover (NC)','Northampton (NC)',
+                        'Onslow (NC)','Orange (NC)','Pamlico (NC)','Pasquotank (NC)','Pender (NC)','Perquimans (NC)',
+                        'Person (NC)','Pitt (NC)','Polk (NC)','Randolph (NC)','Richmond (NC)','Robeson (NC)',
+                        'Rockingham (NC)','Rowan (NC)','Rutherford (NC)','Sampson (NC)','Scotland (NC)','Stanly (NC)',
+                        'Stokes (NC)','Surry (NC)','Swain (NC)','Transylvania (NC)','Tyrrell (NC)','Union (NC)',
+                        'Vance (NC)','Wake (NC)','Warren (NC)','Washington (NC)','Watauga (NC)','Wayne (NC)',
+                        'Wilkes (NC)','Wilson (NC)','Yadkin (NC)','Yancey (NC)',
+                        'Abbeville (SC)','Aiken (SC)','Allendale (SC)','Anderson (SC)','Bamberg (SC)','Barnwell (SC)',
+                        'Beaufort (SC)','Berkeley (SC)','Calhoun (SC)','Charleston (SC)','Cherokee (SC)','Chester (SC)',
+                        'Chesterfield (SC)','Clarendon (SC)','Colleton (SC)','Darlington (SC)','Dillon (SC)',
+                        'Dorchester (SC)','Edgefield (SC)','Fairfield (SC)','Florence (SC)','Georgetown (SC)',
+                        'Greenville (SC)','Greenwood (SC)','Hampton (SC)','Horry (SC)','Jasper (SC)','Kershaw (SC)',
+                        'Lancaster (SC)','Laurens (SC)','Lee (SC)','Lexington (SC)','Marion (SC)','Marlboro (SC)',
+                        'McCormick (SC)','Newberry (SC)','Oconee (SC)','Orangeburg (SC)','Pickens (SC)','Richland (SC)',
+                        'Saluda (SC)','Spartanburg (SC)','Sumter (SC)','Union (SC)','Williamsburg (SC)','York (SC)'
+                      ].forEach(function(c) { %>
+                        <option <%- v.county === c ? 'selected' : '' %>><%= c %></option>
+                      <% }) %>
+                    </select>
+                  </label>
+                  <label>Region
+                    <select name="region">
+                      <option value="">—</option>
+                      <% regions.forEach(r => { %>
+                        <option <%- v.region === r ? 'selected' : '' %>><%= r %></option>
+                      <% }) %>
+                    </select>
+                  </label>
+                  <label>Map URL <input type="url" name="mapUrl" value="<%= v.mapUrl %>"></label>
+                  <label>Website <input type="url" name="website" value="<%= v.website %>"></label>
+                  <label class="full">Parking Notes <textarea name="parkingNotes" rows="2"><%= v.parkingNotes %></textarea></label>
+                  <label class="full">Accessibility Notes <textarea name="accessibilityNotes" rows="2"><%= v.accessibilityNotes %></textarea></label>
+                </div>
+                <div style="margin-top:12px;display:flex;gap:8px">
+                  <button type="submit" class="btn">Save Changes</button>
+                  <button type="button" class="btn-sm" onclick="toggleEdit('<%= v._id %>')">Cancel</button>
+                </div>
+              </form>
+            </td>
           </tr>
         <% }) %>
       </tbody>
     </table>
   </main>
+
+  <script>
+    function toggleEdit(id) {
+      var row = document.getElementById('edit-' + id);
+      row.style.display = row.style.display === 'none' ? '' : 'none';
+    }
+
+    // Sortable columns
+    (function () {
+      var tbody = document.querySelector('#venues-table tbody');
+      var headers = document.querySelectorAll('#venues-table th.sortable');
+      var sortCol = -1, sortAsc = true;
+
+      headers.forEach(function (th) {
+        th.addEventListener('click', function () {
+          var col = parseInt(th.getAttribute('data-col'));
+          if (sortCol === col) { sortAsc = !sortAsc; } else { sortCol = col; sortAsc = true; }
+
+          // Collect data+edit row pairs
+          var rows = Array.from(tbody.querySelectorAll('tr[data-id]'));
+          var pairs = rows.map(function (r) {
+            return { data: r, edit: document.getElementById('edit-' + r.getAttribute('data-id')) };
+          });
+
+          pairs.sort(function (a, b) {
+            var aText = (a.data.cells[col] ? a.data.cells[col].textContent : '').trim().toLowerCase();
+            var bText = (b.data.cells[col] ? b.data.cells[col].textContent : '').trim().toLowerCase();
+            return sortAsc ? aText.localeCompare(bText) : bText.localeCompare(aText);
+          });
+
+          pairs.forEach(function (p) {
+            tbody.appendChild(p.data);
+            if (p.edit) tbody.appendChild(p.edit);
+          });
+
+          headers.forEach(function (h) { h.classList.remove('sort-asc', 'sort-desc'); });
+          th.classList.add(sortAsc ? 'sort-asc' : 'sort-desc');
+        });
+      });
+    })();
+  </script>
 </body>
 </html>
