@@ -51,7 +51,41 @@
           grid.innerHTML = '<p class="nsc-empty">No open auditions right now — check back soon.</p>';
           return;
         }
-        grid.innerHTML = data.slice(0, MAX).map(renderCard).join('');
+
+        var today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        // Keep only auditions with at least one upcoming date
+        var upcoming = data.filter(function (a) {
+          return a.auditionDates && a.auditionDates.some(function (d) {
+            if (!d.date) return false;
+            var dt = new Date(d.date);
+            dt.setHours(0, 0, 0, 0);
+            return dt >= today;
+          });
+        });
+
+        // Sort by soonest upcoming audition date
+        upcoming.sort(function (a, b) {
+          var aDate = a.auditionDates.find(function (d) {
+            if (!d.date) return false;
+            var dt = new Date(d.date); dt.setHours(0,0,0,0);
+            return dt >= today;
+          });
+          var bDate = b.auditionDates.find(function (d) {
+            if (!d.date) return false;
+            var dt = new Date(d.date); dt.setHours(0,0,0,0);
+            return dt >= today;
+          });
+          return new Date(aDate.date) - new Date(bDate.date);
+        });
+
+        if (upcoming.length === 0) {
+          grid.innerHTML = '<p class="nsc-empty">No open auditions right now — check back soon.</p>';
+          return;
+        }
+
+        grid.innerHTML = upcoming.slice(0, MAX).map(renderCard).join('');
       })
       .catch(function () {
         grid.innerHTML = '<p class="nsc-empty">Unable to load auditions. Please try again later.</p>';
