@@ -283,7 +283,7 @@ router.post('/venues', requireAuth, async (req, res) => {
   res.redirect('/admin/venues');
 });
 
-router.put('/venues/:id', requireAuth, async (req, res) => {
+router.post('/venues/:id', requireAuth, async (req, res) => {
   const d = req.body;
   const coords = await geocodeAddress({ address: d.address, city: d.city, state: d.state, zip: d.zip });
   await Venue.findByIdAndUpdate(req.params.id, { ...d, lat: coords ? coords.lat : undefined, lng: coords ? coords.lng : undefined });
