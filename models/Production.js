@@ -28,7 +28,7 @@ const productionSchema = new mongoose.Schema(
         type: String,
         enum: ['musical', 'play', 'drama', 'comedy', 'one_act', 'revue', 'opera', 'operetta', 'fringe', 'immersive', 'improv', 'reading', 'childrens', 'other'],
       }],
-      familyRating: { type: String, enum: ['G', 'PG', 'PG-13'] },
+      familyRating: { type: String, enum: ['G', 'PG', 'PG-13','18+'] },
       posterImageUrl: String,
       runtime: String,
       contentWarnings: String,
