@@ -176,7 +176,7 @@
                   <label>Family Rating
                     <select name="familyRating">
                       <option value="">—</option>
-                      <% ['G','PG','PG-13'].forEach(r => { %>
+                      <% ['G','PG','PG-13','18+'].forEach(r => { %>
                         <option <%- (p.show && p.show.familyRating) === r ? 'selected' : '' %>><%= r %></option>
                       <% }) %>
                     </select>
