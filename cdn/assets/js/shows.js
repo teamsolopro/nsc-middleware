@@ -111,10 +111,11 @@
 
   // ─── Filter & render ───────────────────────────────────────
   function applyFilters() {
-    var search    = (el(SEARCH_ID)    && el(SEARCH_ID).value.trim().toLowerCase())    || '';
-    var typeVal   = (el(FILTER_TYPE_ID)   && el(FILTER_TYPE_ID).value)   || '';
-    var ratingVal = (el(FILTER_RATING_ID) && el(FILTER_RATING_ID).value) || '';
-    var radiusMi  = parseFloat((el(FILTER_RADIUS_ID) && el(FILTER_RADIUS_ID).value) || '0');
+    var search     = (el(SEARCH_ID)    && el(SEARCH_ID).value.trim().toLowerCase())    || '';
+    var typeVal    = (el(FILTER_TYPE_ID)    && el(FILTER_TYPE_ID).value)    || '';
+    var ratingVal  = (el(FILTER_RATING_ID)  && el(FILTER_RATING_ID).value)  || '';
+    var regionVal  = (el('nsc-filter-region') && el('nsc-filter-region').value) || '';
+    var radiusMi   = parseFloat((el(FILTER_RADIUS_ID) && el(FILTER_RADIUS_ID).value) || '0');
     var dateFrom  = (el(FILTER_DATE_FROM_ID) && el(FILTER_DATE_FROM_ID).value) ? new Date(el(FILTER_DATE_FROM_ID).value) : null;
     var dateTo    = (el(FILTER_DATE_TO_ID)   && el(FILTER_DATE_TO_ID).value)   ? new Date(el(FILTER_DATE_TO_ID).value)   : null;
 
@@ -139,6 +140,12 @@
 
       // Family rating
       if (ratingVal && (p.show && p.show.familyRating) !== ratingVal) return false;
+
+      // Region
+      if (regionVal) {
+        var pRegion = (p.linkedVenueId && p.linkedVenueId.region) || (p.linkedCompanyId && p.linkedCompanyId.region) || '';
+        if (pRegion !== regionVal) return false;
+      }
 
       // Date range filter — show if run overlaps with selected range
       if (dateFrom && p.dates && p.dates.closes && new Date(p.dates.closes) < dateFrom) return false;
@@ -260,7 +267,7 @@
 
   // ─── Wire up filter controls ──────────────────────────────
   function bindControls() {
-    var ids = [SEARCH_ID, FILTER_TYPE_ID, FILTER_RATING_ID, FILTER_RADIUS_ID, FILTER_DATE_FROM_ID, FILTER_DATE_TO_ID];
+    var ids = [SEARCH_ID, FILTER_TYPE_ID, FILTER_RATING_ID, 'nsc-filter-region', FILTER_RADIUS_ID, FILTER_DATE_FROM_ID, FILTER_DATE_TO_ID];
     ids.forEach(function (id) {
       var elem = el(id);
       if (elem) elem.addEventListener('input', applyFilters);
@@ -283,8 +290,11 @@
     var loadingEl = el(LOADING_ID);
     var emptyEl   = el(EMPTY_ID);
 
-    fetch(CDN)
-      .then(function (res) { return res.json(); })
+    var dataPromise = (window._nscShowsData instanceof Promise)
+      ? window._nscShowsData
+      : fetch(CDN).then(function (res) { return res.json(); });
+
+    dataPromise
       .then(function (data) {
         if (loadingEl) loadingEl.style.display = 'none';
         allProductions = Array.isArray(data) ? data : [];
@@ -301,9 +311,5 @@
       });
   }
 
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', init);
-  } else {
-    init();
-  }
+  init();
 })();

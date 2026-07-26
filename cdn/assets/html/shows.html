@@ -1,0 +1,196 @@
+<style>
+  /* ── Shows page ─────────────────────────────────────────── */
+  .nsc-shows-page { font-family: 'Lato', sans-serif; max-width: 1100px; margin: 0 auto; padding: 0 16px 60px; }
+
+  /* ── Two-column layout ──────────────────────────────────── */
+  .nsc-shows-layout { display: flex; gap: 28px; align-items: flex-start; }
+
+  /* ── Filter sidebar ─────────────────────────────────────── */
+  .nsc-shows-sidebar {
+    flex: 0 0 240px; background: #f5f3ee; border-radius: 8px;
+    padding: 20px; box-sizing: border-box; position: sticky; top: 20px;
+  }
+  .nsc-shows-sidebar h3 {
+    font-family: 'Lato', sans-serif; font-size: 13px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.5px; color: #3d5a80;
+    margin: 0 0 16px;
+  }
+  .nsc-filter-group { display: flex; flex-direction: column; gap: 4px; margin-bottom: 14px; }
+  .nsc-filter-group label {
+    font-size: 11px; font-weight: 700; color: #555;
+    text-transform: uppercase; letter-spacing: 0.5px;
+  }
+  .nsc-filter-group input[type=text],
+  .nsc-filter-group input[type=date],
+  .nsc-filter-group select {
+    font-family: 'Lato', sans-serif; font-size: 14px;
+    padding: 9px 12px; border: 1px solid #c8d8e8; border-radius: 6px;
+    background: #fff; color: #1a1a1a; width: 100%; box-sizing: border-box;
+  }
+  .nsc-filter-group input:focus,
+  .nsc-filter-group select:focus { outline: 2px solid #6699c2; border-color: #6699c2; }
+  .nsc-btn-clear {
+    font-family: 'Lato', sans-serif; font-size: 13px; color: #4477a1;
+    background: none; border: 1px solid #c8d8e8; border-radius: 6px;
+    padding: 9px 14px; cursor: pointer; width: 100%; margin-top: 4px;
+  }
+  .nsc-btn-clear:hover { background: #d6e6f5; }
+
+  /* ── Main content area ──────────────────────────────────── */
+  .nsc-shows-main { flex: 1; min-width: 0; }
+
+  /* ── Section headers ────────────────────────────────────── */
+  .nsc-shows-section-title {
+    font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 700;
+    color: #3d5a80; margin: 0 0 16px; padding-bottom: 8px;
+    border-bottom: 2px solid #d6e6f5;
+  }
+  .nsc-shows-section-title + .nsc-grid { margin-bottom: 32px; }
+
+  /* ── Card grid ──────────────────────────────────────────── */
+  .nsc-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 20px;
+  }
+
+  /* ── Individual card ────────────────────────────────────── */
+  .nsc-card {
+    display: flex; flex-direction: column;
+    background: #fff; border: 1px solid #dce8f0; border-radius: 10px;
+    overflow: hidden; transition: box-shadow 0.15s, transform 0.15s;
+  }
+  .nsc-card:hover { box-shadow: 0 4px 16px rgba(68,119,161,0.15); transform: translateY(-2px); }
+  .nsc-card-poster { width: 100%; aspect-ratio: 2/3; object-fit: cover; display: block; }
+  .nsc-card-body { padding: 16px; display: flex; flex-direction: column; flex: 1; }
+  .nsc-card-label { font-size: 11px; font-weight: 700; color: #6699c2; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+  .nsc-card-title { font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 700; margin: 0 0 4px; color: #1a1a1a; }
+  .nsc-card-author { font-family: 'Cormorant Garamond', serif; font-size: 15px; font-weight: 400; font-style: italic; color: #555; display: block; }
+  .nsc-card-company { font-size: 13px; font-weight: 700; color: #4477a1; margin: 4px 0 0; }
+  .nsc-card-meta { font-size: 13px; color: #555; margin: 4px 0 0; }
+  .nsc-card-desc { font-family: 'Cormorant Garamond', serif; font-size: 15px; color: #444; margin: 8px 0 0; line-height: 1.5; }
+  .nsc-distance { color: #3d5a80; font-weight: 600; }
+  .nsc-card-actions { display: flex; align-items: center; gap: 12px; margin-top: auto; padding-top: 14px; }
+  .nsc-btn { display: inline-block; padding: 8px 16px; border-radius: 6px; font-family: 'Lato', sans-serif; font-size: 13px; font-weight: 700; text-decoration: none; cursor: pointer; }
+  .nsc-btn-primary { background: #6699c2; color: #fff; }
+  .nsc-btn-primary:hover { background: #4477a1; }
+  .nsc-card-link { font-size: 13px; color: #4477a1; text-decoration: none; font-weight: 600; margin-left: auto; }
+  .nsc-card-link:hover { text-decoration: underline; }
+
+  /* ── States ─────────────────────────────────────────────── */
+  .nsc-loading { text-align: center; color: #999; padding: 2rem; font-style: italic; }
+  .nsc-empty   { text-align: center; color: #999; padding: 3rem; font-style: italic; display: none; }
+
+  @media (max-width: 700px) {
+    .nsc-shows-layout { flex-direction: column; }
+    .nsc-shows-sidebar { flex: none; width: 100%; position: static; }
+  }
+</style>
+
+<div class="nsc-shows-page">
+  <div class="nsc-shows-layout">
+
+    <aside class="nsc-shows-sidebar">
+      <h3>Filter Shows</h3>
+
+      <div class="nsc-filter-group">
+        <label for="nsc-search">Search</label>
+        <input type="text" id="nsc-search" placeholder="Title, author, or theater…" autocomplete="off">
+      </div>
+
+      <div class="nsc-filter-group">
+        <label for="nsc-filter-type">Show Type</label>
+        <select id="nsc-filter-type">
+          <option value="">All Types</option>
+          <option value="musical">Musical</option>
+          <option value="play">Play</option>
+          <option value="drama">Drama</option>
+          <option value="comedy">Comedy</option>
+          <option value="one_act">One Act</option>
+          <option value="revue">Revue</option>
+          <option value="opera">Opera</option>
+          <option value="operetta">Operetta</option>
+          <option value="fringe">Fringe</option>
+          <option value="immersive">Immersive</option>
+          <option value="improv">Improv</option>
+          <option value="reading">Reading</option>
+          <option value="childrens">Children's</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
+
+      <div class="nsc-filter-group">
+        <label for="nsc-filter-rating">Rating</label>
+        <select id="nsc-filter-rating">
+          <option value="">All Ratings</option>
+          <option value="G">G</option>
+          <option value="PG">PG</option>
+          <option value="PG-13">PG-13</option>
+          <option value="18+">18+</option>
+        </select>
+      </div>
+
+      <div class="nsc-filter-group">
+        <label for="nsc-filter-date-from">From Date</label>
+        <input type="date" id="nsc-filter-date-from">
+      </div>
+
+      <div class="nsc-filter-group">
+        <label for="nsc-filter-date-to">To Date</label>
+        <input type="date" id="nsc-filter-date-to">
+      </div>
+
+      <div class="nsc-filter-group">
+        <label for="nsc-filter-region">Region</label>
+        <select id="nsc-filter-region">
+          <option value="">All Regions</option>
+          <option value="NC">--- North Carolina ---</option>
+          <option>Asheville / Western NC</option>
+          <option>Charlotte Metro</option>
+          <option>Eastern NC</option>
+          <option>Outer Banks</option>
+          <option>Triad</option>
+          <option>Triangle</option>
+          <option>Wilmington / Cape Fear</option>
+          <option value="SC">--- South Carolina ---</option>
+          <option>Lowcountry</option>
+          <option>Midlands</option>
+          <option>Pee Dee</option>
+          <option>Piedmont</option>
+          <option>Sandhills</option>
+          <option>Upstate</option>
+        </select>
+      </div>
+
+      <div class="nsc-filter-group">
+        <label for="nsc-filter-radius">Distance (miles)</label>
+        <select id="nsc-filter-radius">
+          <option value="0">Any Distance</option>
+          <option value="10">10 mi</option>
+          <option value="25">25 mi</option>
+          <option value="50">50 mi</option>
+          <option value="100">100 mi</option>
+        </select>
+      </div>
+
+      <button id="nsc-clear-filters" class="nsc-btn-clear">Clear All Filters</button>
+    </aside>
+
+    <div class="nsc-shows-main">
+      <p id="nsc-loading" class="nsc-loading">Loading shows…</p>
+      <p id="nsc-empty" class="nsc-empty">No shows match your filters.</p>
+      <p id="nsc-result-count" class="nsc-shows-count" style="display:none"></p>
+
+      <section id="nsc-running-section" style="display:none">
+        <h2 class="nsc-shows-section-title">Currently Running</h2>
+        <div id="nsc-running-grid" class="nsc-grid"></div>
+      </section>
+
+      <section id="nsc-upcoming-section" style="display:none">
+        <h2 class="nsc-shows-section-title">Coming Up</h2>
+        <div id="nsc-upcoming-grid" class="nsc-grid"></div>
+      </section>
+    </div>
+
+  </div>
+</div>

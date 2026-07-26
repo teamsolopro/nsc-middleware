@@ -1,0 +1,182 @@
+<style>
+  /* ── Auditions page ─────────────────────────────────────── */
+  .nsc-aud-page { font-family: 'Lato', sans-serif; max-width: 1100px; margin: 0 auto; padding: 0 16px 60px; }
+
+  /* ── Two-column layout ──────────────────────────────────── */
+  .nsc-aud-layout { display: flex; gap: 28px; align-items: flex-start; }
+
+  /* ── Filter sidebar ─────────────────────────────────────── */
+  .nsc-aud-sidebar {
+    flex: 0 0 240px; background: #f5f3ee; border-radius: 8px;
+    padding: 20px; box-sizing: border-box; position: sticky; top: 20px;
+  }
+  .nsc-aud-sidebar h3 {
+    font-family: 'Lato', sans-serif; font-size: 13px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.5px; color: #3d5a80;
+    margin: 0 0 16px;
+  }
+  .nsc-aud-filter-group { display: flex; flex-direction: column; gap: 4px; margin-bottom: 14px; }
+  .nsc-aud-filter-group label {
+    font-size: 11px; font-weight: 700; color: #555;
+    text-transform: uppercase; letter-spacing: 0.5px;
+  }
+  .nsc-aud-filter-group input[type=text],
+  .nsc-aud-filter-group input[type=date],
+  .nsc-aud-filter-group select {
+    font-family: 'Lato', sans-serif; font-size: 14px;
+    padding: 9px 12px; border: 1px solid #c8d8e8; border-radius: 6px;
+    background: #fff; color: #1a1a1a; width: 100%; box-sizing: border-box;
+  }
+  .nsc-aud-filter-group input:focus,
+  .nsc-aud-filter-group select:focus { outline: 2px solid #6699c2; border-color: #6699c2; }
+  .nsc-aud-btn-clear {
+    font-family: 'Lato', sans-serif; font-size: 13px; color: #4477a1;
+    background: none; border: 1px solid #c8d8e8; border-radius: 6px;
+    padding: 9px 14px; cursor: pointer; width: 100%; margin-top: 4px;
+  }
+  .nsc-aud-btn-clear:hover { background: #d6e6f5; }
+
+  /* ── Main content ───────────────────────────────────────── */
+  .nsc-aud-main { flex: 1; min-width: 0; }
+
+  /* ── Card grid ──────────────────────────────────────────── */
+  .nsc-aud-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+  }
+
+  /* ── Cards ──────────────────────────────────────────────── */
+  .nsc-card {
+    display: flex; flex-direction: column;
+    background: #fff; border: 1px solid #dce8f0; border-radius: 10px;
+    padding: 20px; transition: box-shadow 0.15s, transform 0.15s;
+  }
+  .nsc-card:hover { box-shadow: 0 4px 16px rgba(68,119,161,0.15); transform: translateY(-2px); }
+  .nsc-card-label { font-size: 11px; font-weight: 700; color: #6699c2; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+  .nsc-card-title { font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 700; margin: 0 0 4px; color: #1a1a1a; }
+  .nsc-card-author { font-family: 'Cormorant Garamond', serif; font-size: 15px; font-weight: 400; font-style: italic; color: #555; display: block; }
+  .nsc-card-company { font-size: 13px; font-weight: 700; color: #4477a1; margin: 4px 0 0; }
+  .nsc-card-meta { font-size: 13px; color: #555; margin: 4px 0 0; }
+  .nsc-distance { color: #3d5a80; font-weight: 600; }
+  .nsc-card-link { font-size: 13px; color: #4477a1; text-decoration: none; font-weight: 600; margin-top: 14px; display: inline-block; }
+  .nsc-card-link:hover { text-decoration: underline; }
+
+  /* ── States ─────────────────────────────────────────────── */
+  .nsc-loading { text-align: center; color: #999; padding: 2rem; font-style: italic; }
+  .nsc-empty   { text-align: center; color: #999; padding: 3rem; font-style: italic; display: none; }
+
+  @media (max-width: 700px) {
+    .nsc-aud-layout { flex-direction: column; }
+    .nsc-aud-sidebar { flex: none; width: 100%; position: static; }
+  }
+</style>
+
+<div class="nsc-aud-page">
+  <div class="nsc-aud-layout">
+
+    <aside class="nsc-aud-sidebar">
+      <h3>Filter Auditions</h3>
+
+      <div class="nsc-aud-filter-group">
+        <label for="nsc-search">Search</label>
+        <input type="text" id="nsc-search" placeholder="Title, company, author…" autocomplete="off">
+      </div>
+
+      <div class="nsc-aud-filter-group">
+        <label for="nsc-filter-type">Show Type</label>
+        <select id="nsc-filter-type">
+          <option value="">All Types</option>
+          <option value="musical">Musical</option>
+          <option value="play">Play</option>
+          <option value="drama">Drama</option>
+          <option value="comedy">Comedy</option>
+          <option value="one_act">One Act</option>
+          <option value="revue">Revue</option>
+          <option value="opera">Opera</option>
+          <option value="operetta">Operetta</option>
+          <option value="fringe">Fringe</option>
+          <option value="immersive">Immersive</option>
+          <option value="improv">Improv</option>
+          <option value="reading">Reading</option>
+          <option value="childrens">Children's</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
+
+      <div class="nsc-aud-filter-group">
+        <label for="nsc-filter-age">Age Range</label>
+        <select id="nsc-filter-age">
+          <option value="">All Ages</option>
+          <option value="children">Children</option>
+          <option value="teens">Teens</option>
+          <option value="young_adults">Young Adults</option>
+          <option value="adults">Adults</option>
+          <option value="seniors">Seniors</option>
+        </select>
+      </div>
+
+      <div class="nsc-aud-filter-group">
+        <label for="nsc-filter-gender">Gender</label>
+        <select id="nsc-filter-gender">
+          <option value="">Any</option>
+          <option value="open">Open</option>
+          <option value="male">Male roles</option>
+          <option value="female">Female roles</option>
+        </select>
+      </div>
+
+      <div class="nsc-aud-filter-group">
+        <label for="nsc-filter-region">Region</label>
+        <select id="nsc-filter-region">
+           <option value="">All Regions</option>
+          <option value="NC">--- North Carolina ---</option>
+          <option>Asheville / Western NC</option>
+          <option>Charlotte Metro</option>
+          <option>Eastern NC</option>
+          <option>Outer Banks</option>
+          <option>Triad</option>
+          <option>Triangle</option>
+          <option>Wilmington / Cape Fear</option>
+          <option value="SC">--- South Carolina ---</option>
+          <option>Lowcountry</option>
+          <option>Midlands</option>
+          <option>Pee Dee</option>
+          <option>Piedmont</option>
+          <option>Sandhills</option>
+          <option>Upstate</option>
+        </select>
+      </div>
+
+      <div class="nsc-aud-filter-group">
+        <label for="nsc-filter-date-from">Audition Date From</label>
+        <input type="date" id="nsc-filter-date-from">
+      </div>
+
+      <div class="nsc-aud-filter-group">
+        <label for="nsc-filter-date-to">Audition Date To</label>
+        <input type="date" id="nsc-filter-date-to">
+      </div>
+
+      <div class="nsc-aud-filter-group">
+        <label for="nsc-filter-radius">Distance (miles)</label>
+        <select id="nsc-filter-radius">
+          <option value="0">Any Distance</option>
+          <option value="10">10 mi</option>
+          <option value="25">25 mi</option>
+          <option value="50">50 mi</option>
+          <option value="100">100 mi</option>
+        </select>
+      </div>
+
+      <button id="nsc-clear-filters" class="nsc-aud-btn-clear">Clear All Filters</button>
+    </aside>
+
+    <div class="nsc-aud-main">
+      <p id="nsc-loading" class="nsc-loading">Loading auditions…</p>
+      <p id="nsc-empty" class="nsc-empty">No auditions match your filters.</p>
+      <div id="nsc-auditions-grid" class="nsc-aud-grid"></div>
+    </div>
+
+  </div>
+</div>

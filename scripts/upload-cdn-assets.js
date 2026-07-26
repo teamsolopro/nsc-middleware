@@ -15,12 +15,13 @@ const path = require('path');
 const CDN_DIR = path.join(__dirname, '..', 'cdn');
 
 const MIME = {
-  '.css': 'text/css',
-  '.js':  'application/javascript',
+  '.css':  'text/css',
+  '.html': 'text/html',
+  '.js':   'application/javascript',
   '.json': 'application/json',
-  '.svg': 'image/svg+xml',
-  '.png': 'image/png',
-  '.jpg': 'image/jpeg',
+  '.svg':  'image/svg+xml',
+  '.png':  'image/png',
+  '.jpg':  'image/jpeg',
   '.jpeg': 'image/jpeg',
   '.webp': 'image/webp',
 };

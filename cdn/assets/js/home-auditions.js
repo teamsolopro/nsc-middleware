@@ -43,6 +43,7 @@
   function init() {
     var grid = document.getElementById(GRID_ID);
     if (!grid) return;
+    grid.style.alignItems = 'start';
 
     fetch(CDN)
       .then(function (res) { return res.json(); })

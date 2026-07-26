@@ -92,6 +92,7 @@
     var typeVal     = (el('nsc-filter-type') && el('nsc-filter-type').value) || '';
     var ageVal      = (el('nsc-filter-age') && el('nsc-filter-age').value) || '';
     var genderVal   = (el('nsc-filter-gender') && el('nsc-filter-gender').value) || '';
+    var regionVal   = (el('nsc-filter-region') && el('nsc-filter-region').value) || '';
     var radiusMi    = parseFloat((el('nsc-filter-radius') && el('nsc-filter-radius').value) || '0');
     var dateFrom    = (el('nsc-filter-date-from') && el('nsc-filter-date-from').value) ? new Date(el('nsc-filter-date-from').value) : null;
     var dateTo      = (el('nsc-filter-date-to') && el('nsc-filter-date-to').value)     ? new Date(el('nsc-filter-date-to').value)   : null;
@@ -126,6 +127,12 @@
           return true;
         });
         if (!hasMatch) return false;
+      }
+
+      // Region
+      if (regionVal) {
+        var aRegion = (a.linkedVenueId && a.linkedVenueId.region) || (a.linkedCompanyId && a.linkedCompanyId.region) || '';
+        if (aRegion !== regionVal) return false;
       }
 
       // Location radius
@@ -194,7 +201,7 @@
 
   // ─── Wire up controls ──────────────────────────────────────
   function bindControls() {
-    var ids = ['nsc-search','nsc-filter-type','nsc-filter-age','nsc-filter-gender','nsc-filter-radius','nsc-filter-date-from','nsc-filter-date-to'];
+    var ids = ['nsc-search','nsc-filter-type','nsc-filter-age','nsc-filter-gender','nsc-filter-region','nsc-filter-radius','nsc-filter-date-from','nsc-filter-date-to'];
     ids.forEach(function (id) {
       var e = el(id);
       if (e) e.addEventListener('input', applyFilters);
