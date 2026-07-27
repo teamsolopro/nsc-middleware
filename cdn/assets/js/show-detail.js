@@ -18,13 +18,13 @@
   function formatDate(dateStr) {
     if (!dateStr) return '';
     var d = new Date(dateStr);
-    return d.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+    return d.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric', timeZone: "UTC" });
   }
 
   function formatDateShort(dateStr) {
     if (!dateStr) return '';
     var d = new Date(dateStr);
-    return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: "UTC" });
   }
 
   function formatCurrency(val) {
