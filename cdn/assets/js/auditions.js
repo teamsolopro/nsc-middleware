@@ -72,6 +72,7 @@
 
     return [
       '<div class="nsc-card">',
+      '<a class="nsc-card-link" href="/auditions/detail?id=' + esc(a._id) + '">',
         '<span class="nsc-card-label">' + esc(showType) + (union ? ' &middot; ' + union : '') + '</span>',
         '<h3 class="nsc-card-title">' + title + '<span class="nsc-card-author">' + author + '</span></h3>',
         company   ? '<p class="nsc-card-company">' + esc(company) + '</p>' : '',
@@ -82,6 +83,7 @@
         genderLine ? '<p class="nsc-card-meta">&#9881; ' + esc(genderLine) + '</p>' : '',
         distLine,
         '<a class="nsc-card-link" href="/auditions/detail?id=' + esc(a._id) + '">View Details &rarr;</a>',
+        '</a>',
       '</div>',
     ].join('');
   }
