@@ -36,6 +36,8 @@
     return [
       '<div class="nsc-card">',
         poster,
+      '</a>',
+      '<a href="/shows/detail?id=' + esc(p._id) + '">',
         '<span class="nsc-card-label">' + esc(showType) + rating + '</span>',
         '<h3 class="nsc-card-title">' + title + '</h3>',
         company  ? '<p class="nsc-card-company">' + esc(company) + '</p>' : '',
