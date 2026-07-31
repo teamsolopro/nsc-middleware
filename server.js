@@ -60,6 +60,7 @@ mongoose
 
     const { runExport } = require('./jobs/exportJson');
     const { runBackup } = require('./jobs/backup');
+    const { runArchive } = require('./jobs/archiveOld');
 
     // CDN export — every day at 3:00 AM ET
     cron.schedule('0 3 * * *', async () => {
@@ -75,7 +76,16 @@ mongoose
       catch (err) { console.error('[cron] Backup failed:', err); }
     }, { timezone: 'America/New_York' });
 
-    console.log('[cron] Scheduled: backup at 2am ET, CDN export at 3am ET');
+    // Archive old productions & delete expired auditions — every Monday at 4:00 AM ET
+    cron.schedule('0 4 * * 1', async () => {
+      console.log('[cron] Running weekly archive...');
+      try {
+        const result = await runArchive();
+        console.log(`[cron] Archive done — ${result.archivedProductions} production(s) archived, ${result.deletedAuditions} audition(s) deleted.`);
+      } catch (err) { console.error('[cron] Archive failed:', err); }
+    }, { timezone: 'America/New_York' });
+
+    console.log('[cron] Scheduled: backup at 2am ET, CDN export at 3am ET, archive at 4am ET Mondays');
   })
   .catch((err) => {
     console.error('MongoDB connection error:', err);
