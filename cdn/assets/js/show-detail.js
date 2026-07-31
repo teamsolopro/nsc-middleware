@@ -94,6 +94,28 @@
       ].join('');
     }
 
+    // Performances
+    var performancesSection = '';
+    var showtimes = (p.showtimes || '').trim();
+    if (p.performances && p.performances.length > 0) {
+      var rows = p.performances.map(function(perf) {
+        return '<li>' + formatDate(perf.date) + (perf.time ? ' &bull; ' + esc(perf.time) : '') + '</li>';
+      }).join('');
+      performancesSection = [
+        '<div class="nsc-detail-section">',
+          '<h2 class="nsc-detail-subheading">Performances</h2>',
+          '<ul class="nsc-perf-list">' + rows + '</ul>',
+        '</div>',
+      ].join('');
+    } else if (showtimes) {
+      performancesSection = [
+        '<div class="nsc-detail-section">',
+          '<h2 class="nsc-detail-subheading">Showtimes</h2>',
+          '<p class="nsc-detail-meta">' + nl2br(showtimes) + '</p>',
+        '</div>',
+      ].join('');
+    }
+
     // Cast
     var castSection = '';
     if (p.cast && p.cast.length > 0) {
@@ -153,6 +175,7 @@
 
           desc ? '<div class="nsc-detail-section"><p class="nsc-detail-desc">' + nl2br(desc) + '</p></div>' : '',
           warnings ? '<div class="nsc-detail-section"><p class="nsc-detail-warning">⚠️ Content Advisory: ' + esc(warnings) + '</p></div>' : '',
+          performancesSection,
           ticketSection,
           castSection,
         '</div>',

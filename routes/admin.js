@@ -218,6 +218,12 @@ router.post('/productions', requireAuth, async (req, res) => {
 
 router.post('/productions/:id', requireAuth, async (req, res) => {
   const d = req.body;
+  const perfDates = Array.isArray(d['perfDate[]']) ? d['perfDate[]'] : (d['perfDate[]'] ? [d['perfDate[]']] : []);
+  const perfTimes = Array.isArray(d['perfTime[]']) ? d['perfTime[]'] : (d['perfTime[]'] ? [d['perfTime[]']] : []);
+  const performances = perfDates.reduce((acc, date, i) => {
+    if (date) acc.push({ date, time: perfTimes[i] || '' });
+    return acc;
+  }, []);
   await Production.findByIdAndUpdate(req.params.id, {
     linkedCompanyId: d.linkedCompanyId || undefined,
     linkedVenueId:   d.linkedVenueId   || undefined,
@@ -241,6 +247,7 @@ router.post('/productions/:id', requireAuth, async (req, res) => {
     'tickets.boxOfficePhone':   d.boxOfficePhone || undefined,
     'tickets.notes':            d.ticketNotes    || undefined,
     showtimes:    d.showtimes,
+    performances: performances,
     contactName:  d.contactName,
     contactEmail: d.contactEmail,
     contactPhone: d.contactPhone,
