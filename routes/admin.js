@@ -172,9 +172,16 @@ router.get('/productions', requireAuth, async (req, res) => {
 router.post('/productions', requireAuth, async (req, res) => {
   try {
     const d = req.body;
+    const perfDates = Array.isArray(d.perfDate) ? d.perfDate : (d.perfDate ? [d.perfDate] : []);
+    const perfTimes = Array.isArray(d.perfTime) ? d.perfTime : (d.perfTime ? [d.perfTime] : []);
+    const performances = perfDates.reduce((acc, date, i) => {
+      if (date) acc.push({ date, time: perfTimes[i] || '' });
+      return acc;
+    }, []);
     const production = new Production({
       linkedCompanyId: d.linkedCompanyId || undefined,
       linkedVenueId:   d.linkedVenueId   || undefined,
+      performances,
       show: {
         title:          d.title,
         author:         d.author,
@@ -218,8 +225,8 @@ router.post('/productions', requireAuth, async (req, res) => {
 
 router.post('/productions/:id', requireAuth, async (req, res) => {
   const d = req.body;
-  const perfDates = Array.isArray(d['perfDate[]']) ? d['perfDate[]'] : (d['perfDate[]'] ? [d['perfDate[]']] : []);
-  const perfTimes = Array.isArray(d['perfTime[]']) ? d['perfTime[]'] : (d['perfTime[]'] ? [d['perfTime[]']] : []);
+  const perfDates = Array.isArray(d.perfDate) ? d.perfDate : (d.perfDate ? [d.perfDate] : []);
+  const perfTimes = Array.isArray(d.perfTime) ? d.perfTime : (d.perfTime ? [d.perfTime] : []);
   const performances = perfDates.reduce((acc, date, i) => {
     if (date) acc.push({ date, time: perfTimes[i] || '' });
     return acc;
