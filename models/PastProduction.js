@@ -14,18 +14,7 @@ const pastProductionSchema = new mongoose.Schema(
     linkedVenueId: { type: mongoose.Schema.Types.ObjectId, ref: 'Venue' },
     linkedAuditionId: { type: mongoose.Schema.Types.ObjectId, ref: 'Audition' },
 
-    show: {
-      title: String,
-      author: String,
-      composer: String,
-      description: String,
-      type: String,
-      showType: [String],
-      familyRating: String,
-      posterImageUrl: String,
-      runtime: String,
-      contentWarnings: String,
-    },
+    show: mongoose.Schema.Types.Mixed,
 
     mediaIds: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Media' }],
 
