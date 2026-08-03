@@ -136,9 +136,8 @@ router.post('/companies', requireAuth, async (req, res) => {
 
 router.post('/companies/:id', requireAuth, async (req, res) => {
   const d = req.body;
-  const homeVenueIds = d.homeVenueIds
-    ? (Array.isArray(d.homeVenueIds) ? d.homeVenueIds : [d.homeVenueIds])
-    : [];
+  const homeVenueIds = (Array.isArray(d.homeVenueIds) ? d.homeVenueIds : [d.homeVenueIds])
+    .filter(Boolean);
   await Company.findByIdAndUpdate(req.params.id, {
     name: d.name, slug: d.slug, city: d.city, state: d.state, region: d.region,
     website: d.website, logoUrl: d.logoUrl || undefined, bio: d.bio,
