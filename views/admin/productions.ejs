@@ -233,6 +233,7 @@
                         <div class="perf-row" style="display:flex;gap:8px;margin-bottom:6px;align-items:center">
                           <input type="date" name="perfDate[]" value="<%= perf.date ? new Date(perf.date).toISOString().slice(0,10) : '' %>" style="font-size:13px;padding:5px 7px;border:1px solid #ccc;border-radius:4px">
                           <input type="text" name="perfTime[]" value="<%= perf.time || '' %>" placeholder="e.g. 7:30 PM" style="font-size:13px;padding:5px 7px;border:1px solid #ccc;border-radius:4px;width:120px">
+                          <button type="button" class="btn-sm" onclick="dupPerfRow(this)" title="Duplicate">⧉</button>
                           <button type="button" class="btn-sm btn-danger" onclick="this.parentElement.remove()">✕</button>
                         </div>
                       <% }) %>
@@ -376,15 +377,23 @@
     })();
 
 
-    function addPerfRow(containerId) {
+    function addPerfRow(containerId, date, time) {
       var container = document.getElementById(containerId);
       var row = document.createElement('div');
       row.className = 'perf-row';
       row.style.cssText = 'display:flex;gap:8px;margin-bottom:6px;align-items:center';
-      row.innerHTML = '<input type="date" name="perfDate[]" style="font-size:13px;padding:5px 7px;border:1px solid #ccc;border-radius:4px">'
-        + '<input type="text" name="perfTime[]" placeholder="e.g. 7:30 PM" style="font-size:13px;padding:5px 7px;border:1px solid #ccc;border-radius:4px;width:120px">'
+      row.innerHTML = '<input type="date" name="perfDate[]" value="' + (date || '') + '" style="font-size:13px;padding:5px 7px;border:1px solid #ccc;border-radius:4px">'
+        + '<input type="text" name="perfTime[]" value="' + (time || '') + '" placeholder="e.g. 7:30 PM" style="font-size:13px;padding:5px 7px;border:1px solid #ccc;border-radius:4px;width:120px">'
+        + '<button type="button" class="btn-sm" onclick="dupPerfRow(this)" title="Duplicate">⧉</button>'
         + '<button type="button" class="btn-sm btn-danger" onclick="this.parentElement.remove()">✕</button>';
       container.appendChild(row);
+    }
+
+    function dupPerfRow(btn) {
+      var row = btn.parentElement;
+      var date = row.querySelector('input[name="perfDate[]"]').value;
+      var time = row.querySelector('input[name="perfTime[]"]').value;
+      addPerfRow(row.parentElement.id, date, time);
     }
 
     function uploadPoster(fileInput, urlId, previewId, statusId) {
