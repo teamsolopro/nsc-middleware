@@ -47,10 +47,13 @@
   }
 
   /* ── Cards ──────────────────────────────────────────────── */
+  a.nsc-card { text-decoration: none !important; color: inherit; }
+  a.nsc-card:hover { text-decoration: none !important; }
+  a.nsc-card * { text-decoration: none !important; }
   .nsc-card {
     display: flex; flex-direction: column;
     background: #fff; border: 1px solid #dce8f0; border-radius: 10px;
-    padding: 20px; transition: box-shadow 0.15s, transform 0.15s;
+    padding: 20px; transition: box-shadow 0.15s, transform 0.15s; 
   }
   .nsc-card:hover { box-shadow: 0 4px 16px rgba(68,119,161,0.15); transform: translateY(-2px); }
   .nsc-card-label { font-size: 11px; font-weight: 700; color: #6699c2; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
@@ -59,7 +62,7 @@
   .nsc-card-company { font-size: 13px; font-weight: 700; color: #4477a1; margin: 4px 0 0; }
   .nsc-card-meta { font-size: 13px; color: #555; margin: 4px 0 0; }
   .nsc-distance { color: #3d5a80; font-weight: 600; }
-  .nsc-card-link { font-size: 13px; color: #4477a1; text-decoration: none; font-weight: 600; margin-top: 14px; display: inline-block; }
+  .nsc-card-link { font-size: 13px; color: #4477a1; text-decoration: none !important; font-weight: 600; margin-top: 14px; display: inline-block; }
   .nsc-card-link:hover { text-decoration: underline; }
 
   /* ── States ─────────────────────────────────────────────── */
@@ -136,13 +139,14 @@
           <option>Coastal NC</option>
           <option>Eastern NC</option>
           <option>Piedmont</option>
+          <option>Sandhills NC</option>
           <option>Triad</option>
           <option>Triangle</option>
           <option value="SC">--- South Carolina ---</option>
           <option>Lowcountry</option>
           <option>Midlands</option>
           <option>Pee Dee</option>
-          <option>Sandhills</option>
+          <option>Sandhills SC</option>
           <option>Upstate</option>
         </select>
       </div>
