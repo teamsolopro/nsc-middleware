@@ -72,7 +72,7 @@
       '        <option>Lowcountry</option>',
       '        <option>Midlands</option>',
       '        <option>Pee Dee</option>',
-      '        <option>Sandhills SC</option>',
+
       '        <option>Upstate</option>', 
       '      </select>',
       '    </div>',
