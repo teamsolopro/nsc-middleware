@@ -98,7 +98,13 @@
     var performancesSection = '';
     var showtimes = (p.showtimes || '').trim();
     if (p.performances && p.performances.length > 0) {
-      var rows = p.performances.map(function(perf) {
+      var sorted = p.performances.slice().sort(function(a, b) {
+        var da = a.date ? new Date(a.date) : new Date(0);
+        var db = b.date ? new Date(b.date) : new Date(0);
+        if (da - db !== 0) return da - db;
+        return (a.time || '').localeCompare(b.time || '');
+      });
+      var rows = sorted.map(function(perf) {
         return '<li>' + formatDate(perf.date) + (perf.time ? ' &bull; ' + esc(perf.time) : '') + '</li>';
       }).join('');
       performancesSection = [

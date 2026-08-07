@@ -229,7 +229,7 @@
                   <div class="full">
                     <label style="font-size:12px;font-weight:600;margin-bottom:6px;display:block">Individual Performances</label>
                     <div id="perfs-<%= p._id %>">
-                      <% (p.performances || []).forEach(function(perf, i) { %>
+                      <% ;(p.performances || []).slice().sort(function(a,b){ var da=a.date?new Date(a.date):new Date(0),db=b.date?new Date(b.date):new Date(0); return da-db||((a.time||'').localeCompare(b.time||'')); }).forEach(function(perf, i) { %>
                         <div class="perf-row" style="display:flex;gap:8px;margin-bottom:6px;align-items:center">
                           <input type="date" name="perfDate[]" value="<%= perf.date ? new Date(perf.date).toISOString().slice(0,10) : '' %>" style="font-size:13px;padding:5px 7px;border:1px solid #ccc;border-radius:4px">
                           <input type="text" name="perfTime[]" value="<%= perf.time || '' %>" placeholder="e.g. 7:30 PM" style="font-size:13px;padding:5px 7px;border:1px solid #ccc;border-radius:4px;width:120px">
