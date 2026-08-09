@@ -50,6 +50,7 @@
             <input type="file" id="add-logo-file" accept="image/*">
             <span class="logo-upload-status" id="add-logo-status"></span>
           </div>
+          <input type="url" id="add-logo-url-text" placeholder="…or paste image URL" style="font-size:13px;margin-top:6px;width:100%;box-sizing:border-box" oninput="syncLogoUrl('add-logo-url-text','add-logo-url','add-logo-preview')">
           <img id="add-logo-preview" class="logo-thumb" style="display:none" alt="Logo preview">
           <input type="hidden" name="logoUrl" id="add-logo-url">
         </label>
@@ -122,6 +123,7 @@
                       <input type="file" id="edit-logo-file-<%= c._id %>" accept="image/*" onchange="uploadLogo(this, '<%= c._id %>')">
                       <span class="logo-upload-status" id="edit-logo-status-<%= c._id %>"></span>
                     </div>
+                    <input type="url" id="edit-logo-url-text-<%= c._id %>" value="<%= c.logoUrl || '' %>" placeholder="…or paste image URL" style="font-size:13px;margin-top:6px;width:100%;box-sizing:border-box" oninput="syncLogoUrl('edit-logo-url-text-<%= c._id %>','edit-logo-url-<%= c._id %>','edit-logo-preview-<%= c._id %>')">
                     <% if (c.logoUrl) { %>
                       <img src="<%= c.logoUrl %>" class="logo-thumb" id="edit-logo-preview-<%= c._id %>" alt="Logo">
                     <% } else { %>
@@ -182,6 +184,14 @@
       row.style.display = row.style.display === 'none' ? '' : 'none';
     }
 
+    function syncLogoUrl(textId, hiddenId, previewId) {
+      var url = document.getElementById(textId).value.trim();
+      document.getElementById(hiddenId).value = url;
+      var preview = document.getElementById(previewId);
+      if (url) { preview.src = url; preview.style.display = 'block'; }
+      else { preview.style.display = 'none'; }
+    }
+
     // Add-form logo upload
     document.getElementById('add-logo-file').addEventListener('change', function () {
       uploadLogoFile(this, 'add-logo-url', 'add-logo-preview', 'add-logo-status');
@@ -210,6 +220,9 @@
         .then(function (data) {
           if (data.url) {
             urlField.value = data.url;
+            // Keep the visible URL text input in sync if present
+            var textInput = document.getElementById(urlFieldId.replace('edit-logo-url-', 'edit-logo-url-text-').replace('add-logo-url', 'add-logo-url-text'));
+            if (textInput) textInput.value = data.url;
             preview.src = data.url;
             preview.style.display = 'block';
             status.textContent = 'Uploaded ✓';
