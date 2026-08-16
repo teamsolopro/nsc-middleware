@@ -75,6 +75,11 @@
       return p.linkedCompanyId && p.linkedCompanyId.slug === slug;
     });
     if (matched.length === 0) return '';
+    matched.sort(function (a, b) {
+      var aDate = a.dates && a.dates.opens ? new Date(a.dates.opens) : new Date('9999');
+      var bDate = b.dates && b.dates.opens ? new Date(b.dates.opens) : new Date('9999');
+      return aDate - bDate;
+    });
     return '<section class="nsc-co-section">' +
       '<h2 class="nsc-co-section-title">' + label + '</h2>' +
       '<div class="nsc-co-prod-grid">' +
