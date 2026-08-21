@@ -35,15 +35,14 @@
 
     return [
       '<div class="nsc-card">',
+      '<a href="/shows/detail?id=' + esc(p._id) + '">',
         poster,
       '</a>',
-      '<a href="/shows/detail?id=' + esc(p._id) + '">',
         '<span class="nsc-card-label">' + esc(showType) + rating + '</span>',
         '<h3 class="nsc-card-title">' + title + '</h3>',
         company  ? '<p class="nsc-card-company">' + esc(company) + '</p>' : '',
         location ? '<p class="nsc-card-meta">&#128205; ' + esc(location) + '</p>' : '',
-        opens    ? '<p class="nsc-card-meta">&#128197; ' + esc(opens) + '</p>' : '',
-        closes   ? '<p class="nsc-card-meta">&#128198; ' + esc(closes) + '</p>' : '',
+        closes   ? '<p class="nsc-card-meta">&#128197; ' + esc(closes) + '</p>' : '',
         '<a class="nsc-card-link" href="/shows/detail?id=' + esc(p._id) + '">View Details &rarr;</a>',
       '</div>',
     ].join('');

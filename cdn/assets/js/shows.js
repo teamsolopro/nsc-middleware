@@ -91,7 +91,7 @@
       '<div class="nsc-card">',
       '<a href="/shows/detail?id=' + esc(p._id) + '">',
         poster,
-      '</a>',
+      
         '<span class="nsc-card-label">' + esc(showType) + rating + '</span>',
         '<h3 class="nsc-card-title">' + title + '<span class="nsc-card-author">' + author + '</span></h3>',
         company  ? '<p class="nsc-card-company">' + esc(company) + '</p>' : '',
@@ -107,6 +107,7 @@
             : '',
           '<a class="nsc-card-link" href="/shows/detail?id=' + esc(p._id) + '">Details &rarr;</a>',
         '</div>',
+        '</a>',
       '</div>',
     ].join('');
   }
