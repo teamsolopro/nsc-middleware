@@ -17,6 +17,13 @@
     .logo-upload-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 4px; }
     .logo-upload-row input[type=file] { font-size: 13px; }
     .logo-upload-status { font-size: 12px; color: #666; }
+    th.sortable { cursor: pointer; user-select: none; white-space: nowrap; }
+    th.sortable:hover { background: #e8eef4; }
+    .sort-icon { display: inline-block; margin-left: 4px; opacity: .4; font-style: normal; font-size: 11px; }
+    th.sort-asc .sort-icon, th.sort-desc .sort-icon { opacity: 1; }
+    th.sort-asc .sort-icon::after  { content: ' ▲'; }
+    th.sort-desc .sort-icon::after { content: ' ▼'; }
+    th.sortable:not(.sort-asc):not(.sort-desc) .sort-icon::after { content: ' ⇅'; }
   </style>
 </head>
 <body>
@@ -68,11 +75,11 @@
       <thead>
         <tr>
           <th>Logo</th>
-          <th>Name</th>
-          <th>City</th>
-          <th>State</th>
-          <th>Region</th>
-          <th>Verified</th>
+          <th class="sortable" data-col="1">Name<i class="sort-icon"></i></th>
+          <th class="sortable" data-col="2">City<i class="sort-icon"></i></th>
+          <th class="sortable" data-col="3">State<i class="sort-icon"></i></th>
+          <th class="sortable" data-col="4">Region<i class="sort-icon"></i></th>
+          <th class="sortable" data-col="5">Verified<i class="sort-icon"></i></th>
           <th>Actions</th>
         </tr>
       </thead>
@@ -183,6 +190,51 @@
       var row = document.getElementById('edit-' + id);
       row.style.display = row.style.display === 'none' ? '' : 'none';
     }
+
+    (function () {
+      var tbody = document.querySelector('table tbody');
+      var lastCol = -1;
+      var asc = true;
+
+      function cellText(row, col) {
+        var cells = row.querySelectorAll('td');
+        if (!cells[col]) return '';
+        return cells[col].textContent.trim();
+      }
+
+      function sortTable(col) {
+        if (col === lastCol) { asc = !asc; } else { asc = true; lastCol = col; }
+
+        var allRows = Array.from(tbody.querySelectorAll('tr'));
+        var pairs = [];
+        for (var i = 0; i < allRows.length; i++) {
+          var r = allRows[i];
+          if (r.id && r.id.startsWith('edit-')) continue;
+          var editRow = allRows[i + 1];
+          pairs.push({ data: r, edit: (editRow && editRow.id && editRow.id.startsWith('edit-')) ? editRow : null });
+        }
+
+        pairs.sort(function (a, b) {
+          var av = cellText(a.data, col);
+          var bv = cellText(b.data, col);
+          return asc ? av.localeCompare(bv) : bv.localeCompare(av);
+        });
+
+        pairs.forEach(function (p) {
+          tbody.appendChild(p.data);
+          if (p.edit) tbody.appendChild(p.edit);
+        });
+
+        document.querySelectorAll('th.sortable').forEach(function (th) {
+          th.classList.remove('sort-asc', 'sort-desc');
+          if (parseInt(th.dataset.col) === col) th.classList.add(asc ? 'sort-asc' : 'sort-desc');
+        });
+      }
+
+      document.querySelectorAll('th.sortable').forEach(function (th) {
+        th.addEventListener('click', function () { sortTable(parseInt(this.dataset.col)); });
+      });
+    })();
 
     function syncLogoUrl(textId, hiddenId, previewId) {
       var url = document.getElementById(textId).value.trim();

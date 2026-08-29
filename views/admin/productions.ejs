@@ -123,6 +123,18 @@
       </form>
     </details>
 
+    <div style="margin-bottom:10px">
+      <label style="font-size:13px;font-weight:600">Filter by Status:
+        <select id="prod-status-filter" onchange="filterByStatus()" style="margin-left:6px;font-size:13px;padding:4px 8px;border:1px solid #ccc;border-radius:4px">
+          <option value="">All</option>
+          <option value="pending">Pending</option>
+          <option value="published">Published</option>
+          <option value="closed">Closed</option>
+          <option value="rejected">Rejected</option>
+        </select>
+      </label>
+    </div>
+
     <table>
       <thead>
         <tr>
@@ -377,6 +389,24 @@
         });
       });
     })();
+
+    function filterByStatus() {
+      var val = document.getElementById('prod-status-filter').value;
+      var allRows = Array.from(document.querySelectorAll('table tbody tr'));
+      for (var i = 0; i < allRows.length; i++) {
+        var r = allRows[i];
+        if (r.id && r.id.startsWith('edit-')) continue; // handled below with its data row
+        var badge = r.querySelector('.status-badge');
+        var status = badge ? badge.textContent.trim() : '';
+        var show = !val || status === val;
+        r.style.display = show ? '' : 'none';
+        // always collapse the edit row when its data row is hidden
+        var next = allRows[i + 1];
+        if (next && next.id && next.id.startsWith('edit-')) {
+          if (!show) next.style.display = 'none';
+        }
+      }
+    }
 
 
     function addPerfRow(containerId, date, time) {
