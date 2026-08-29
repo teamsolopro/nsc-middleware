@@ -100,7 +100,7 @@
       <tbody>
         <% venues.forEach(v => { %>
           <tr data-id="<%= v._id %>">
-            <td><%= v.name %></td>
+            <td><%= v.name %> <span style="font-size:11px;color:#999">— <%= v._id %></span></td>
             <td><%= v.city %></td>
             <td><%= v.state %></td>
             <td><%= v.region %></td>

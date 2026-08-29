@@ -87,7 +87,7 @@
         <% companies.forEach(c => { %>
           <tr>
             <td><% if (c.logoUrl) { %><img src="<%= c.logoUrl %>" class="logo-thumb" alt="logo"><% } else { %>—<% } %></td>
-            <td><strong><%= c.name %></strong></td>
+            <td><strong><%= c.name %></strong> <span style="font-size:11px;color:#999;font-weight:normal">— <%= c._id %></span></td>
             <td><%= c.city %></td>
             <td><%= c.state %></td>
             <td><%= c.region %></td>
