@@ -50,7 +50,7 @@
 
   function formatCurrency(val) {
     if (val == null || val === '') return '';
-    return '$' + Number(val).toFixed(2).replace(/\.00$/, '');
+    return '$' + Number(val.replace(/\D/g, '')).toFixed(2).replace(/\.00$/, '');
   }
 
   function el(id) { return document.getElementById(id); }
