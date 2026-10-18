@@ -24,11 +24,26 @@ async function runExport() {
 
   // Clean up empty string ID fields before populating
   await Promise.all([
-    Audition.updateMany({ linkedCompanyId: '' }, { $unset: { linkedCompanyId: '' } }),
-    Audition.updateMany({ linkedVenueId: '' }, { $unset: { linkedVenueId: '' } }),
-    Production.updateMany({ linkedCompanyId: '' }, { $unset: { linkedCompanyId: '' } }),
-    Production.updateMany({ linkedVenueId: '' }, { $unset: { linkedVenueId: '' } }),
-    Venue.updateMany({ linkedCompanyId: '' }, { $unset: { linkedCompanyId: '' } }),
+    Audition.updateMany(
+      { linkedCompanyId: { $type: 'string' } },
+      { $unset: { linkedCompanyId: '' } }
+    ),
+    Audition.updateMany(
+      { linkedVenueId: { $type: 'string' } },
+      { $unset: { linkedVenueId: '' } }
+    ),
+    Production.updateMany(
+      { linkedCompanyId: { $type: 'string' } },
+      { $unset: { linkedCompanyId: '' } }
+    ),
+    Production.updateMany(
+      { linkedVenueId: { $type: 'string' } },
+      { $unset: { linkedVenueId: '' } }
+    ),
+    Venue.updateMany(
+      { linkedCompanyId: { $type: 'string' } },
+      { $unset: { linkedCompanyId: '' } }
+    ),
   ]);
 
   const [auditions, productions, companies, venues] = await Promise.all([
