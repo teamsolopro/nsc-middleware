@@ -376,6 +376,8 @@ router.post('/auditions', requireAuth, async (req, res) => {
       requirements: {
         preparedSong:    d.preparedSong    === 'on',
         songLength:      d.songLength      || undefined,
+        videoSubmission: d.videoSubmission === 'on',
+        videoInstructions: d.videoInstructions || undefined,
         coldReading:     d.coldReading     === 'on',
         preparedReading: d.preparedReading === 'on',
         dance:           d.dance           === 'on',

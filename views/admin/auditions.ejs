@@ -135,8 +135,10 @@
           <label style="flex-direction:row;gap:4px;font-size:14px"><input type="checkbox" name="dance"> Dance</label>
           <label style="flex-direction:row;gap:4px;font-size:14px"><input type="checkbox" name="headshot"> Headshot</label>
           <label style="flex-direction:row;gap:4px;font-size:14px"><input type="checkbox" name="resume"> Resume</label>
+          <label style="flex-direction:row;gap:4px;font-size:14px"><input type="checkbox" name="videoSubmission"> Video Submission</label>
         </div>
         <label>Song Length <input type="text" name="songLength" placeholder="e.g. 16 bars or 2 minutes"></label>
+        <label>Video Instructions <input type="text" name="videoInstructions" placeholder="e.g. 2-minute self-tape, upload link to be provided"></label>
         <label>Callback Notes <input type="text" name="callbacks"></label>
         <label>Conflict Dates <input type="text" name="conflictDates"></label>
         <label>Additional Notes <textarea name="additionalNotes" rows="2"></textarea></label>
@@ -230,6 +232,7 @@
                       <% }) %>
                     </select>
                   </label>
+                  <label><input type="checkbox" name="videoSubmission" <%- a.requirements && a.requirements.videoSubmission ? 'checked' : '' %>> Video Submission</label>
                   <label class="full">Description <textarea name="description" rows="3"><%= a.show && a.show.description %></textarea></label>
 
                   <h4>Company, Venue &amp; Linked Production</h4>
@@ -307,6 +310,7 @@
                     </div>
                   </div>
                   <label>Song Length <input type="text" name="songLength" value="<%= a.requirements && a.requirements.songLength %>"></label>
+                  <label>Video Instructions <input type="text" name="videoInstructions" value="<%= a.requirements && a.requirements.videoInstructions %>"></label>
                   <label>Callback Notes <input type="text" name="callbacks" value="<%= a.requirements && a.requirements.callbacks %>"></label>
                   <label class="full">Conflict Dates <input type="text" name="conflictDates" value="<%= a.requirements && a.requirements.conflictDates %>"></label>
                   <label class="full">Additional Notes <textarea name="additionalNotes" rows="2"><%= a.requirements && a.requirements.additionalNotes %></textarea></label>
